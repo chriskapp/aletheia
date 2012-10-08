@@ -264,6 +264,7 @@ public class Aletheia extends JFrame
 		getActiveUrl().setText("");
 		getActiveIn().setText("");
 		getActiveOut().setText("");
+		getActiveSidebar().setVisible(false);
 
 		SwingUtilities.invokeLater(new Runnable() {
 

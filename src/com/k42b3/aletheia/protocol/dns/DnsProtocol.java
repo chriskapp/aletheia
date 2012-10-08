@@ -62,25 +62,29 @@ public class DnsProtocol extends ProtocolAbstract
 		types = new HashMap<Integer, String>();
 
 		types.put(org.xbill.DNS.Type.A, "A (IPv4 address)");
-		types.put(org.xbill.DNS.Type.NS, "NS (Name server)");
+		types.put(org.xbill.DNS.Type.A6, "A6 (IPv6 address (experimental))");
+		types.put(org.xbill.DNS.Type.AAAA, "AAAA (IPv6 address)");
+		types.put(org.xbill.DNS.Type.CNAME, "CNAME (Canonical name)");
+		types.put(org.xbill.DNS.Type.GPOS, "GPOS (Geographical position)");
+		types.put(org.xbill.DNS.Type.HINFO, "HINFO (Host information)");
+		types.put(org.xbill.DNS.Type.LOC, "LOC (Location)");
+		types.put(org.xbill.DNS.Type.MAILA, "MAILA (Transfer mail agent records)");
+		types.put(org.xbill.DNS.Type.MAILB, "MAILB (Transfer mailbox records)");
+		types.put(org.xbill.DNS.Type.MB, "MB (Mailbox domain name)");
 		types.put(org.xbill.DNS.Type.MD, "MD (Mail destination)");
 		types.put(org.xbill.DNS.Type.MF, "MF (Mail forwarder)");
-		types.put(org.xbill.DNS.Type.CNAME, "CNAME (Canonical name)");
-		types.put(org.xbill.DNS.Type.SOA, "SOA (Start of authority)");
-		types.put(org.xbill.DNS.Type.MB, "MB (Mailbox domain name)");
 		types.put(org.xbill.DNS.Type.MG, "MG (Mail group member)");
-		types.put(org.xbill.DNS.Type.MR, "MR (Mail rename name)");
-		types.put(org.xbill.DNS.Type.NULL, "NULL (Null record)");
-		types.put(org.xbill.DNS.Type.WKS, "WKS (Well known services)");
-		types.put(org.xbill.DNS.Type.PTR, "PTR (Domain name pointer)");
-		types.put(org.xbill.DNS.Type.HINFO, "HINFO (Host information)");
 		types.put(org.xbill.DNS.Type.MINFO, "MINFO (Mailbox information)");
+		types.put(org.xbill.DNS.Type.MR, "MR (Mail rename name)");
 		types.put(org.xbill.DNS.Type.MX, "MX (Mail routing information)");
-		types.put(org.xbill.DNS.Type.TXT, "TXT (Text strings)");
+		types.put(org.xbill.DNS.Type.NS, "NS (Name server)");
+		types.put(org.xbill.DNS.Type.NULL, "NULL (Null record)");
+		types.put(org.xbill.DNS.Type.PTR, "PTR (Domain name pointer)");
 		types.put(org.xbill.DNS.Type.RP, "RP (Responsible person)");
-		types.put(org.xbill.DNS.Type.GPOS, "GPOS (Geographical position)");
-		types.put(org.xbill.DNS.Type.AAAA, "AAAA (IPv6 address)");
-		types.put(org.xbill.DNS.Type.LOC, "LOC (Location)");
+		types.put(org.xbill.DNS.Type.RT, "RT (Router)");
+		types.put(org.xbill.DNS.Type.SOA, "SOA (Start of authority)");
+		types.put(org.xbill.DNS.Type.TXT, "TXT (Text strings)");
+		types.put(org.xbill.DNS.Type.WKS, "WKS (Well known services)");
 
 		service = Executors.newSingleThreadExecutor();
 	}

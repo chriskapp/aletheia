@@ -1,5 +1,6 @@
 
 0.1.1
+[ ] add history
 [x] added own sidebar for each tab. Sidebar is only display if an resource 
     handler is available for the content type
 [x] add probably other resources to sidebar like images etc.

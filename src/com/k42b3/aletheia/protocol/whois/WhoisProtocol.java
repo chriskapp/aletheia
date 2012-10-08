@@ -55,12 +55,10 @@ public class WhoisProtocol extends ProtocolAbstract
 		try
 		{
 			// connect
-			int port = request.getUrl().getPort() == -1 ? 43 : request.getUrl().getPort();
-
-			whois.connect(request.getUrl().getHost(), port);
+			whois.connect(WhoisClient.DEFAULT_HOST);
 
 			// send query
-			String response = whois.query(this.getRequest().getContent());
+			String response = whois.query(request.getUrl().getHost());
 
 			// create response
 			this.response = new Response(response);
