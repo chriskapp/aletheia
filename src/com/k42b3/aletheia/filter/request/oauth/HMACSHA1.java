@@ -1,6 +1,4 @@
 /**
- * $Id: HMACSHA1.java 18 2012-05-27 13:15:41Z k42b3.x@googlemail.com $
- * 
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -37,7 +35,6 @@ import com.k42b3.aletheia.Aletheia;
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
- * @version    $Revision: 18 $
  */
 public class HMACSHA1 implements SignatureInterface
 {

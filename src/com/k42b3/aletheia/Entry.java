@@ -31,7 +31,6 @@ import javax.swing.UIManager;
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
- * @version    $Revision: 21 $
  */
 public class Entry 
 {

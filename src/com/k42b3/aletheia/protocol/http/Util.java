@@ -1,6 +1,4 @@
 /**
- * $Id: Util.java 31 2012-10-03 13:14:24Z k42b3.x@googlemail.com $
- * 
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -40,7 +38,6 @@ import java.util.Stack;
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
- * @version    $Revision: 31 $
  */
 public class Util 
 {

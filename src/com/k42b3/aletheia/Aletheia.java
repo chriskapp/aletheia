@@ -1,6 +1,4 @@
 /**
- * $Id: Aletheia.java 31M 2012-10-03 13:17:52Z (lokal) $
- * 
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -98,7 +96,6 @@ import com.k42b3.aletheia.protocol.Response;
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
- * @version    $Revision: 31M $
  */
 public class Aletheia extends JFrame
 {

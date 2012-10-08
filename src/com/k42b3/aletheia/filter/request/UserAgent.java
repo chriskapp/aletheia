@@ -1,6 +1,4 @@
 /**
- * $Id: UserAgent.java 19 2012-05-27 15:16:14Z k42b3.x@googlemail.com $
- * 
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -33,7 +31,6 @@ import com.k42b3.aletheia.protocol.Request;
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
- * @version    $Revision: 19 $
  */
 public class UserAgent extends RequestFilterAbstract
 {

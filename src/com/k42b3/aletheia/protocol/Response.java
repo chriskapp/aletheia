@@ -1,6 +1,4 @@
 /**
- * $Id: Response.java 23 2012-05-27 23:19:57Z k42b3.x@googlemail.com $
- * 
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -30,7 +28,6 @@ package com.k42b3.aletheia.protocol;
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
- * @version    $Revision: 23 $
  */
 public class Response 
 {
