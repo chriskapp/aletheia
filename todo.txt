@@ -1,0 +1,40 @@
+
+0.1.1
+[x] added own sidebar for each tab. Sidebar is only display if an resource 
+    handler is available for the content type
+[x] add probably other resources to sidebar like images etc.
+[ ] add support for websockets and spdy
+[ ] implement https
+[ ] implement json formatter
+
+0.1.0
+[x] add right sidebar link and form processor
+[x] added ftp, whois support
+[x] added process filter
+[x] set automatic add header fields
+
+0.0.9
+[x] fixed form parser
+[x] Added seperate url textfield in each tab
+[x] improved resolving relative urls
+
+0.0.8
+[x] added download option
+[x] updated shortcuts
+[x] improved link list search
+[x] fixed XML formatter
+[x] improved dig dns request
+
+0.0.7
+[x] fix if transfer encoding is chunked sometimes the last 0 byte is included in
+    the response see "yahoo.com"
+[x] fix if transfer encoding is chunked the last chunk is sometimes skipped
+    for some reasons see "us.yahoo.com"
+[x] implement follow location filter
+[x] if transfer encoding = chunked remove size form content
+[x] add default config wich is loaded on startup and applied to any tab
+[x] improve filter system
+[x] on save write also config properties to xml
+
+________________________________________________________________________________
+$Id$
