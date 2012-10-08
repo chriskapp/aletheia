@@ -23,7 +23,6 @@
 package com.k42b3.aletheia.protocol;
 
 import com.k42b3.aletheia.protocol.dns.DnsProtocol;
-import com.k42b3.aletheia.protocol.ftp.FtpProtocol;
 import com.k42b3.aletheia.protocol.http.HttpProtocol;
 import com.k42b3.aletheia.protocol.whois.WhoisProtocol;
 

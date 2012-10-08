@@ -171,9 +171,10 @@ public class Util
 
 	/**
 	 * This method takes an base url and resolves the href to an url
+	 * 
 	 * @param baseUrl
 	 * @param href
-	 * @return
+	 * @return string
 	 * @throws MalformedURLException
 	 */
 	public static String resolveHref(String baseUrl, String href) throws MalformedURLException
@@ -306,6 +307,12 @@ public class Util
 		else
 		{
 			absoluteUrl = "/";
+		}
+
+		// add last slash
+		if(relativePath.endsWith("/") && !absoluteUrl.endsWith("/"))
+		{
+			absoluteUrl = absoluteUrl + "/";
 		}
 
 		return absoluteUrl;

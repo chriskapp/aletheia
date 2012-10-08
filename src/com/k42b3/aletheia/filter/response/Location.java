@@ -22,8 +22,6 @@
 
 package com.k42b3.aletheia.filter.response;
 
-import java.util.Properties;
-
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.filter.ResponseFilterAbstract;
 import com.k42b3.aletheia.protocol.Response;
@@ -38,8 +36,6 @@ import com.k42b3.aletheia.protocol.http.Util;
  */
 public class Location extends ResponseFilterAbstract
 {
-	private Properties config = new Properties();
-
 	public void exec(Response response) throws Exception
 	{
 		if(response instanceof com.k42b3.aletheia.protocol.http.Response)
@@ -50,11 +46,14 @@ public class Location extends ResponseFilterAbstract
 			{
 				String location = httpResponse.getHeader("Location");
 
-				if(location != null && !Aletheia.getInstance().getActiveUrl().getText().equals(location))
+				if(location != null)
 				{
 					location = Util.resolveHref(Aletheia.getInstance().getActiveUrl().getText(), location);
 
-					Aletheia.getInstance().run(location);
+					if(!Aletheia.getInstance().getActiveUrl().getText().equals(location))
+					{
+						Aletheia.getInstance().run(location);
+					}
 				}
 			}
 		}

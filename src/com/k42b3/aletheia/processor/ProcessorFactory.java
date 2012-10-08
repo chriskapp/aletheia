@@ -22,16 +22,12 @@
 
 package com.k42b3.aletheia.processor;
 
-import java.awt.BorderLayout;
 import java.util.HashMap;
-
-import javax.swing.JFrame;
 
 import com.k42b3.aletheia.processor.format.Json;
 import com.k42b3.aletheia.processor.format.Xml;
 import com.k42b3.aletheia.processor.html.Form;
 import com.k42b3.aletheia.protocol.Response;
-import com.k42b3.aletheia.sidebar.HtmlResource;
 
 /**
  * ProcessorFactory

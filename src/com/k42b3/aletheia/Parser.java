@@ -24,10 +24,6 @@ package com.k42b3.aletheia;
 
 import java.util.logging.Logger;
 
-import javax.swing.JPanel;
-
-import com.k42b3.aletheia.processor.ProcessorInterface;
-
 /**
  * Parser
  *

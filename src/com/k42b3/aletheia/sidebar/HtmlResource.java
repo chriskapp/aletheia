@@ -39,13 +39,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.Parser;
 import com.k42b3.aletheia.TextFieldUrl;
-import com.k42b3.aletheia.processor.ProcessorFactory;
-import com.k42b3.aletheia.processor.ProcessorInterface;
-import com.k42b3.aletheia.protocol.Response;
 import com.k42b3.aletheia.protocol.http.Util;
 
 /**
@@ -134,9 +132,6 @@ public class HtmlResource extends JPanel
 		// get content
 		String html = response.getBody();
 
-		// reset
-		this.reset();
-
 		// set base url
 		this.baseUrl = Aletheia.getInstance().getActiveUrl().getText();
 
@@ -149,13 +144,15 @@ public class HtmlResource extends JPanel
 		this.parseImages(html);
 		this.parseScripts(html);
 
-		//
-		this.filter("");
-	}
+		// call filter
+		SwingUtilities.invokeLater(new Runnable() {
 
-	private void reset()
-	{
-		this.lm.clear();
+			public void run()
+			{
+				filter("");
+			}
+
+		});
 	}
 
 	private void parseLinks(String html)

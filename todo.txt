@@ -1,5 +1,8 @@
 
 0.1.1
+[x] fix url resolving issue
+[ ] add option to use alethia as proxy to see requests made by a browser
+[ ] add cookie handling filter
 [ ] add history
 [x] added own sidebar for each tab. Sidebar is only display if an resource 
     handler is available for the content type
