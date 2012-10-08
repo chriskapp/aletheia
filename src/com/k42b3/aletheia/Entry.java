@@ -1,6 +1,4 @@
 /**
- * $Id: Entry.java 21 2012-05-27 17:37:22Z k42b3.x@googlemail.com $
- * 
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 

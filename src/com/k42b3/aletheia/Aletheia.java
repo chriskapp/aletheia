@@ -255,6 +255,8 @@ public class Aletheia extends JFrame
 		}
 		catch(Exception e)
 		{
+			getActiveOut().setText(e.getMessage());
+
 			Aletheia.handleException(e);
 		}
 	}

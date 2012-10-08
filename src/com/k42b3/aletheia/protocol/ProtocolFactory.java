@@ -61,7 +61,7 @@ public class ProtocolFactory
 		}
 		else
 		{
-			throw new Exception("Unknown protocol");
+			throw new Exception("Unknown protocol " + protocol);
 		}
 	}
 }
