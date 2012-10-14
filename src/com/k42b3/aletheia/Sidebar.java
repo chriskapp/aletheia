@@ -23,13 +23,16 @@
 package com.k42b3.aletheia;
 
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.k42b3.aletheia.protocol.Response;
-import com.k42b3.aletheia.sidebar.HtmlResource;
+import com.k42b3.aletheia.sidebar.SidebarInterface;
+import com.k42b3.aletheia.sidebar.http.Atom;
+import com.k42b3.aletheia.sidebar.http.Html;
 
 /**
  * Sidebar
@@ -40,7 +43,8 @@ import com.k42b3.aletheia.sidebar.HtmlResource;
  */
 public class Sidebar extends JPanel
 {
-	private HtmlResource htmlResource;
+	private Html html;
+	private Atom atom;
 
 	public Sidebar()
 	{
@@ -52,9 +56,16 @@ public class Sidebar extends JPanel
 		this.setBorder(new EmptyBorder(4, 0, 4, 4));
 		this.setVisible(false);
 
-		// html resources
-		this.htmlResource = new HtmlResource();
-		this.add(this.htmlResource, "HtmlResource");
+		// add sidebar panels
+
+		// http
+		// html
+		this.html = new Html();
+		this.add(this.html, this.html.getContentType());
+
+		// atom
+		this.atom = new Atom();
+		this.add(this.atom, this.atom.getContentType());
 	}
 
 	public void update(Response response)
@@ -64,21 +75,32 @@ public class Sidebar extends JPanel
 			if(response instanceof com.k42b3.aletheia.protocol.http.Response)
 			{
 				com.k42b3.aletheia.protocol.http.Response httpResponse = (com.k42b3.aletheia.protocol.http.Response) response;
+
+				Component[] components = this.getComponents();
+				String contentType = httpResponse.getHeader("Content-Type");
 				
-				if(httpResponse.getHeader("Content-Type").indexOf("text/html") != -1)
+				if(contentType != null)
 				{
-					this.htmlResource.process(httpResponse);
+					for(int i = 0; i < components.length; i++)
+					{
+						JPanel panel = (JPanel) components[i];
 
-					CardLayout cl = (CardLayout) this.getLayout();
-					cl.show(this, "HtmlResource");
+						if(panel != null && contentType.indexOf(panel.getName()) != -1)
+						{
+							((SidebarInterface) components[i]).process(response);
 
-					this.setVisible(true);
+							CardLayout cl = (CardLayout) this.getLayout();
+							cl.show(this, components[i].getName());
+
+							this.setVisible(true);
+
+							return;
+						}
+					}
 				}
-				else
-				{
-					// no sidebar available for this content type
-					this.setVisible(false);
-				}
+
+				// no sidebar available for this content type
+				this.setVisible(false);
 			}
 			else
 			{

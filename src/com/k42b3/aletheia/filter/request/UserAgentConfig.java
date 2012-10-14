@@ -35,6 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.ListDataListener;
 
+import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.filter.ConfigFilterAbstract;
 
 /**
@@ -93,6 +94,7 @@ public class UserAgentConfig extends ConfigFilterAbstract
 		// add agents
 		ArrayList<AgentEntry> agents = new ArrayList<AgentEntry>();
 
+		agents.add(new AgentEntry("Aletheia " + Aletheia.VERSION, "Aletheia/" + Aletheia.VERSION));
 		agents.add(new AgentEntry("Firefox 4.0", "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.3) Gecko/20100401 Firefox/4.0 (.NET CLR 3.5.30729)"));
 		agents.add(new AgentEntry("Firefox 3.8", "Mozilla/5.0 (X11; U; Linux i686; pl-PL; rv:1.9.0.2) Gecko/20121223 Ubuntu/9.25 (jaunty) Firefox/3.8"));
 		agents.add(new AgentEntry("Internet Explorer 8", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)"));
