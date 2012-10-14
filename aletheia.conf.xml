@@ -8,6 +8,10 @@
 		</in>
 		<out>
 			<filter name="com.k42b3.aletheia.filter.response.Location" />
+			<filter name="com.k42b3.aletheia.filter.response.Application" />
 		</out>
 	</filters>
+	<applications>
+		<application contentType="application/x-shockwave-flash" path="J:\application\flashplayer\flashplayer_11_sa.exe ${url}" />
+	</applications>
 </aletheia>

@@ -79,6 +79,7 @@ public class FilterOut extends JFrame
 		ArrayList<String> filterList = new ArrayList<String>();
 
 		filterList.add("Location");
+		filterList.add("Application");
 
 
 		// parse filters

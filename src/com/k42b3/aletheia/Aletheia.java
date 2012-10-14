@@ -103,6 +103,8 @@ public class Aletheia extends JFrame
 
 	public static Aletheia instance;
 
+	private Config config;
+	private History history;
 	private JTabbedPane tp;
 
 	private HashMap<Integer, ArrayList<RequestFilterAbstract>> filtersIn;
@@ -122,6 +124,12 @@ public class Aletheia extends JFrame
 		this.setMinimumSize(this.getSize());
 		this.setLayout(new BorderLayout());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		// load config
+		config = new Config(Aletheia.getConfigFile());
+
+		// history
+		history = new History();
 
 		// filter
 		filtersIn = new HashMap<Integer, ArrayList<RequestFilterAbstract>>();
@@ -185,6 +193,9 @@ public class Aletheia extends JFrame
 
 			// set url
 			this.getActiveUrl().setText(currentUrl.toString());
+
+			// add to history
+			history.add(currentUrl.toString());
 
 			// get protocol
 			ProtocolInterface protocol = ProtocolFactory.factory(currentUrl.getProtocol());
@@ -298,6 +309,20 @@ public class Aletheia extends JFrame
 				{
 					run(getActiveUrl().getText());
 				}
+				else if(e.getKeyCode() == KeyEvent.VK_UP)
+				{
+					if(history.hasPrevious())
+					{
+						getActiveUrl().setText(history.previous());
+					}
+				}
+				else if(e.getKeyCode() == KeyEvent.VK_DOWN)
+				{
+					if(history.hasNext())
+					{
+						getActiveUrl().setText(history.next());
+					}
+				}
 			}
 
 			public void keyPressed(KeyEvent e) 
@@ -406,7 +431,10 @@ public class Aletheia extends JFrame
 		}
 
 		// load default filters
-		loadDefaultFilters();
+		int selectedIndex = this.tp.getTabCount() - 1;
+
+		filtersIn.put(selectedIndex, config.getFiltersIn());
+		filtersOut.put(selectedIndex, config.getFiltersOut());
 	}
 
 	public void newTab()
@@ -572,11 +600,6 @@ public class Aletheia extends JFrame
 				throw new Exception("Uri or request element not found");
 			}
 
-			// filter
-			NodeList filtersList = doc.getElementsByTagName("filter");
-
-			parseFilters(filtersList);
-
 			logger.info("Loaded successful from " + file.getAbsolutePath());
 		}
 		catch(Exception e)
@@ -633,6 +656,11 @@ public class Aletheia extends JFrame
 		out.append("version and more informations visit <http://code.google.com/p/aletheia>." + "\n");
 
 		JOptionPane.showMessageDialog(this, out, "About", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	public Config getConfig()
+	{
+		return config;
 	}
 
 	/**
@@ -704,110 +732,6 @@ public class Aletheia extends JFrame
 	private int getSelectedIndex()
 	{
 		return this.tp.getSelectedIndex();
-	}
-
-	/**
-	 * Loads all default filters from the config xml
-	 */
-	private void loadDefaultFilters()
-	{
-		try
-		{
-			// read xml
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(Aletheia.getConfig());
-
-			Element rootElement = (Element) doc.getDocumentElement();
-
-			rootElement.normalize();
-
-			// filter
-			NodeList filtersList = doc.getElementsByTagName("filter");
-
-			parseFilters(filtersList);
-		}
-		catch(Exception e)
-		{
-			Aletheia.handleException(e);
-		}
-	}
-
-	private void parseFilters(NodeList filtersList)
-	{
-		ArrayList<RequestFilterAbstract> filtersIn = new ArrayList<RequestFilterAbstract>();
-		ArrayList<ResponseFilterAbstract> filtersOut = new ArrayList<ResponseFilterAbstract>();
-
-		for(int i = 0; i < filtersList.getLength(); i++)
-		{
-			try
-			{
-				Element filterElement = (Element) filtersList.item(i);
-				
-				// in
-				if(filterElement.getParentNode().getNodeName().equals("in"))
-				{
-					String cls = filterElement.getAttribute("name");
-					Properties config = new Properties();
-
-					NodeList propertyList = filterElement.getElementsByTagName("property");
-
-					for(int j = 0; j < propertyList.getLength(); j++)
-					{
-						Element property = (Element) propertyList.item(j);
-
-						config.put(property.getAttribute("name"), property.getTextContent());
-					}
-
-					Class c = Class.forName(cls);
-
-					RequestFilterAbstract filter = (RequestFilterAbstract) c.newInstance();
-					filter.setConfig(config);
-
-					filtersIn.add(filter);
-				}
-				// out
-				else if(filterElement.getParentNode().getNodeName().equals("out"))
-				{
-					String cls = filterElement.getAttribute("name");
-					Properties config = new Properties();
-
-					NodeList propertyList = filterElement.getElementsByTagName("property");
-
-					for(int j = 0; j < propertyList.getLength(); j++)
-					{
-						Element property = (Element) propertyList.item(j);
-
-						config.put(property.getAttribute("name"), property.getTextContent());
-					}
-
-					Class c = Class.forName(cls);
-
-					ResponseFilterAbstract filter = (ResponseFilterAbstract) c.newInstance();
-					filter.setConfig(config);
-
-					filtersOut.add(filter);
-				}
-			}
-			catch(Exception e)
-			{
-				Aletheia.handleException(e);
-			}
-		}
-
-		if(filtersIn.size() > 0)
-		{
-			logger.info("Loaded " + filtersIn.size() + " request filter");
-
-			this.filtersIn.put(getSelectedIndex(), filtersIn);
-		}
-
-		if(filtersOut.size() > 0)
-		{
-			logger.info("Loaded " + filtersOut.size() + " response filter");
-
-			this.filtersOut.put(getSelectedIndex(), filtersOut);
-		}
 	}
 
 	/**
@@ -1037,7 +961,7 @@ public class Aletheia extends JFrame
 	 * 
 	 * @return File
 	 */
-	public static File getConfig()
+	public static File getConfigFile()
 	{
 		return new File("aletheia.conf.xml");
 	}
