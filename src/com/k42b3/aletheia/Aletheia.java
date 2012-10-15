@@ -99,7 +99,7 @@ import com.k42b3.aletheia.protocol.Response;
  */
 public class Aletheia extends JFrame
 {
-	public static final String VERSION = "0.1.1 beta";
+	public static final String VERSION = "0.1.2 beta";
 
 	public static Aletheia instance;
 
