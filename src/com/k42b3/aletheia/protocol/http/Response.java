@@ -78,7 +78,14 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 		}
 		else
 		{
-			body = this.toHexdump();
+			if(this.isBinary())
+			{
+				body = this.toHexdump();
+			}
+			else
+			{
+				body = new String(this.getContent(), Charset.forName("UTF-8"));
+			}
 		}
 
 		this.setBody(body);
@@ -167,7 +174,7 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 		for(int i = 0; i < this.content.length; i++)
 		{
 			String hex = Integer.toHexString(this.content[i]);
-			
+
 			if(hex.length() < 8)
 			{
 				while(hex.length() < 8)
@@ -186,5 +193,32 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 		}
 
 		return dump.toString();
+	}
+	
+	/**
+	 * Tries to detect whether the content is binary or text content. If the 
+	 * content contains more the 8 bytes wich have the upper bytes set it 
+	 * returns true
+	 * 
+	 * @return boolean
+	 */
+	private boolean isBinary()
+	{
+		int c = 0;
+
+		for(int i = 0; i < this.content.length; i++)
+		{
+			if(this.content[i] >> 16 != 0)
+			{
+				c++;
+			}
+
+			if(c > 8)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
