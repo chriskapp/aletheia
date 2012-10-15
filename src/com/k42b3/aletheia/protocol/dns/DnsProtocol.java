@@ -39,7 +39,6 @@ import org.xbill.DNS.SimpleResolver;
 
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.protocol.ProtocolAbstract;
-import com.k42b3.aletheia.protocol.ftp.Response;
 
 /**
  * FtpProtocol

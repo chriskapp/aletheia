@@ -22,11 +22,16 @@
 
 package com.k42b3.aletheia.protocol.http;
 
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.entity.ContentType;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Response
@@ -43,9 +48,9 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 	protected Map<String, String> header = new HashMap<String, String>();
 	protected String body;
 
-	public Response(HttpResponse response, String content) throws Exception
+	public Response(HttpResponse response) throws Exception
 	{
-		super(content);
+		super(EntityUtils.toByteArray(response.getEntity()));
 
 		this.response = response;
 
@@ -63,8 +68,20 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 
 		this.setHeaders(h);
 
-		// set body
-		this.setBody(this.getContent());
+		// read body
+		Charset charset = this.detectCharset();
+		String body = "";
+
+		if(charset != null)
+		{
+			body = new String(this.getContent(), charset);
+		}
+		else
+		{
+			body = this.toHexdump();
+		}
+
+		this.setBody(body);
 	}
 
 	public int getCode()
@@ -115,5 +132,59 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 	public String toString()
 	{
 		return Util.buildMessage(this.line, this.header, this.body, "\n");
+	}
+
+	private Charset detectCharset()
+	{
+		// try to read charset from the header
+		if(this.header.containsKey("Content-Type"))
+		{
+			try
+			{
+				ContentType contentType = ContentType.parse(header.get("Content-Type"));
+
+				return contentType.getCharset();
+			}
+			catch(ParseException e)
+			{
+			}
+			catch(UnsupportedCharsetException e)
+			{
+			}
+		}
+
+		// @todo try to parse meta tag therefor we need to convert the content
+		// byte[] into an string 
+		// <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+		return null;
+	}
+
+	private String toHexdump()
+	{
+		StringBuilder dump = new StringBuilder();
+
+		for(int i = 0; i < this.content.length; i++)
+		{
+			String hex = Integer.toHexString(this.content[i]);
+			
+			if(hex.length() < 8)
+			{
+				while(hex.length() < 8)
+				{
+					hex = "0" + hex;
+				}
+			}
+
+			if(i > 0 && i % 8 == 0)
+			{
+				dump.append("\n");
+			}
+
+			dump.append(hex);
+			dump.append(" ");
+		}
+
+		return dump.toString();
 	}
 }

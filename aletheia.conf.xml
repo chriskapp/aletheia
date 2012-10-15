@@ -12,6 +12,6 @@
 		</out>
 	</filters>
 	<applications>
-		<application contentType="application/x-shockwave-flash" path="J:\application\flashplayer\flashplayer_11_sa.exe ${url}" />
+		<!-- <application contentType="application/x-shockwave-flash" path="J:\application\flashplayer\flashplayer_11_sa.exe ${url}" /> -->
 	</applications>
 </aletheia>

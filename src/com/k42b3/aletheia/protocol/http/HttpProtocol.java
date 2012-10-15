@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
@@ -54,7 +53,6 @@ import org.apache.http.protocol.RequestContent;
 import org.apache.http.protocol.RequestExpectContinue;
 import org.apache.http.protocol.RequestTargetHost;
 import org.apache.http.protocol.RequestUserAgent;
-import org.apache.http.util.EntityUtils;
 
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.protocol.CallbackInterface;
@@ -179,15 +177,7 @@ public class HttpProtocol extends ProtocolAbstract
 			}
 
 			// create response
-			String content = "";
-			HttpEntity entity = response.getEntity();
-
-			if(entity != null)
-			{
-				content = EntityUtils.toString(entity);
-			}
-
-			this.response = new Response(response, content);
+			this.response = new Response(response);
 
 			// call callback
 			callback.onResponse(this.request, this.response);

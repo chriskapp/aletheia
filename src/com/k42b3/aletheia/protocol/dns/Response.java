@@ -22,6 +22,8 @@
 
 package com.k42b3.aletheia.protocol.dns;
 
+import java.nio.charset.Charset;
+
 /**
  * Response
  *
@@ -33,6 +35,11 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 {
 	public Response(String content) 
 	{
-		super(content);
+		super(content.getBytes(Charset.forName("US-ASCII")));
+	}
+
+	public String toString()
+	{
+		return new String(content, Charset.forName("US-ASCII"));
 	}
 }

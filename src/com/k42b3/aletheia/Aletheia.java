@@ -1053,7 +1053,7 @@ public class Aletheia extends JFrame
 				try
 				{
 					FileOutputStream fos = new FileOutputStream(file);
-					fos.write(getActiveOut().getText().getBytes());
+					fos.write(getActiveOut().getResponse().getContent());
 					fos.flush();
 					fos.close();
 

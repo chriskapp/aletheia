@@ -29,27 +29,24 @@ package com.k42b3.aletheia.protocol;
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class Response 
+abstract public class Response 
 {
-	protected String content;
+	protected byte[] content;
 
-	public Response(String content)
+	public Response(byte[] content)
 	{
 		this.setContent(content);
 	}
 
-	public String getContent()
+	public byte[] getContent()
 	{
 		return this.content;
 	}
 	
-	public void setContent(String content)
+	public void setContent(byte[] content)
 	{
 		this.content = content;
 	}
 
-	public String toString()
-	{
-		return this.getContent();
-	}
+	abstract public String toString();
 }

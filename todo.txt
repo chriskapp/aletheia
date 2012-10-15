@@ -1,9 +1,12 @@
 
 0.1.1
-[ ] add cookie handling filter
+[ ] add hex view for binary content
+[ ] add cookie handling filter and improve form handler for easy search and 
+    login etc.
 [ ] add support for websockets and spdy
 [ ] implement https
 [ ] implement json formatter
+[x] fixed download
 [x] add atom sidebar
 [x] add history
 [x] fix url resolving issue
