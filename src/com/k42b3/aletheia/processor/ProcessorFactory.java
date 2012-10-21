@@ -27,6 +27,7 @@ import java.util.HashMap;
 import com.k42b3.aletheia.processor.format.Json;
 import com.k42b3.aletheia.processor.format.Xml;
 import com.k42b3.aletheia.processor.html.Form;
+import com.k42b3.aletheia.processor.html.Images;
 import com.k42b3.aletheia.protocol.Response;
 
 /**
@@ -50,6 +51,10 @@ public class ProcessorFactory
 		if(name.equals("html.form"))
 		{
 			processors.put(name, new Form());
+		}
+		else if(name.equals("html.images"))
+		{
+			processors.put(name, new Images());
 		}
 		else if(name.equals("format.xml"))
 		{

@@ -864,6 +864,7 @@ public class Aletheia extends JFrame
 		// html
 		JMenu menuHtml = new JMenu("Html");
 
+		// form
 		JMenuItem itemForm = new JMenuItem("Form");
 		itemForm.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
 		itemForm.addActionListener(new ActionListener() {
@@ -875,6 +876,19 @@ public class Aletheia extends JFrame
 
 		});
 		menuHtml.add(itemForm);
+
+		// images
+		JMenuItem itemImages = new JMenuItem("Images");
+		itemImages.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
+		itemImages.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				callProcessor("html.images");
+			}
+
+		});
+		menuHtml.add(itemImages);
 
 		menuProcessor.add(menuHtml);
 
