@@ -22,38 +22,37 @@
 
 package com.k42b3.aletheia.filter.response;
 
+import java.net.URL;
+import java.util.ArrayList;
+
 import com.k42b3.aletheia.Aletheia;
+import com.k42b3.aletheia.CookieStore;
 import com.k42b3.aletheia.filter.ResponseFilterAbstract;
 import com.k42b3.aletheia.protocol.Response;
-import com.k42b3.aletheia.protocol.http.Util;
 
 /**
- * Location
+ * Cookie
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class Location extends ResponseFilterAbstract
+public class Cookie extends ResponseFilterAbstract
 {
 	public void exec(Response response) throws Exception
 	{
 		if(response instanceof com.k42b3.aletheia.protocol.http.Response)
 		{
 			com.k42b3.aletheia.protocol.http.Response httpResponse = (com.k42b3.aletheia.protocol.http.Response) response;
-			
-			if(httpResponse.getCode() >= 300 && httpResponse.getCode() < 400)
+
+			if(httpResponse.getHeaders().containsKey("Set-Cookie"))
 			{
-				String location = httpResponse.getHeader("Location");
+				URL url = new URL(Aletheia.getInstance().getActiveUrl().getText());
+				ArrayList<com.k42b3.aletheia.Cookie> cookies = com.k42b3.aletheia.Cookie.convert(httpResponse.getHeader("Set-Cookie"));
 
-				if(location != null)
+				for(int i = 0; i < cookies.size(); i++)
 				{
-					location = Util.resolveHref(Aletheia.getInstance().getActiveUrl().getText(), location);
-
-					if(!Aletheia.getInstance().getActiveUrl().getText().equals(location))
-					{
-						Aletheia.getInstance().run(location);
-					}
+					CookieStore.getInstance().addCookie(url.getHost(), cookies.get(i));
 				}
 			}
 		}

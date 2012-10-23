@@ -20,40 +20,43 @@
  * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.k42b3.aletheia.filter.response;
+package com.k42b3.aletheia.filter.request;
 
-import com.k42b3.aletheia.Aletheia;
-import com.k42b3.aletheia.filter.ResponseFilterAbstract;
-import com.k42b3.aletheia.protocol.Response;
-import com.k42b3.aletheia.protocol.http.Util;
+import java.util.ArrayList;
+
+import com.k42b3.aletheia.CookieStore;
+import com.k42b3.aletheia.filter.RequestFilterAbstract;
+import com.k42b3.aletheia.protocol.Request;
 
 /**
- * Location
+ * UserAgent
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class Location extends ResponseFilterAbstract
+public class Cookie extends RequestFilterAbstract
 {
-	public void exec(Response response) throws Exception
+	public void exec(Request request) 
 	{
-		if(response instanceof com.k42b3.aletheia.protocol.http.Response)
+		if(request instanceof com.k42b3.aletheia.protocol.http.Request)
 		{
-			com.k42b3.aletheia.protocol.http.Response httpResponse = (com.k42b3.aletheia.protocol.http.Response) response;
-			
-			if(httpResponse.getCode() >= 300 && httpResponse.getCode() < 400)
+			com.k42b3.aletheia.protocol.http.Request httpRequest = (com.k42b3.aletheia.protocol.http.Request) request;
+
+			ArrayList<com.k42b3.aletheia.Cookie> cookies = CookieStore.getInstance().getCookies(httpRequest.getHost());
+			StringBuilder cookieHeader =  new StringBuilder();
+
+			if(cookies.size() > 0)
 			{
-				String location = httpResponse.getHeader("Location");
-
-				if(location != null)
+				for(int i = 0; i < cookies.size(); i++)
 				{
-					location = Util.resolveHref(Aletheia.getInstance().getActiveUrl().getText(), location);
+					cookieHeader.append(cookies.get(i).toString());
+					cookieHeader.append("; ");
+				}
 
-					if(!Aletheia.getInstance().getActiveUrl().getText().equals(location))
-					{
-						Aletheia.getInstance().run(location);
-					}
+				if(!httpRequest.getHeaders().containsKey("Cookie"))
+				{
+					httpRequest.setHeader("Cookie", cookieHeader.toString());
 				}
 			}
 		}

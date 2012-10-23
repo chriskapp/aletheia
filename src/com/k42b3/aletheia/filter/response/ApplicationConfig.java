@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 import com.k42b3.aletheia.filter.ConfigFilterAbstract;
 
 /**
- * CharsetConfig
+ * ApplicationConfig
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3

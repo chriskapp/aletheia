@@ -34,17 +34,17 @@ import javax.swing.JPanel;
 import com.k42b3.aletheia.filter.ConfigFilterAbstract;
 
 /**
- * LocationConfig
+ * CookieConfig
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class LocationConfig extends ConfigFilterAbstract
+public class CookieConfig extends ConfigFilterAbstract
 {
 	private JCheckBox ckbActive;
 
-	public LocationConfig()
+	public CookieConfig()
 	{
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -72,7 +72,7 @@ public class LocationConfig extends ConfigFilterAbstract
 
 	public String getName()
 	{
-		return "Location";
+		return "Cookie";
 	}
 	
 	public void onLoad(Properties config) 

@@ -30,7 +30,7 @@ import com.k42b3.aletheia.filter.ResponseFilterAbstract;
 import com.k42b3.aletheia.protocol.Response;
 
 /**
- * Charset
+ * Application
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3

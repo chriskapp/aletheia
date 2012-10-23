@@ -20,7 +20,7 @@
  * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.k42b3.aletheia.filter.response;
+package com.k42b3.aletheia.filter.request;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -34,21 +34,21 @@ import javax.swing.JPanel;
 import com.k42b3.aletheia.filter.ConfigFilterAbstract;
 
 /**
- * LocationConfig
+ * UserAgentConfig
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class LocationConfig extends ConfigFilterAbstract
+public class CookieConfig extends ConfigFilterAbstract
 {
 	private JCheckBox ckbActive;
 
-	public LocationConfig()
+	public CookieConfig()
 	{
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-		JPanel panel = new JPanel();		
+		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(0, 1));
 
 
@@ -60,7 +60,7 @@ public class LocationConfig extends ConfigFilterAbstract
 		lblActive.setPreferredSize(new Dimension(100, 24));
 		panelActive.add(lblActive);
 
-		this.ckbActive = new JCheckBox();		
+		this.ckbActive = new JCheckBox();
 		this.ckbActive.setPreferredSize(new Dimension(200, 24));
 		panelActive.add(this.ckbActive);
 
@@ -72,9 +72,9 @@ public class LocationConfig extends ConfigFilterAbstract
 
 	public String getName()
 	{
-		return "Location";
+		return "Cookie";
 	}
-	
+
 	public void onLoad(Properties config) 
 	{
 		this.ckbActive.setSelected(true);
