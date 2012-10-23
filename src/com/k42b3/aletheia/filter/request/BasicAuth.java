@@ -46,7 +46,7 @@ public class BasicAuth extends RequestFilterAbstract
 			String user = getConfig().getProperty("user");
 			String pw = getConfig().getProperty("pw");
 
-			if(!httpRequest.getHeaders().containsKey("Authorization"))
+			if(!httpRequest.hasHeader("Authorization"))
 			{
 				httpRequest.setHeader("Authorization", "Basic " + this.computeAuth(user + ":" + pw));
 			}

@@ -1,5 +1,6 @@
 
 0.1.2
+[ ] Added image viewer processor
 [ ] add cookie handling filter and improve form handler for easy search and 
     login etc.
 [ ] add support for websockets and spdy

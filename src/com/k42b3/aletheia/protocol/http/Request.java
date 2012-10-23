@@ -26,7 +26,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 
 /**
  * Request
@@ -42,7 +45,7 @@ public class Request extends com.k42b3.aletheia.protocol.Request
 	protected String path;
 
 	protected String line;
-	protected Map<String, String> header;
+	protected LinkedList<Header> header;
 	protected String body;
 
 	public Request(URL url, String content)
@@ -128,24 +131,59 @@ public class Request extends com.k42b3.aletheia.protocol.Request
 		return this.line;
 	}
 
-	public void setHeaders(Map<String, String> headers)
+	public void setHeaders(LinkedList<Header> headers)
 	{
 		this.header = headers;
 	}
 
-	public Map<String, String> getHeaders()
+	public LinkedList<Header> getHeaders()
 	{
 		return this.header;
 	}
 
+	public void setHeader(Header header, boolean replace)
+	{
+		if(replace)
+		{
+			for(int i = 0; i < this.header.size(); i++)
+			{
+				if(this.header.get(i).getName().toLowerCase().equals(header.getName().toLowerCase()))
+				{
+					this.header.set(i, header);
+					return;
+				}
+			}
+		}
+
+		this.header.add(header);
+	}
+
+	public void setHeader(Header header)
+	{
+		this.setHeader(header, true);
+	}
+
 	public void setHeader(String key, String value)
 	{
-		this.header.put(key, value);
+		this.setHeader(new BasicHeader(key, value));
 	}
 
 	public String getHeader(String key)
 	{
-		return this.header.get(key);
+		for(int i = 0; i < this.header.size(); i++)
+		{
+			if(this.header.get(i).getName().toLowerCase().equals(key.toLowerCase()))
+			{
+				return this.header.get(i).getValue();
+			}
+		}
+
+		return null;
+	}
+
+	public boolean hasHeader(String key)
+	{
+		return this.getHeader(key) != null;
 	}
 
 	public void setBody(String body)

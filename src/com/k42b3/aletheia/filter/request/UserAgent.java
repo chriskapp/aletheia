@@ -43,7 +43,7 @@ public class UserAgent extends RequestFilterAbstract
 			// get config
 			String agent = getConfig().getProperty("agent");
 
-			if(!httpRequest.getHeaders().containsKey("User-Agent"))
+			if(!httpRequest.hasHeader("User-Agent"))
 			{
 				httpRequest.setHeader("User-Agent", agent);
 			}

@@ -25,8 +25,8 @@ package com.k42b3.aletheia.protocol.http;
 import java.net.Socket;
 import java.net.URL;
 import java.net.URLStreamHandler;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.Header;
@@ -52,7 +52,6 @@ import org.apache.http.protocol.RequestConnControl;
 import org.apache.http.protocol.RequestContent;
 import org.apache.http.protocol.RequestExpectContinue;
 import org.apache.http.protocol.RequestTargetHost;
-import org.apache.http.protocol.RequestUserAgent;
 
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.protocol.CallbackInterface;
@@ -134,14 +133,18 @@ public class HttpProtocol extends ProtocolAbstract
 			}
 
 			// add headers
-			Map<String, String> headers = this.getRequest().getHeaders();
-			Iterator<Map.Entry<String, String>> it = headers.entrySet().iterator();
+			ArrayList<String> ignoreHeader = new ArrayList<String>();
+			ignoreHeader.add("Content-Length");
+			ignoreHeader.add("Expect");
 
-			while(it.hasNext()) 
+			LinkedList<Header> headers = this.getRequest().getHeaders();
+
+			for(int i = 0; i < headers.size(); i++)
 			{
-				Map.Entry<String, String> pairs = it.next();
-
-				request.addHeader(pairs.getKey(), pairs.getValue());
+				if(!ignoreHeader.contains(headers.get(i).getName()))
+				{
+					request.addHeader(headers.get(i));
+				}
 			}
 
 			// set body
@@ -164,13 +167,16 @@ public class HttpProtocol extends ProtocolAbstract
 
 			logger.info("< " + response.getStatusLine());
 
-			// set all request headers 
+			// update request headers 
+			LinkedList<Header> header = new LinkedList<Header>();
 			Header[] allHeaders = request.getAllHeaders();
 
 			for(int i = 0; i < allHeaders.length; i++)
 			{
-				this.getRequest().setHeader(allHeaders[i].getName(), allHeaders[i].getValue());
+				header.add(allHeaders[i]);
 			}
+
+			this.getRequest().setHeaders(header);
 
 			// create response
 			this.response = new Response(response);

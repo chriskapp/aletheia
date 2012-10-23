@@ -24,8 +24,7 @@ package com.k42b3.aletheia.protocol.http;
 
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -45,12 +44,12 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 	protected HttpResponse response;
 
 	protected String line;
-	protected Map<String, String> header = new HashMap<String, String>();
+	protected LinkedList<Header> header;
 	protected String body;
 
 	public Response(HttpResponse response) throws Exception
 	{
-		super(EntityUtils.toByteArray(response.getEntity()));
+		super(response.getEntity() != null ? EntityUtils.toByteArray(response.getEntity()) : null);
 
 		this.response = response;
 
@@ -58,37 +57,44 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 		this.setLine(response.getStatusLine().toString());
 
 		// set headers
-		HashMap<String, String> h = new HashMap<String, String>();
+		LinkedList<Header> header = new LinkedList<Header>();
 		Header[] headers = response.getAllHeaders();
 
 		for(int i = 0; i < headers.length; i++)
 		{
-			h.put(headers[i].getName(), headers[i].getValue());
+			header.add(headers[i]);
 		}
 
-		this.setHeaders(h);
+		this.setHeaders(header);
 
 		// read body
-		Charset charset = this.detectCharset();
-		String body = "";
+		if(this.content != null)
+		{
+			Charset charset = this.detectCharset();
+			String body = "";
 
-		if(charset != null)
-		{
-			body = new String(this.getContent(), charset);
-		}
-		else
-		{
-			if(this.isBinary())
+			if(charset != null)
 			{
-				body = this.toHexdump();
+				body = new String(this.getContent(), charset);
 			}
 			else
 			{
-				body = new String(this.getContent(), Charset.forName("UTF-8"));
+				if(this.isBinary())
+				{
+					body = this.toHexdump();
+				}
+				else
+				{
+					body = new String(this.getContent(), Charset.forName("UTF-8"));
+				}
 			}
-		}
 
-		this.setBody(body);
+			this.setBody(body);
+		}
+		else
+		{
+			this.setBody("");
+		}
 	}
 
 	public int getCode()
@@ -106,24 +112,32 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 		return this.line;
 	}
 
-	public void setHeaders(Map<String, String> headers)
+	public void setHeaders(LinkedList<Header> headers)
 	{
 		this.header = headers;
 	}
 
-	public Map<String, String> getHeaders()
+	public LinkedList<Header> getHeaders()
 	{
 		return this.header;
 	}
 
-	public void setHeader(String key, String value)
-	{
-		this.header.put(key, value);
-	}
-
 	public String getHeader(String key)
 	{
-		return this.header.get(key);
+		for(int i = 0; i < this.header.size(); i++)
+		{
+			if(this.header.get(i).getName().toLowerCase().equals(key.toLowerCase()))
+			{
+				return this.header.get(i).getValue();
+			}
+		}
+
+		return null;
+	}
+
+	public boolean hasHeader(String key)
+	{
+		return this.getHeader(key) != null;
 	}
 
 	public void setBody(String body)
@@ -144,19 +158,30 @@ public class Response extends com.k42b3.aletheia.protocol.Response
 	private Charset detectCharset()
 	{
 		// try to read charset from the header
-		if(this.header.containsKey("Content-Type"))
+		String contentType = this.getHeader("Content-Type");
+
+		if(contentType != null)
 		{
 			try
 			{
-				ContentType contentType = ContentType.parse(header.get("Content-Type"));
+				Charset charset = ContentType.parse(contentType).getCharset();
 
-				return contentType.getCharset();
+				if(charset != null)
+				{
+					return charset;
+				}
 			}
 			catch(ParseException e)
 			{
 			}
 			catch(UnsupportedCharsetException e)
 			{
+			}
+
+			// if the content type is text/* use default charset
+			if(contentType.indexOf("text/") != -1)
+			{
+				return Charset.forName("UTF-8");
 			}
 		}
 

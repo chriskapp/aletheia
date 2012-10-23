@@ -44,17 +44,18 @@ public class Cookie extends RequestFilterAbstract
 			com.k42b3.aletheia.protocol.http.Request httpRequest = (com.k42b3.aletheia.protocol.http.Request) request;
 
 			ArrayList<com.k42b3.aletheia.Cookie> cookies = CookieStore.getInstance().getCookies(httpRequest.getHost());
-			StringBuilder cookieHeader =  new StringBuilder();
 
-			if(cookies.size() > 0)
+			if(cookies != null && cookies.size() > 0)
 			{
+				StringBuilder cookieHeader =  new StringBuilder();
+
 				for(int i = 0; i < cookies.size(); i++)
 				{
 					cookieHeader.append(cookies.get(i).toString());
 					cookieHeader.append("; ");
 				}
 
-				if(!httpRequest.getHeaders().containsKey("Cookie"))
+				if(!httpRequest.hasHeader("Cookie"))
 				{
 					httpRequest.setHeader("Cookie", cookieHeader.toString());
 				}
