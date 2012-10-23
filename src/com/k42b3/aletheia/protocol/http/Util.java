@@ -25,12 +25,11 @@ package com.k42b3.aletheia.protocol.http;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.LinkedList;
 import java.util.Stack;
+
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 
 /**
  * Util
@@ -56,7 +55,7 @@ public class Util
 		
 		return false;
 	}
-	
+
 	public static boolean isValidType(String type)
 	{
 		for(int i = 0; i < Util.types.length; i++)
@@ -69,31 +68,10 @@ public class Util
 		
 		return false;
 	}
-	
-	public static Charset getContentTypeCharset(String contentType)
+
+	public static LinkedList<Header> parseHeader(String rawHeader, String delimiter)
 	{
-		// default charset
-		String charset = "UTF-8";
-
-		
-		// we look in the content-type header for an charset
-		if(contentType != null)
-		{
-			int pos = contentType.indexOf("charset=");
-			
-			if(pos != -1)
-			{
-				charset = contentType.substring(pos + 8).trim();
-			}
-		}
-
-
-		return Charset.forName(charset);
-	}
-
-	public static Map<String, String> parseHeader(String rawHeader, String delimiter)
-	{
-		LinkedHashMap<String, String> headers = new LinkedHashMap<String, String>();
+		LinkedList<Header> headers = new LinkedList<Header>();
 
 		String[] lines = rawHeader.split(delimiter);
 
@@ -111,7 +89,7 @@ public class Util
 
 					if(!key.isEmpty() && !value.isEmpty())
 					{
-						headers.put(key, value);
+						headers.add(new BasicHeader(key, value));
 					}
 				}
 			}
@@ -120,23 +98,23 @@ public class Util
 		return headers;
 	}
 
-	public static String buildMessage(String statusLine, Map<String, String> header, String body, String delimter)
+	public static String buildMessage(String statusLine, LinkedList<Header> header, String body, String delimter)
 	{
 		StringBuilder str = new StringBuilder();
 
-		Iterator<Entry<String, String>> itr = header.entrySet().iterator();
+		// status line
+		str.append(statusLine);
+		str.append(delimter);
 
-		str.append(statusLine + delimter);
-
-		while(itr.hasNext())
+		// headers
+		for(int i = 0; i < header.size(); i++)
 		{
-			Entry<String, String> e = itr.next();
-
-			str.append(e.getKey() + ": " + e.getValue() + delimter);
+			str.append(header.get(i).getName() + ": " + header.get(i).getValue() + delimter);
 		}
 
 		str.append(delimter);
 
+		// body
 		if(body != null && !body.isEmpty())
 		{
 			str.append(body);
@@ -144,7 +122,7 @@ public class Util
 
 		return str.toString();
 	}
-	
+
 	public static String urlEncode(String content)
 	{
 		try
@@ -179,6 +157,8 @@ public class Util
 	 */
 	public static String resolveHref(String baseUrl, String href) throws MalformedURLException
 	{
+		URL currentUrl = new URL(baseUrl);
+
 		if(href.startsWith("http://") || href.startsWith("https://"))
 		{
 			// we have an absolute url
@@ -186,12 +166,11 @@ public class Util
 		}
 		else if(href.startsWith("//"))
 		{
-			return "http:" + href;
+			return currentUrl.getProtocol() + ":" + href;
 		}
 		else
 		{
 			// we have an path wich must be resolved to the base url
-			URL currentUrl = new URL(baseUrl);
 			String completePath;
 
 			if(href.startsWith("/"))
@@ -267,7 +246,7 @@ public class Util
 			relativePath = relativePath.substring(0, pos);
 		}
 
-		// resolve absolute url
+		// if the path contains no slash we have nothing to resolve
 		if(relativePath.indexOf('/') == -1)
 		{
 			return relativePath;
@@ -281,10 +260,10 @@ public class Util
 		{
 			part = parts[i].trim();
 
-			if(part.isEmpty() || part == ".")
+			if(part.isEmpty() || part.equals("."))
 			{
 			}
-			else if(part == "..")
+			else if(part.equals(".."))
 			{
 				path.pop();
 			}
@@ -301,6 +280,13 @@ public class Util
 		{
 			for(int i = 0; i < path.size(); i++)
 			{
+				if(i > 0 && path.get(i).indexOf('.') != -1 && path.get(i - 1).equals(path.get(i)))
+				{
+					// if the element before has the same name and it contains
+					// an dot we have probably an file name
+					continue;
+				}
+
 				absoluteUrl+= "/" + path.get(i);
 			}
 		}
