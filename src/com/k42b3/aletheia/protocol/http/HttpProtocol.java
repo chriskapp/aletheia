@@ -85,16 +85,12 @@ public class HttpProtocol extends ProtocolAbstract
 		params = new SyncBasicHttpParams();
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 		HttpProtocolParams.setContentCharset(params, "UTF-8");
-		HttpProtocolParams.setUserAgent(params, "Aletheia " + Aletheia.VERSION);
 		HttpProtocolParams.setUseExpectContinue(params, true);
-		
+
 		HttpRequestInterceptor[] interceptors = {
-			// Required protocol interceptors
 			new RequestContent(),
 			new RequestTargetHost(),
-			// Recommended protocol interceptors
 			new RequestConnControl(),
-			new RequestUserAgent(),
 			new RequestExpectContinue()
 		};
 
