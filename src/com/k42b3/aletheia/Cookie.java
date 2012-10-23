@@ -1,6 +1,5 @@
 package com.k42b3.aletheia;
 
-import java.util.ArrayList;
 
 public class Cookie
 {
@@ -32,15 +31,27 @@ public class Cookie
 	{
 		this.value = value;
 	}
-	
+
 	public String toString()
 	{
 		return this.name + "=" + this.value;
 	}
-	
-	public static ArrayList<Cookie> convert(String rawCookie)
+
+	public static Cookie convert(String rawCookie)
 	{
+		String[] parts = rawCookie.split(";");
+		String[] pair = parts[0].split("=", 2);
+
+		if(pair.length > 0)
+		{
+			String name = pair[0];
+			String value = pair.length > 1 ? pair[1] : "";
+
+			// @todo extract expire / domain part
+
+			return new Cookie(name, value);
+		}
+
 		return null;
-		//return new Cookie();
 	}
 }
