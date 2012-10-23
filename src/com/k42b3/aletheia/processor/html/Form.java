@@ -42,8 +42,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.Parser;
@@ -63,7 +65,7 @@ import com.k42b3.aletheia.protocol.http.Util;
 public class Form extends JFrame implements ProcessorInterface
 {
 	private ArrayList<FormData> forms = new ArrayList<FormData>();
-	private ArrayList<HashMap<String, JTextField>> fields = new ArrayList<HashMap<String, JTextField>>();
+	private ArrayList<FormTableModel> fields = new ArrayList<FormTableModel>();
 	private JTabbedPane tb;
 
 	private String baseUrl;
@@ -133,11 +135,7 @@ public class Form extends JFrame implements ProcessorInterface
 	{
 		this.forms.clear();
 		this.fields.clear();
-
-		for(int i = 0; i < this.tb.getTabCount(); i++)
-		{
-			this.tb.removeTabAt(i);
-		}
+		this.tb.removeAll();
 	}
 
 	private void insert()
@@ -145,23 +143,19 @@ public class Form extends JFrame implements ProcessorInterface
 		if(this.fields.size() > 0)
 		{
 			StringBuilder response = new StringBuilder();
-			HashMap<String, JTextField> fields = this.fields.get(this.tb.getSelectedIndex());
-			Set<Entry<String, JTextField>> set = fields.entrySet();
-			Iterator<Entry<String, JTextField>> iter = set.iterator();
-
-			while(iter.hasNext())
+			FormTableModel model = this.fields.get(this.tb.getSelectedIndex());
+			
+			for(int i = 0; i < model.getRowCount(); i++)
 			{
-				Map.Entry<String, JTextField> item = (Map.Entry<String, JTextField>) iter.next();
-				String value = Util.urlEncode(item.getValue().getText());
-
-				if(value != null)
+				boolean active = (boolean) model.getValueAt(i, 0);
+				
+				if(active)
 				{
-					response.append(item.getKey() + "=" + value);
+					String key = "" + model.getValueAt(i, 1);
+					String value = "" + model.getValueAt(i, 2);
 
-					if(iter.hasNext())
-					{
-						response.append('&');
-					}
+					response.append(key + "=" + value);
+					response.append("&");
 				}
 			}
 
@@ -206,6 +200,7 @@ public class Form extends JFrame implements ProcessorInterface
 					Aletheia.getInstance().getActiveUrl().setText(url);
 
 					request.setLine(method, path);
+					request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 					request.setBody(response.toString());
 				}
 
@@ -226,54 +221,32 @@ public class Form extends JFrame implements ProcessorInterface
 		{
 			for(int i = 0; i < forms.size(); i++)
 			{
-				HashMap<String, JTextField> fields = new HashMap<String, JTextField>();
-
 				Set<Entry<String, String>> set = forms.get(i).getValues().entrySet();
 				Iterator<Entry<String, String>> iter = set.iterator();
 
-				JPanel containerPanel = new JPanel();
-				containerPanel.setLayout(new FlowLayout());
-				containerPanel.setPreferredSize(new Dimension(320, 600));
-
-				JPanel formPanel = new JPanel();
-				formPanel.setLayout(new GridLayout(0, 1));
-
-				JPanel panel = new JPanel();
-				panel.setLayout(new FlowLayout());
-				JTextField txtForm = new JTextField(forms.get(i).getMethod() + " " + forms.get(i).getUrl());
-				txtForm.setPreferredSize(new Dimension(305, 20));
-				panel.add(txtForm);
-
-				formPanel.add(panel);
+				FormTableModel formModel = new FormTableModel();
+				JTable formTable = new JTable(formModel);
+				formTable.setRowHeight(24);
+				formTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+				formTable.getColumnModel().getColumn(0).setPreferredWidth(40);
+				formTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+				formTable.getColumnModel().getColumn(2).setPreferredWidth(150);
 
 				while(iter.hasNext())
 				{
 					Map.Entry<String, String> item = (Map.Entry<String, String>) iter.next();
 
-					panel = new JPanel();
-					panel.setLayout(new FlowLayout());
+					Object[] row = {true, item.getKey(), item.getValue()};
 
-					JLabel lblName = new JLabel(item.getKey());
-					lblName.setPreferredSize(new Dimension(100, 20));
-					JTextField txtValue = new JTextField(item.getValue());
-					txtValue.setPreferredSize(new Dimension(200, 20));
-
-					fields.put(item.getKey(), txtValue);
-
-					panel.add(lblName);
-					panel.add(txtValue);
-
-					formPanel.add(panel);
+					formModel.addRow(row);
 				}
 
-				containerPanel.add(formPanel);
-
-				JScrollPane scp = new JScrollPane(containerPanel);
+				JScrollPane scp = new JScrollPane(formTable);
 				scp.setBorder(new EmptyBorder(4, 4, 4, 4));
 
 				tb.addTab("Form #" + i, scp);
 
-				this.fields.add(fields);
+				this.fields.add(formModel);
 			}
 		}
 		else
@@ -410,6 +383,35 @@ public class Form extends JFrame implements ProcessorInterface
 		public void actionPerformed(ActionEvent e) 
 		{
 			insert();
+		}
+	}
+	
+	private class FormTableModel extends DefaultTableModel
+	{
+		private String[] columns = {"", "Key", "Value"};
+
+		public FormTableModel()
+		{
+		}
+
+		public Class getColumnClass(int columnIndex)
+		{
+			return columnIndex == 0 ? Boolean.class : String.class;
+		}
+
+		public int getColumnCount()
+		{
+			return 3;
+		}
+		
+		public String getColumnName(int column)
+		{
+			return column > 0 && column < this.columns.length ? this.columns[column] : null;
+		}
+		
+		public boolean isCellEditable(int row, int column)
+		{
+			return true;
 		}
 	}
 }
