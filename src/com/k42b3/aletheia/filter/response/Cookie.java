@@ -24,6 +24,9 @@ package com.k42b3.aletheia.filter.response;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
+
+import org.apache.http.Header;
 
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.CookieStore;
@@ -45,14 +48,31 @@ public class Cookie extends ResponseFilterAbstract
 		{
 			com.k42b3.aletheia.protocol.http.Response httpResponse = (com.k42b3.aletheia.protocol.http.Response) response;
 
-			if(httpResponse.getHeaders().containsKey("Set-Cookie"))
+			if(httpResponse.hasHeader("Set-Cookie"))
 			{
-				URL url = new URL(Aletheia.getInstance().getActiveUrl().getText());
-				ArrayList<com.k42b3.aletheia.Cookie> cookies = com.k42b3.aletheia.Cookie.convert(httpResponse.getHeader("Set-Cookie"));
+				// get cookies
+				LinkedList<Header> headers = httpResponse.getHeaders();
+				ArrayList<String> cookies = new ArrayList<String>();
 
+				for(int i = 0; i < headers.size(); i++)
+				{
+					if(headers.get(i).getName().toLowerCase().equals("set-cookie"))
+					{
+						cookies.add(headers.get(i).getValue());
+					}
+				}
+
+				// save to cookie store
+				URL url = new URL(Aletheia.getInstance().getActiveUrl().getText());
+				
 				for(int i = 0; i < cookies.size(); i++)
 				{
-					CookieStore.getInstance().addCookie(url.getHost(), cookies.get(i));
+					com.k42b3.aletheia.Cookie cookie = com.k42b3.aletheia.Cookie.convert(cookies.get(i));
+					
+					if(cookie != null)
+					{
+						CookieStore.getInstance().addCookie(url.getHost(), cookie);
+					}
 				}
 			}
 		}

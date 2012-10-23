@@ -78,6 +78,7 @@ public class FilterOut extends JFrame
 		// add filters
 		ArrayList<String> filterList = new ArrayList<String>();
 
+		filterList.add("Cookie");
 		filterList.add("Location");
 		filterList.add("Application");
 

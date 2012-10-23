@@ -88,7 +88,7 @@ public class Oauth extends RequestFilterAbstract
 			values.put("oauth_signature", sig.build(baseString, consumerSecret, tokenSecret));
 
 			// add header to request
-			if(!httpRequest.getHeaders().containsKey("Authorization"))
+			if(!httpRequest.hasHeader("Authorization"))
 			{
 				httpRequest.setHeader("Authorization", "OAuth realm=\"Aletheia\", " + this.buildAuthString(values));
 			}

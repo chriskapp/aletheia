@@ -78,6 +78,7 @@ public class FilterIn extends JFrame
 		// add filters
 		ArrayList<String> filters = new ArrayList<String>();
 
+		filters.add("Cookie");
 		filters.add("BasicAuth");
 		filters.add("Oauth");
 		filters.add("UserAgent");

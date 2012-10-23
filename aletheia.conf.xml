@@ -2,11 +2,13 @@
 <aletheia>
 	<filters>
 		<in>
+			<filter name="com.k42b3.aletheia.filter.request.Cookie" />
 			<filter name="com.k42b3.aletheia.filter.request.UserAgent">
 				<property name="agent">Lynx 2.8.7</property>
 			</filter>
 		</in>
 		<out>
+			<filter name="com.k42b3.aletheia.filter.response.Cookie" />
 			<filter name="com.k42b3.aletheia.filter.response.Location" />
 			<filter name="com.k42b3.aletheia.filter.response.Application" />
 		</out>
