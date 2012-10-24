@@ -58,7 +58,7 @@ import com.k42b3.aletheia.protocol.CallbackInterface;
 import com.k42b3.aletheia.protocol.ProtocolAbstract;
 
 /**
- * Http
+ * HttpProtocol
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
@@ -70,13 +70,13 @@ public class HttpProtocol extends ProtocolAbstract
 	public final static String type = "HTTP/1.1";
 	public final static String method = "GET";
 
-	private HttpParams params;
-	private HttpHost host;
-	private HttpProcessor httpproc;
-	private HttpRequestExecutor httpexecutor;
-	private HttpContext context;
-	private ConnectionReuseStrategy connStrategy;
-	private DefaultHttpClientConnection conn;
+	protected HttpParams params;
+	protected HttpHost host;
+	protected HttpProcessor httpproc;
+	protected HttpRequestExecutor httpexecutor;
+	protected HttpContext context;
+	protected ConnectionReuseStrategy connStrategy;
+	protected DefaultHttpClientConnection conn;
 
 	public HttpProtocol()
 	{
@@ -103,8 +103,21 @@ public class HttpProtocol extends ProtocolAbstract
 
 		// request settings
 		int port = request.getUrl().getPort();
+
+		if(port == -1)
+		{
+			if(request.getUrl().getProtocol().equalsIgnoreCase("https"))
+			{
+				port = 443;
+			}
+			else
+			{
+				port = 80;
+			}
+		}
+
 		context = new BasicHttpContext(null);
-		host = new HttpHost(request.getUrl().getHost(), port == -1 ? 80 : port);
+		host = new HttpHost(request.getUrl().getHost(), port);
 
 		conn = new DefaultHttpClientConnection();
 		connStrategy = new DefaultConnectionReuseStrategy();
@@ -117,7 +130,8 @@ public class HttpProtocol extends ProtocolAbstract
 	{
 		try
 		{
-			Socket socket = new Socket(host.getHostName(), host.getPort());
+			// get socket
+			Socket socket = this.getSocket();
 			conn.bind(socket, params);
 
 			// build request
@@ -219,5 +233,10 @@ public class HttpProtocol extends ProtocolAbstract
 	public URLStreamHandler getStreamHandler()
 	{
 		return new HttpURLStreamHandler();
+	}
+
+	public Socket getSocket() throws Exception
+	{
+		return new Socket(host.getHostName(), host.getPort());
 	}
 }

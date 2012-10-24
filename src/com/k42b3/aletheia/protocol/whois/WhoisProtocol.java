@@ -32,7 +32,7 @@ import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.protocol.ProtocolAbstract;
 
 /**
- * FtpProtocol
+ * WhoisProtocol
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3

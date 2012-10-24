@@ -1,8 +1,8 @@
 package com.k42b3.aletheia.tests;
 
-import com.k42b3.aletheia.protocol.http.Util;
-
 import junit.framework.TestCase;
+
+import com.k42b3.aletheia.protocol.http.Util;
 
 public class UtilTest extends TestCase
 {

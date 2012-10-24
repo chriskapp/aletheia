@@ -1,11 +1,17 @@
 
-0.1.2
-[ ] Added image viewer processor
-[ ] add cookie handling filter and improve form handler for easy search and 
-    login etc.
+0.1.3
 [ ] add support for websockets and spdy
-[ ] implement https
 [ ] implement json formatter
+
+0.1.2
+[ ] Fix parser so that if an hre starts with " it can contain ' signs
+[ ] implement https
+[x] Improved content type detection
+[x] Fixed url href resolving bug
+[x] Improved header handling
+[x] Added image viewer processor
+[x] add cookie handling filter and improve form handler for easy search and 
+    login etc.
 
 0.1.1
 [x] add hex view for binary content

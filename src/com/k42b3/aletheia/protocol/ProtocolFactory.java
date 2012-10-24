@@ -24,6 +24,7 @@ package com.k42b3.aletheia.protocol;
 
 import com.k42b3.aletheia.protocol.dns.DnsProtocol;
 import com.k42b3.aletheia.protocol.http.HttpProtocol;
+import com.k42b3.aletheia.protocol.https.HttpsProtocol;
 import com.k42b3.aletheia.protocol.whois.WhoisProtocol;
 
 /**
@@ -40,6 +41,10 @@ public class ProtocolFactory
 		if(protocol.equals("http"))
 		{
 			return new HttpProtocol();
+		}
+		else if(protocol.equals("https"))
+		{
+			return new HttpsProtocol();
 		}
 		/*
 		else if(protocol.equals("ftp"))

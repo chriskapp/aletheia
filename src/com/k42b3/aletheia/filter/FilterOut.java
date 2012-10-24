@@ -51,7 +51,6 @@ public class FilterOut extends JFrame
 	private ArrayList<ConfigFilterAbstract> filtersConfig = new ArrayList<ConfigFilterAbstract>();
 	private ArrayList<ResponseFilterAbstract> filters = new ArrayList<ResponseFilterAbstract>();
 	
-	private Aletheia aletheia;
 	private ArrayList<ResponseFilterAbstract> activeFilters;
 
 	private Logger logger = Logger.getLogger("com.k42b3.aletheia");

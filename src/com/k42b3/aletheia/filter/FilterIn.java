@@ -51,7 +51,6 @@ public class FilterIn extends JFrame
 	private ArrayList<ConfigFilterAbstract> filtersConfig = new ArrayList<ConfigFilterAbstract>();
 	private ArrayList<RequestFilterAbstract> filters = new ArrayList<RequestFilterAbstract>();
 
-	private Aletheia aletheia;
 	private ArrayList<RequestFilterAbstract> activeFilters;
 
 	private Logger logger = Logger.getLogger("com.k42b3.aletheia");
