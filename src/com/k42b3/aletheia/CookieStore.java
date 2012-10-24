@@ -2,29 +2,30 @@ package com.k42b3.aletheia;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class CookieStore
 {
 	private static CookieStore instance;
 
-	private HashMap<String, ArrayList<Cookie>> store;
+	private HashMap<String, LinkedList<Cookie>> store;
 
 	private CookieStore()
 	{
-		store = new HashMap<String, ArrayList<Cookie>>();
+		store = new HashMap<String, LinkedList<Cookie>>();
 	}
 
 	public void addCookie(String domain, Cookie cookie)
 	{
 		if(!store.containsKey(domain))
 		{
-			store.put(domain, new ArrayList<Cookie>());
+			store.put(domain, new LinkedList<Cookie>());
 		}
 
 		store.get(domain).add(cookie);
 	}
 
-	public void setCookies(String domain, ArrayList<Cookie> cookies)
+	public void setCookies(String domain, LinkedList<Cookie> cookies)
 	{
 		store.put(domain, cookies);
 	}
@@ -45,7 +46,7 @@ public class CookieStore
 		}
 	}
 
-	public ArrayList<Cookie> getCookies(String domain)
+	public LinkedList<Cookie> getCookies(String domain)
 	{
 		if(store.containsKey(domain))
 		{

@@ -23,6 +23,7 @@
 package com.k42b3.aletheia.processor.html;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -74,7 +75,7 @@ public class Form extends JFrame implements ProcessorInterface
 		// settings
 		this.setTitle("Form");
 		this.setLocation(100, 100);
-		this.setSize(360, 400);
+		this.setPreferredSize(new Dimension(360, 400));
 		this.setMinimumSize(this.getSize());
 		this.setResizable(false);
 		this.setLayout(new BorderLayout());
@@ -398,12 +399,12 @@ public class Form extends JFrame implements ProcessorInterface
 
 		public int getColumnCount()
 		{
-			return 3;
+			return columns.length;
 		}
 		
 		public String getColumnName(int column)
 		{
-			return column > 0 && column < this.columns.length ? this.columns[column] : null;
+			return column >= 0 && column < this.columns.length ? this.columns[column] : null;
 		}
 		
 		public boolean isCellEditable(int row, int column)

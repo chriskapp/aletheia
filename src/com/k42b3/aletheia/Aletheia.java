@@ -925,6 +925,30 @@ public class Aletheia extends JFrame
 
 		menuProcessor.add(menuFormat);
 
+		// certificates
+		JMenuItem itemCerts = new JMenuItem("Certificates");
+		itemCerts.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				callProcessor("certificates");
+			}
+
+		});
+		menuProcessor.add(itemCerts);
+
+		// cookies
+		JMenuItem itemCookies = new JMenuItem("Cookies");
+		itemCookies.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				callProcessor("cookies");
+			}
+
+		});
+		menuProcessor.add(itemCookies);
+
 		menuBar.add(menuProcessor);
 
 

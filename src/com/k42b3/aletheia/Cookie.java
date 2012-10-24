@@ -37,6 +37,18 @@ public class Cookie
 		return this.name + "=" + this.value;
 	}
 
+	public boolean equals(Object o)
+	{
+		if(o instanceof Cookie)
+		{
+			return ((Cookie) o).getName().equals(this.getName());
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	public static Cookie convert(String rawCookie)
 	{
 		String[] parts = rawCookie.split(";");

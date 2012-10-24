@@ -48,7 +48,15 @@ public class ProcessorFactory
 			return processors.get(name);
 		}
 
-		if(name.equals("html.form"))
+		if(name.equals("certificates"))
+		{
+			processors.put(name, new Certificates());
+		}
+		else if(name.equals("cookies"))
+		{
+			processors.put(name, new Cookies());
+		}
+		else if(name.equals("html.form"))
 		{
 			processors.put(name, new Form());
 		}

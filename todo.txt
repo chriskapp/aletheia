@@ -5,7 +5,8 @@
 
 0.1.2
 [ ] Fix parser so that if an hre starts with " it can contain ' signs
-[ ] implement https
+[x] Added cookie and certificate processor
+[x] implement https
 [x] Improved content type detection
 [x] Fixed url href resolving bug
 [x] Improved header handling

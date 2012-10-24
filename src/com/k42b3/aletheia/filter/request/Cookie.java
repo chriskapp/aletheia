@@ -23,6 +23,7 @@
 package com.k42b3.aletheia.filter.request;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import com.k42b3.aletheia.CookieStore;
 import com.k42b3.aletheia.filter.RequestFilterAbstract;
@@ -43,7 +44,7 @@ public class Cookie extends RequestFilterAbstract
 		{
 			com.k42b3.aletheia.protocol.http.Request httpRequest = (com.k42b3.aletheia.protocol.http.Request) request;
 
-			ArrayList<com.k42b3.aletheia.Cookie> cookies = CookieStore.getInstance().getCookies(httpRequest.getHost());
+			LinkedList<com.k42b3.aletheia.Cookie> cookies = CookieStore.getInstance().getCookies(httpRequest.getHost());
 
 			if(cookies != null && cookies.size() > 0)
 			{

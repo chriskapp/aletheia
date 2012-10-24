@@ -25,6 +25,7 @@ package com.k42b3.aletheia.processor.html;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.SystemColor;
@@ -121,7 +122,7 @@ public class Images extends JFrame implements ProcessorInterface
 		// settings
 		this.setTitle("Images");
 		this.setLocation(100, 100);
-		this.setSize(360, 600);
+		this.setPreferredSize(new Dimension(360, 600));
 		this.setMinimumSize(this.getSize());
 		this.setResizable(false);
 		this.setLayout(new BorderLayout());
