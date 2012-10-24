@@ -29,46 +29,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.commons.codec.binary.Base64;
-
 import com.k42b3.aletheia.Aletheia;
-import com.k42b3.aletheia.CertificateStore;
 import com.k42b3.aletheia.Cookie;
 import com.k42b3.aletheia.CookieStore;
-import com.k42b3.aletheia.Parser;
-import com.k42b3.aletheia.processor.ProcessorFactory;
-import com.k42b3.aletheia.processor.ProcessorInterface;
-import com.k42b3.aletheia.processor.html.Images;
 import com.k42b3.aletheia.protocol.Response;
-import com.k42b3.aletheia.protocol.http.Request;
-import com.k42b3.aletheia.protocol.http.Util;
 
 /**
  * Form

@@ -22,12 +22,8 @@
 
 package com.k42b3.aletheia;
 
-import java.io.Writer;
-import java.nio.charset.Charset;
 import java.security.cert.X509Certificate;
 import java.util.LinkedList;
-
-import org.apache.commons.codec.binary.Base64;
 
 /**
  * CertificateStore

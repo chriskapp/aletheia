@@ -22,7 +22,6 @@
 
 package com.k42b3.aletheia.filter.request;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.k42b3.aletheia.CookieStore;
