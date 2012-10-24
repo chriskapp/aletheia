@@ -110,7 +110,7 @@ public class Aletheia extends JFrame
 	private HashMap<Integer, ArrayList<RequestFilterAbstract>> filtersIn;
 	private HashMap<Integer, ArrayList<ResponseFilterAbstract>> filtersOut;
 
-	private ExecutorService executor = Executors.newSingleThreadExecutor();
+	private ExecutorService executor = Executors.newFixedThreadPool(8);
 
 	private Log logWin;
 	private Logger logger = Logger.getLogger("com.k42b3.aletheia");
@@ -204,37 +204,7 @@ public class Aletheia extends JFrame
 			Request request = protocol.buildRequest(currentUrl, getActiveIn().getText());
 
 			// set request
-			protocol.setRequest(request, new CallbackInterface() {
-
-				public void onResponse(Request request, Response response) 
-				{
-					// update request and response
-					getActiveIn().setRequest(request);
-					getActiveOut().setResponse(response);
-
-					// apply response filter 
-					if(filtersOut.containsKey(getSelectedIndex()))
-					{
-						ArrayList<ResponseFilterAbstract> filters = filtersOut.get(getSelectedIndex());
-
-						for(int i = 0; i < filters.size(); i++)
-						{
-							try
-							{
-								filters.get(i).exec(response);
-							}
-							catch(Exception e)
-							{
-								Aletheia.handleException(e);
-							}
-						}
-					}
-
-					// update links
-					getActiveSidebar().update(response);
-				}
-
-			});
+			protocol.setRequest(request, new RunCallbackInterface(getActiveIn(), getActiveOut(), getActiveSidebar()));
 
 			// apply request filter 
 			if(this.filtersIn.containsKey(this.getSelectedIndex()))
@@ -1020,7 +990,49 @@ public class Aletheia extends JFrame
 		return instance;
 	}
 
-	public class InFilterHandler implements ActionListener
+	private class RunCallbackInterface implements CallbackInterface
+	{
+		private TextPaneIn textIn;
+		private TextPaneOut textOut;
+		private Sidebar sidebar;
+
+		public RunCallbackInterface(TextPaneIn textIn, TextPaneOut textOut, Sidebar sidebar)
+		{
+			this.textIn = textIn;
+			this.textOut = textOut;
+			this.sidebar = sidebar;
+		}
+
+		public void onResponse(Request request, Response response) 
+		{
+			// update request and response
+			textIn.setRequest(request);
+			textOut.setResponse(response);
+
+			// apply response filter 
+			if(filtersOut.containsKey(getSelectedIndex()))
+			{
+				ArrayList<ResponseFilterAbstract> filters = filtersOut.get(getSelectedIndex());
+
+				for(int i = 0; i < filters.size(); i++)
+				{
+					try
+					{
+						filters.get(i).exec(response);
+					}
+					catch(Exception e)
+					{
+						Aletheia.handleException(e);
+					}
+				}
+			}
+
+			// update links
+			sidebar.update(response);
+		}
+	}
+
+	private class InFilterHandler implements ActionListener
 	{
 		private FilterIn filterWin;
 
@@ -1048,7 +1060,7 @@ public class Aletheia extends JFrame
 		}
 	}
 
-	public class OutFilterHandler implements ActionListener
+	private class OutFilterHandler implements ActionListener
 	{
 		private FilterOut filterWin;
 		
@@ -1076,7 +1088,7 @@ public class Aletheia extends JFrame
 		}
 	}
 
-	public class OutDownloadHandler implements ActionListener
+	private class OutDownloadHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
@@ -1106,7 +1118,7 @@ public class Aletheia extends JFrame
 		}
 	}
 
-	public class XmlFilter extends FileFilter
+	private class XmlFilter extends FileFilter
 	{
 		public boolean accept(File file)
 		{
@@ -1129,7 +1141,7 @@ public class Aletheia extends JFrame
 		}
 	}
 	
-	public class DefaultURLStreamHandlerFactory implements URLStreamHandlerFactory
+	private class DefaultURLStreamHandlerFactory implements URLStreamHandlerFactory
 	{
 		public URLStreamHandler createURLStreamHandler(String protocol) 
 		{
