@@ -2,9 +2,9 @@
 0.1.3
 [ ] add support for websockets and spdy
 [ ] implement json formatter
+[ ] Fix parser so that if an tag attribute starts with " it can contain ' signs
 
 0.1.2
-[ ] Fix parser so that if an hre starts with " it can contain ' signs
 [x] Added cookie and certificate processor
 [x] implement https
 [x] Improved content type detection

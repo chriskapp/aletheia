@@ -91,25 +91,29 @@ public class Request extends com.k42b3.aletheia.protocol.Request
 	{
 		HashMap<String, String> params = new HashMap<String, String>();
 		String query = url.getQuery();
-		String[] parts = query.split("&");
-
-		for(int i = 0; i < parts.length; i++)
+		
+		if(query != null)
 		{
-			try
-			{
-				String[] kv = parts[i].split("=", 2);
+			String[] parts = query.split("&");
 
-				if(kv.length == 1)
-				{
-					params.put(kv[0], "");
-				}
-				else if(kv.length == 2)
-				{
-					params.put(kv[0], URLDecoder.decode(kv[1], "UTF-8"));
-				}
-			}
-			catch(UnsupportedEncodingException e)
+			for(int i = 0; i < parts.length; i++)
 			{
+				try
+				{
+					String[] kv = parts[i].split("=", 2);
+
+					if(kv.length == 1)
+					{
+						params.put(kv[0], "");
+					}
+					else if(kv.length == 2)
+					{
+						params.put(kv[0], URLDecoder.decode(kv[1], "UTF-8"));
+					}
+				}
+				catch(UnsupportedEncodingException e)
+				{
+				}
 			}
 		}
 
