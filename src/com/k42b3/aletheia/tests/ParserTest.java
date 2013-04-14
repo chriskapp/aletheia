@@ -3,7 +3,6 @@ package com.k42b3.aletheia.tests;
 import junit.framework.TestCase;
 
 import com.k42b3.aletheia.Parser;
-import com.k42b3.aletheia.protocol.http.Util;
 
 public class ParserTest extends TestCase
 {
