@@ -61,6 +61,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -72,6 +74,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.fife.ui.rtextarea.RTextScrollPane;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -337,7 +340,7 @@ public class Aletheia extends JFrame
 		// in textarea
 		TextPaneIn in = new TextPaneIn();
 		
-		JScrollPane scrIn = new JScrollPane(in);
+		JScrollPane scrIn = new RTextScrollPane(in);
 		scrIn.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 4));
 		scrIn.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrIn.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);	
@@ -373,8 +376,17 @@ public class Aletheia extends JFrame
 
 		// out textarea
 		TextPaneOut out = new TextPaneOut();
+		out.addHyperlinkListener(new HyperlinkListener() {
 
-		JScrollPane scrOut = new JScrollPane(out);
+			public void hyperlinkUpdate(HyperlinkEvent e)
+			{
+				newTab();
+				run(e.getURL().toString());
+			}
+
+		});
+
+		JScrollPane scrOut = new RTextScrollPane(out);
 		scrOut.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 4));
 		scrOut.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrOut.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);	

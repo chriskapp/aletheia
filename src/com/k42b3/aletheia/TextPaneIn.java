@@ -25,7 +25,7 @@ package com.k42b3.aletheia;
 import java.awt.Color;
 import java.awt.Font;
 
-import javax.swing.JTextPane;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import com.k42b3.aletheia.protocol.Request;
 
@@ -36,7 +36,7 @@ import com.k42b3.aletheia.protocol.Request;
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class TextPaneIn extends JTextPane
+public class TextPaneIn extends RSyntaxTextArea
 {
 	private Request request;
 

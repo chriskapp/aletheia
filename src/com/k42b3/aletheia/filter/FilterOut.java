@@ -80,6 +80,7 @@ public class FilterOut extends JFrame
 		filterList.add("Cookie");
 		filterList.add("Location");
 		filterList.add("Application");
+		filterList.add("Syntax");
 
 
 		// parse filters
