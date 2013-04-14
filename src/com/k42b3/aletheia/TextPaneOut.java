@@ -59,7 +59,22 @@ public class TextPaneOut extends JTextPane
 
 		this.setText(response.toString());
 	}
-	
+
+	public boolean hasRequest()
+	{
+		return this.response != null;
+	}
+
+	public void setBody(String body)
+	{
+		int pos = this.getText().indexOf("\n\n");
+		
+		if(pos != -1)
+		{
+			this.setText(this.getText().substring(0, pos) + "\n\n" + body);
+		}
+	}
+
 	public Response getResponse()
 	{
 		return this.response;

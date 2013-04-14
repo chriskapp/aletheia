@@ -52,19 +52,17 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
-import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.text.DefaultEditorKit;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -79,6 +77,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.k42b3.aletheia.MenuBar.MenuBarActionListener;
 import com.k42b3.aletheia.filter.FilterIn;
 import com.k42b3.aletheia.filter.FilterOut;
 import com.k42b3.aletheia.filter.RequestFilterAbstract;
@@ -89,6 +88,7 @@ import com.k42b3.aletheia.protocol.ProtocolFactory;
 import com.k42b3.aletheia.protocol.ProtocolInterface;
 import com.k42b3.aletheia.protocol.Request;
 import com.k42b3.aletheia.protocol.Response;
+import com.k42b3.aletheia.sample.SampleFactory;
 
 /**
  * Aletheia
@@ -99,7 +99,7 @@ import com.k42b3.aletheia.protocol.Response;
  */
 public class Aletheia extends JFrame
 {
-	public static final String VERSION = "0.1.2 beta";
+	public static final String VERSION = "0.1.3 beta";
 
 	public static Aletheia instance;
 
@@ -421,6 +421,19 @@ public class Aletheia extends JFrame
 		}
 	}
 
+	public void saveDialog()
+	{
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new XmlFilter());
+
+		int returnVal = fc.showSaveDialog(Aletheia.this);
+
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			save(fc.getSelectedFile());
+		}
+	}
+
 	public void save(File file)
 	{
 		try
@@ -545,6 +558,19 @@ public class Aletheia extends JFrame
 		}
 	}
 	
+	public void openDialog()
+	{
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new XmlFilter());
+
+		int returnVal = fc.showOpenDialog(Aletheia.this);
+
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			open(fc.getSelectedFile());
+		}
+	}
+
 	public void open(File file)
 	{
 		try
@@ -589,6 +615,30 @@ public class Aletheia extends JFrame
 		try
 		{
 			ProcessorFactory.factory(name).process(getActiveOut().getResponse());
+		}
+		catch(Exception e)
+		{
+			Aletheia.handleException(e);
+		}
+	}
+
+	/**
+	 * Calls an sample wich gets inserted as request
+	 * 
+	 * @param String name
+	 */
+	public void callSample(String name)
+	{
+		try
+		{
+			if(getActiveIn().hasRequest())
+			{
+				SampleFactory.factory(name).process();
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(this, "Please make a request in order to call a sample", "Information", JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 		catch(Exception e)
 		{
@@ -712,107 +762,40 @@ public class Aletheia extends JFrame
 	 */
 	private JMenuBar buildMenuBar()
 	{
-		JMenuBar menuBar = new JMenuBar();
+		MenuBar menuBar = new MenuBar();
+		menuBar.setActionListener(new MenuBarActionListener(){
 
-
-		// url
-		JMenu menuUrl = new JMenu("URL");
-
-		JMenuItem itemRun = new JMenuItem("Run");
-		itemRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
-		itemRun.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onUrlRun()
 			{
 				run(getActiveUrl().getText());
 			}
 
-		});
-		menuUrl.add(itemRun);
-
-		JMenuItem itemReset = new JMenuItem("Reset");
-		itemReset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
-		itemReset.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onUrlReset()
 			{
 				reset();
 			}
 
-		});
-		menuUrl.add(itemReset);
-
-		JMenuItem itemNewTab = new JMenuItem("New Tab");
-		itemNewTab.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
-		itemNewTab.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onUrlNewTab()
 			{
 				newTab();
 			}
 
-		});
-		menuUrl.add(itemNewTab);
-
-		JMenuItem itemCloseTab = new JMenuItem("Close Tab");
-		itemCloseTab.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
-		itemCloseTab.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onUrlCloseTab()
 			{
 				closeTab();
 			}
 
-		});
-		menuUrl.add(itemCloseTab);
-
-		JMenuItem itemSave = new JMenuItem("Save");
-		itemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-		itemSave.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e)
+			public void onUrlSave()
 			{
-				// save file
-				JFileChooser fc = new JFileChooser();
-				fc.setFileFilter(new XmlFilter());
-
-				int returnVal = fc.showSaveDialog(Aletheia.this);
-
-				if(returnVal == JFileChooser.APPROVE_OPTION)
-				{
-					save(fc.getSelectedFile());
-				}
+				saveDialog();
 			}
 
-		});
-		menuUrl.add(itemSave);
-
-		JMenuItem itemLoad = new JMenuItem("Open");
-		itemLoad.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-		itemLoad.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onUrlOpen()
 			{
-				// load file
-				JFileChooser fc = new JFileChooser();
-				fc.setFileFilter(new XmlFilter());
-
-				int returnVal = fc.showOpenDialog(Aletheia.this);
-
-				if(returnVal == JFileChooser.APPROVE_OPTION)
-				{
-					open(fc.getSelectedFile());
-				}
+				openDialog();
 			}
 
-		});
-		menuUrl.add(itemLoad);
-
-		JMenuItem itemFocus = new JMenuItem("Focus");
-		itemFocus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK));
-		itemFocus.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onUrlFocus()
 			{
 				if(!getActiveUrl().hasFocus())
 				{
@@ -823,132 +806,62 @@ public class Aletheia extends JFrame
 				getActiveUrl().setSelectionEnd(getActiveUrl().getText().length());
 			}
 
-		});
-		menuUrl.add(itemFocus);
-
-		menuBar.add(menuUrl);
-
-		
-		// processor
-		JMenu menuProcessor = new JMenu("Processor");
-
-		// html
-		JMenu menuHtml = new JMenu("Html");
-
-		// form
-		JMenuItem itemForm = new JMenuItem("Form");
-		itemForm.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
-		itemForm.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onProcessorHtmlForm()
 			{
 				callProcessor("html.form");
 			}
 
-		});
-		menuHtml.add(itemForm);
-
-		// images
-		JMenuItem itemImages = new JMenuItem("Images");
-		itemImages.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
-		itemImages.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onProcessorHtmlImages()
 			{
 				callProcessor("html.images");
 			}
 
-		});
-		menuHtml.add(itemImages);
-
-		menuProcessor.add(menuHtml);
-
-		// format
-		JMenu menuFormat = new JMenu("Format");
-
-		// xml
-		JMenuItem itemXml = new JMenuItem("XML");
-		//itemXml.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-		itemXml.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onProcessorFormatXml()
 			{
 				callProcessor("format.xml");
 			}
 
-		});
-		menuFormat.add(itemXml);
-		
-		/*
-		// json
-		JMenuItem itemJson = new JMenuItem("JSON");
-		itemJson.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, ActionEvent.CTRL_MASK));
-		itemJson.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onProcessorFormatJson()
 			{
 				callProcessor("format.json");
 			}
 
-		});
-		menuFormat.add(itemJson);
-		*/
-
-		menuProcessor.add(menuFormat);
-
-		// certificates
-		JMenuItem itemCerts = new JMenuItem("Certificates");
-		itemCerts.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onProcessorCertificates()
 			{
 				callProcessor("certificates");
 			}
 
-		});
-		menuProcessor.add(itemCerts);
-
-		// cookies
-		JMenuItem itemCookies = new JMenuItem("Cookies");
-		itemCookies.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onProcessorCookies()
 			{
 				callProcessor("cookies");
 			}
 
-		});
-		menuProcessor.add(itemCookies);
+			public void onSampleForm()
+			{
+				callSample("form");
+			}
 
-		menuBar.add(menuProcessor);
+			public void onSampleUpload()
+			{
+				callSample("upload");
+			}
 
+			public void onSampleWsHandshake()
+			{
+				callSample("wshandshake");
+			}
 
-		// help
-		JMenu menuHelp = new JMenu("Help");
-
-		JMenuItem itemLog = new JMenuItem("Log");
-		itemLog.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onHelpLog()
 			{
 				log();
 			}
 
-		});
-		menuHelp.add(itemLog);
-
-		JMenuItem itemAbout = new JMenuItem("About");
-		itemAbout.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
+			public void onHelpAbout()
 			{
 				about();
 			}
 
 		});
-		menuHelp.add(itemAbout);
-
-		menuBar.add(menuHelp);
 
 		return menuBar;
 	}

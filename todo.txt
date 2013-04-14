@@ -1,8 +1,12 @@
 
-0.1.3
+0.1.4
 [ ] add support for websockets and spdy
-[ ] implement json formatter
-[ ] Fix parser so that if an tag attribute starts with " it can contain ' signs
+
+0.1.3
+[x] added sample requests
+[x] Fix parser so that if an tag attribute starts with " it can contain ' signs
+[x] add request processor
+[x] implement json formatter
 
 0.1.2
 [x] Added cookie and certificate processor

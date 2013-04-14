@@ -60,6 +60,21 @@ public class TextPaneIn extends JTextPane
 		this.setText(request.toString());
 	}
 
+	public boolean hasRequest()
+	{
+		return this.request != null;
+	}
+
+	public void setBody(String body)
+	{
+		int pos = this.getText().indexOf("\n\n");
+		
+		if(pos != -1)
+		{
+			this.setText(this.getText().substring(0, pos) + "\n\n" + body);
+		}
+	}
+
 	public Request getRequest()
 	{
 		return this.request;

@@ -4,7 +4,7 @@
  * debugging and finding security issues in web applications. For the current 
  * version and more informations visit <http://code.google.com/p/aletheia>
  * 
- * Copyright (c) 2010-2012 Christoph Kappestein <k42b3.x@gmail.com>
+ * Copyright (c) 2010-2013 Christoph Kappestein <k42b3.x@gmail.com>
  * 
  * This file is part of Aletheia. Aletheia is free software: you can 
  * redistribute it and/or modify it under the terms of the GNU 
@@ -20,40 +20,49 @@
  * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.k42b3.aletheia.processor.format;
+package com.k42b3.aletheia.sample;
 
-import org.apache.sling.commons.json.JSONObject;
+import java.math.BigInteger;
+import java.net.URL;
+import java.security.SecureRandom;
 
 import com.k42b3.aletheia.Aletheia;
-import com.k42b3.aletheia.processor.ProcessorFactory;
-import com.k42b3.aletheia.processor.ProcessorInterface;
-import com.k42b3.aletheia.protocol.Response;
+import com.k42b3.aletheia.protocol.http.Request;
 
 /**
- * Json
+ * Upload
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class Json implements ProcessorInterface
+public class Upload implements SampleInterface
 {
 	public String getName()
 	{
-		return "JSON Formatter";
+		return "Upload";
 	}
 
-	public void process(Response response) throws Exception
+	public void process() throws Exception
 	{
-		String content = ProcessorFactory.getResponseContent(response);
+		SecureRandom random = new SecureRandom();
+		URL url = new URL(Aletheia.getInstance().getActiveUrl().getText());
+		String boundary = "----" + new BigInteger(160, random).toString(32);
+		Request request = (com.k42b3.aletheia.protocol.http.Request) Aletheia.getInstance().getActiveIn().getRequest();
 
-		if(content != null)
-		{
-			// read json
-			JSONObject json = new JSONObject(content);
+		String body = "";
+		body+= "--" + boundary + "\n";
+		body+= "Content-Disposition: form-data; name=\"userfile\"; filename=\"foo.txt\"" + "\n";
+		body+= "Content-Type: text/plain" + "\n";
+		body+= "\n";
+		body+= "foobar\n";
+		body+= "--" + boundary + "--" + "\n";
 
-			// set content
-			Aletheia.getInstance().getActiveOut().setBody(json.toString(4));
-		}
+		request.setLine("POST", url.getPath());
+		request.setHeader("Host", url.getHost());
+		request.setHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+		request.setBody(body);
+
+		Aletheia.getInstance().getActiveIn().update();
 	}
 }

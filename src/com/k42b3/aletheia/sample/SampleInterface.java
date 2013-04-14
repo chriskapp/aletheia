@@ -4,7 +4,7 @@
  * debugging and finding security issues in web applications. For the current 
  * version and more informations visit <http://code.google.com/p/aletheia>
  * 
- * Copyright (c) 2010-2012 Christoph Kappestein <k42b3.x@gmail.com>
+ * Copyright (c) 2010-2013 Christoph Kappestein <k42b3.x@gmail.com>
  * 
  * This file is part of Aletheia. Aletheia is free software: you can 
  * redistribute it and/or modify it under the terms of the GNU 
@@ -20,40 +20,17 @@
  * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.k42b3.aletheia.processor.format;
-
-import org.apache.sling.commons.json.JSONObject;
-
-import com.k42b3.aletheia.Aletheia;
-import com.k42b3.aletheia.processor.ProcessorFactory;
-import com.k42b3.aletheia.processor.ProcessorInterface;
-import com.k42b3.aletheia.protocol.Response;
+package com.k42b3.aletheia.sample;
 
 /**
- * Json
+ * SampleInterface
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class Json implements ProcessorInterface
+public interface SampleInterface 
 {
-	public String getName()
-	{
-		return "JSON Formatter";
-	}
-
-	public void process(Response response) throws Exception
-	{
-		String content = ProcessorFactory.getResponseContent(response);
-
-		if(content != null)
-		{
-			// read json
-			JSONObject json = new JSONObject(content);
-
-			// set content
-			Aletheia.getInstance().getActiveOut().setBody(json.toString(4));
-		}
-	}
+	public String getName();
+	public void process() throws Exception;
 }

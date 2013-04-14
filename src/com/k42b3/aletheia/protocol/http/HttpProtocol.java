@@ -28,13 +28,18 @@ import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import org.apache.commons.net.util.Base64;
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpClientConnection;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
@@ -87,7 +92,7 @@ public class HttpProtocol extends ProtocolAbstract
 		HttpProtocolParams.setUseExpectContinue(params, true);
 
 		HttpRequestInterceptor[] interceptors = {
-			new RequestContent(),
+			new RequestContent(true),
 			new RequestTargetHost(),
 			new RequestConnControl(),
 			new RequestExpectContinue()
@@ -147,6 +152,7 @@ public class HttpProtocol extends ProtocolAbstract
 			}
 
 			// add headers
+			String boundary = null;
 			ArrayList<String> ignoreHeader = new ArrayList<String>();
 			ignoreHeader.add("Content-Length");
 			ignoreHeader.add("Expect");
@@ -157,16 +163,91 @@ public class HttpProtocol extends ProtocolAbstract
 			{
 				if(!ignoreHeader.contains(headers.get(i).getName()))
 				{
+					// if the content-type header gets set the conent-length
+					// header is automatically added
 					request.addHeader(headers.get(i));
+				}
+
+				if(headers.get(i).getName().equals("Content-Type") && headers.get(i).getValue().startsWith("multipart/form-data"))
+				{
+					String header = headers.get(i).getValue().substring(headers.get(i).getValue().indexOf(";") + 1).trim();
+					
+					if(!header.isEmpty())
+					{
+						String parts[] = header.split("=");
+
+						if(parts.length >= 2)
+						{
+							boundary = parts[1];
+						}
+					}
 				}
 			}
 
 			// set body
-			if(request instanceof BasicHttpEntityEnclosingRequest)
+			if(request instanceof BasicHttpEntityEnclosingRequest && boundary != null)
 			{
-				StringEntity body = new StringEntity(this.getRequest().getBody());
+				boundary = "--" + boundary;
+				StringBuilder body = new StringBuilder();
+				String req = this.getRequest().getBody();
 
-				((BasicHttpEntityEnclosingRequest) request).setEntity(body);
+				int i = 0;
+				String partHeader;
+				String partBody;
+
+				while((i = req.indexOf(boundary, i)) != -1)
+				{
+					int hPos = req.indexOf("\n\n", i + 1);
+					if(hPos != -1)
+					{
+						partHeader = req.substring(i + boundary.length() + 1, hPos).trim();
+					}
+					else
+					{
+						partHeader = null;
+					}
+
+					int bpos = req.indexOf(boundary, i + 1);
+					if(bpos != -1)
+					{
+						partBody = req.substring(hPos == -1 ? i : hPos + 2, bpos);
+					}
+					else
+					{
+						partBody = req.substring(hPos == -1 ? i : hPos + 2);
+					}
+
+					if(partBody.equals(boundary + "--"))
+					{
+						body.append(boundary + "--" + "\r\n");
+						break;
+					}
+					else if(!partBody.isEmpty())
+					{
+						body.append(boundary + "\r\n");
+						if(partHeader != null && !partHeader.isEmpty())
+						{
+							body.append(partHeader.replaceAll("\n", "\r\n"));
+							body.append("\r\n");
+							body.append("\r\n");
+						}
+						body.append(partBody);
+					}
+
+					i++;
+				}
+
+				this.getRequest().setBody(body.toString().replaceAll("\r\n", "\n"));
+
+				HttpEntity entity = new StringEntity(this.getRequest().getBody());
+
+				((BasicHttpEntityEnclosingRequest) request).setEntity(entity);
+			}
+			else if(request instanceof BasicHttpEntityEnclosingRequest)
+			{
+				HttpEntity entity = new StringEntity(this.getRequest().getBody());
+
+				((BasicHttpEntityEnclosingRequest) request).setEntity(entity);
 			}
 
 			logger.info("> " + request.getRequestLine().getUri());

@@ -41,17 +41,23 @@ public class Parser
 		int sPos = -1;
 		boolean noWhiteSpaces = false;
 		boolean inVal = false;
+		char quoteTag = 0;
 
 		for(int i = 0; i < content.length(); i++)
 		{
 			if(inVal)
 			{
-				if(content.charAt(i) == '"' || content.charAt(i) == '\'' || content.charAt(i) == '>')
+				if(content.charAt(i) == quoteTag)
 				{
 					break;
 				}
 
 				if(noWhiteSpaces && Character.isWhitespace(content.charAt(i)))
+				{
+					break;
+				}
+
+				if(quoteTag == 0 && content.charAt(i) == '>')
 				{
 					break;
 				}
@@ -63,9 +69,11 @@ public class Parser
 				if(Parser.startsWith(name + "=", i, content))
 				{
 					sPos = i + name.length();
+					quoteTag = content.charAt(sPos + 1);
 
-					if(content.charAt(sPos + 1) != '"' && content.charAt(sPos + 1) != '\'')
+					if(quoteTag != '"' && quoteTag != '\'')
 					{
+						quoteTag = 0;
 						noWhiteSpaces = true;
 					}
 					else

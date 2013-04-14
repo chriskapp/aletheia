@@ -84,7 +84,7 @@ public class Xml implements ProcessorInterface
 			writer.write(doc, output);
 
 			// set content
-			Aletheia.getInstance().getActiveOut().setText(bout.toString());
+			Aletheia.getInstance().getActiveOut().setBody(bout.toString());
 		}
 	}
 }

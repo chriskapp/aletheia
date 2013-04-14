@@ -223,7 +223,6 @@ public class Request extends com.k42b3.aletheia.protocol.Request
 		String body = "";
 
 		int pos = request.indexOf("\n\n");
-		
 		if(pos == -1)
 		{
 			header = request;
