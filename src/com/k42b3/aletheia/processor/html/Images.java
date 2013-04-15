@@ -23,30 +23,26 @@
 package com.k42b3.aletheia.processor.html;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -56,31 +52,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.impl.DefaultHttpClientConnection;
-import org.apache.http.message.BasicHttpRequest;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.params.SyncBasicHttpParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
-import org.apache.http.protocol.HttpRequestExecutor;
-import org.apache.http.protocol.ImmutableHttpProcessor;
-import org.apache.http.protocol.RequestConnControl;
-import org.apache.http.protocol.RequestContent;
-import org.apache.http.protocol.RequestExpectContinue;
-import org.apache.http.protocol.RequestTargetHost;
-import org.apache.http.protocol.RequestUserAgent;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import com.k42b3.aletheia.Aletheia;
@@ -117,7 +97,7 @@ public class Images extends JFrame implements ProcessorInterface
 	{
 		super();
 
-		executorService = Executors.newFixedThreadPool(8);
+		executorService = Executors.newFixedThreadPool(6);
 		
 		// settings
 		this.setTitle("Images");
@@ -245,55 +225,34 @@ public class Images extends JFrame implements ProcessorInterface
 		}
 	}
 
-	private byte[] requestImage(URL imageUrl)
+	private byte[] requestImage(URL imageUrl, int count)
 	{
 		byte[] image = null;
-		DefaultHttpClientConnection conn = new DefaultHttpClientConnection();
 
 		try
 		{
-			// http settings
-			HttpParams params = new SyncBasicHttpParams();
-			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-			HttpProtocolParams.setContentCharset(params, "UTF-8");
-			HttpProtocolParams.setUserAgent(params, "Aletheia " + Aletheia.VERSION);
-			HttpProtocolParams.setUseExpectContinue(params, true);
-			
-			HttpRequestInterceptor[] interceptors = {
-				// Required protocol interceptors
-				new RequestContent(),
-				new RequestTargetHost(),
-				// Recommended protocol interceptors
-				new RequestConnControl(),
-				new RequestUserAgent(),
-				new RequestExpectContinue()
-			};
+			if(count > 4)
+			{
+				throw new Exception("Max redirection reached");
+			}
 
-			HttpProcessor httpproc = new ImmutableHttpProcessor(interceptors);
-			HttpRequestExecutor httpexecutor = new HttpRequestExecutor();
-			
-			// request settings
-			int port = imageUrl.getPort();
-			HttpContext context = new BasicHttpContext(null);
-			HttpHost host = new HttpHost(imageUrl.getHost(), port == -1 ? 80 : port);
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpUriRequest request = new HttpGet(imageUrl.toString());
+			HttpResponse response = client.execute(request);
 
-			context.setAttribute(ExecutionContext.HTTP_CONNECTION, conn);
-			context.setAttribute(ExecutionContext.HTTP_TARGET_HOST, host);
-			
-			Socket socket = new Socket(host.getHostName(), host.getPort());
-			conn.bind(socket, params);
-			
-			// build request
-			BasicHttpRequest request = new BasicHttpRequest("GET", imageUrl.getPath());
+			// redirect
+			Header location = response.getFirstHeader("Location");
+			if(location != null)
+			{
+				URL url = new URL(location.getValue());
 
-			// request
-			request.setParams(params);
-			httpexecutor.preProcess(request, httpproc, context);
+				if(!url.toString().equals(imageUrl.toString()))
+				{
+					return requestImage(url, count + 1);
+				}
+			}
 
-			HttpResponse response = httpexecutor.execute(request, conn, context);
-			response.setParams(params);
-			httpexecutor.postProcess(response, httpproc, context);
-
+			// read image
 			image = EntityUtils.toByteArray(response.getEntity());
 
 			// info
@@ -304,19 +263,13 @@ public class Images extends JFrame implements ProcessorInterface
 		{
 			Aletheia.handleException(e);
 		}
-		finally
-		{
-			try
-			{
-				conn.close();
-			}
-			catch(Exception e)
-			{
-				Aletheia.handleException(e);
-			}
-		}
 
 		return image;
+	}
+
+	private byte[] requestImage(URL imageUrl)
+	{
+		return requestImage(imageUrl, 0);
 	}
 
 	private String getFileName(URL url)
@@ -390,17 +343,7 @@ public class Images extends JFrame implements ProcessorInterface
 
 			if(!imageCache.containsKey(imageUrl.toString()))
 			{
-				BufferedImage im = new BufferedImage(128, 128, BufferedImage.TYPE_4BYTE_ABGR);
-				Graphics2D g = im.createGraphics();
-				g.setColor(Color.BLACK);
-				g.fillRect(0, 0, 128, 128);
-
 				label = new ImageLabel(imageUrl);
-				ImageIcon icon = new ImageIcon(im);
-
-				label.setIcon(icon);
-				label.setText("Loading ...");
-				label.setBorder(new EmptyBorder(4, 4, 4, 4));
 
 				imageCache.put(imageUrl.toString(), label);
 			}
@@ -424,81 +367,58 @@ public class Images extends JFrame implements ProcessorInterface
 		}
 	}
 
-	private class ImageLabel extends JLabel
+	private class ImageLabel extends Canvas
 	{
-		private URL imageUrl;
-		private ImageIcon icon;
+		public final static int WIDTH = 330;
+		public final static int HEIGHT = 128;
 
-		private int width;
-		private int height;
-		private String fileName;
+		private URL imageUrl;
+		private Image image;
 
 		public ImageLabel(URL imageUrl)
 		{
 			this.imageUrl = imageUrl;
 
-			this.setOpaque(true);
-			this.load();
+			load();
 		}
 
-		private void imageLoaded()
+		public void paint(Graphics g)
 		{
-			// set icon and text
-			SwingUtilities.invokeLater(new Runnable() {
+			g.setColor(getBackground());
+			g.fillRect(0, 0, WIDTH, HEIGHT);
 
-				public void run()
-				{
-					setIcon(icon);
-					setText("<html><body><table><tr><td>Url:</td><td nowrap>" + imageUrl.toString() + "</td></tr><tr><td>Width:</td><td>" + width + "px</td></tr><tr><td>Height:</td><td>" + height + "px</td></tr><tr><td>File:</td><td>" + fileName + "</td></tr></table></body></html>");
+			if(image != null)
+			{
+				g.drawImage(image, 0, 0, null);
+			}
 
-					list.repaint();
-				}
+			g.setColor(getForeground());
+			g.drawString(imageUrl.toString(), 10, 20);
+		}
 
-			});
+		public Dimension getPreferredSize() 
+		{
+			return new Dimension(WIDTH, HEIGHT);
 		}
 
 		private void load()
 		{
-			executorService.execute(new Runnable(){
+			executorService.execute(new Runnable() {
 
 				public void run()
 				{
-					BufferedImage image = null;
+					image = Toolkit.getDefaultToolkit().createImage(requestImage(imageUrl));
 
-					try
-					{
-						byte[] rawImage = requestImage(imageUrl);
+					Toolkit.getDefaultToolkit().prepareImage(image, WIDTH, HEIGHT, new ImageObserver() {
 
-						if(rawImage != null)
+						public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height)
 						{
-							InputStream bais = new ByteArrayInputStream(rawImage);
-							image = ImageIO.read(bais);
+							list.repaint();
 
-							// noramlize image size
-							if(image != null)
-							{
-								width = image.getWidth();
-								height = image.getHeight();
-								fileName = getFileName(imageUrl);
-
-								BufferedImage im = new BufferedImage(128, 128, BufferedImage.TYPE_4BYTE_ABGR);
-								Graphics2D g = im.createGraphics();
-								g.setBackground(Color.BLACK);
-								g.fillRect(0, 0, 128, 128);
-								g.drawImage(image, 0, 0, width, height, null);
-
-								// set icon
-								icon = new ImageIcon(im);
-
-								// call image loaded
-								imageLoaded();
-							}
+							return false;
 						}
-					}
-					catch(IOException e)
-					{
-						Aletheia.handleException(e);
-					}
+
+					});
 				}
 
 			});

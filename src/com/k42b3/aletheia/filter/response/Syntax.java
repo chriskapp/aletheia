@@ -67,7 +67,6 @@ public class Syntax extends ResponseFilterAbstract
 			{
 				textarea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
 			}
-			
 		}
 	}
 }
