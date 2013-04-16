@@ -28,6 +28,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,8 +46,12 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.k42b3.aletheia.Aletheia;
-import com.k42b3.aletheia.Parser;
 import com.k42b3.aletheia.processor.ProcessorFactory;
 import com.k42b3.aletheia.processor.ProcessorInterface;
 import com.k42b3.aletheia.protocol.Response;
@@ -149,11 +154,18 @@ public class Form extends JFrame implements ProcessorInterface
 				
 				if(active)
 				{
-					String key = "" + model.getValueAt(i, 1);
-					String value = "" + model.getValueAt(i, 2);
+					try
+					{
+						String key = "" + model.getValueAt(i, 1);
+						String value = "" + model.getValueAt(i, 2);
 
-					response.append(key + "=" + value);
-					response.append("&");
+						response.append(key + "=" + URLEncoder.encode(value, "UTF-8"));
+						response.append("&");
+					}
+					catch(Exception e)
+					{
+						Aletheia.handleException(e);
+					}
 				}
 			}
 
@@ -259,55 +271,58 @@ public class Form extends JFrame implements ProcessorInterface
 
 	private void parseForms(String html)
 	{
-		FormData form = null;
+		Document doc = Jsoup.parse(html);
+		Elements forms = doc.getElementsByTag("form");
+		FormData data = null;
 
-		for(int i = 0; i < html.length(); i++)
+		for(Element form : forms)
 		{
-			if(form == null)
+			// get method
+			String method = form.attr("method");
+			if(method.isEmpty())
 			{
-				if(Parser.startsWith("<form", i, html))
-				{
-					String formTag = Parser.getTag(i, html);
-					String method = Parser.getAttribute("method", formTag);
-					String action = Parser.getAttribute("action", formTag);
-
-					form = new FormData(method, action);
-				}
+				method = "GET";
 			}
-			else
+
+			// get action
+			String action = form.attr("action");
+			if(action.isEmpty())
 			{
-				if(Parser.startsWith("<input", i, html))
-				{
-					String inputTag = Parser.getTag(i, html);
-					String name = Parser.getAttribute("name", inputTag);
-					String value = Parser.getAttribute("value", inputTag);
-
-					form.addElement(name, value);
-				}
-
-				if(Parser.startsWith("<textarea", i, html))
-				{
-					String textareaTag = Parser.getTag(i, html);
-					String name = Parser.getAttribute("name", textareaTag);
-
-					form.addElement(name, "");
-				}
-
-				if(Parser.startsWith("<select", i, html))
-				{
-					String selectTag = Parser.getTag(i, html);
-					String name = Parser.getAttribute("name", selectTag);
-
-					form.addElement(name, "");
-				}
-
-				if(Parser.startsWith("</form>", i, html))
-				{
-					forms.add(form);
-
-					form = null;
-				}
+				action = baseUrl;
 			}
+
+			// create form
+			data = new FormData(method, action);
+
+			// input elements
+			Elements inputs = form.getElementsByTag("input");
+			for(Element input : inputs)
+			{
+				data.addElement(input.attr("name"), input.attr("value"));
+			}
+
+			// textarea elements
+			Elements textareas = form.getElementsByTag("textarea");
+			for(Element textarea : textareas)
+			{
+				data.addElement(textarea.attr("name"), textarea.html());
+			}
+
+			// select
+			Elements selects = form.getElementsByTag("select");
+			for(Element select : selects)
+			{
+				Elements options = select.select("option:selected");
+				String value = "";
+				if(options.size() > 0)
+				{
+					value = options.first().attr("value");
+				}
+
+				data.addElement(select.attr("name"), value);
+			}
+
+			this.forms.add(data);
 		}
 	}
 

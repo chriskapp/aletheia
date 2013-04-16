@@ -24,25 +24,34 @@ package com.k42b3.aletheia.sidebar.http;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.SystemColor;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.k42b3.aletheia.Aletheia;
-import com.k42b3.aletheia.Parser;
 import com.k42b3.aletheia.TextFieldUrl;
 import com.k42b3.aletheia.protocol.http.Util;
 
@@ -55,9 +64,9 @@ import com.k42b3.aletheia.protocol.http.Util;
  */
 public class Html extends SidebarHttpAbstract
 {
-	private ArrayList<String> resources;
-	private DefaultListModel<String> lm;
-	private JList<String> list;
+	private ArrayList<Resource> resources;
+	private DefaultListModel<Resource> lm;
+	private JList<Resource> list;
 	private JTextField search;
 
 	private String baseUrl;
@@ -87,7 +96,11 @@ public class Html extends SidebarHttpAbstract
 					if(!list.hasFocus())
 					{
 						list.requestFocus();
-						list.setSelectedIndex(0);
+						
+						if(lm.getSize() > 0)
+						{
+							list.setSelectedIndex(0);
+						}
 					}
 				}
 				else
@@ -109,15 +122,56 @@ public class Html extends SidebarHttpAbstract
 
 
 		// list
-		resources = new ArrayList<String>();
-		lm = new DefaultListModel<String>();
-		list = new JList<String>(lm);
+		resources = new ArrayList<Resource>();
+		lm = new DefaultListModel<Resource>();
+		list = new JList<Resource>(lm);
 		list.setFont(new Font("Courier New", Font.PLAIN, 12));
 		list.setBackground(new Color(255, 255, 255));
 		list.setForeground(new Color(0, 0, 0));
 		list.addKeyListener(new LinkKeyListener());
 		list.addMouseListener(new LinkMouseListener());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.setCellRenderer(new ListCellRenderer<Resource>() {
+
+			public Component getListCellRendererComponent(JList<? extends Resource> list, Resource value, int index, boolean isSelected, boolean cellHasFocus)
+			{
+				String html = "<html>";
+				if(value.isHeading())
+				{
+					html+= "&nbsp;<b>" + value.getDescription() + "</b>";
+				}
+				else
+				{
+					if(!value.getDescription().isEmpty())
+					{
+						html+= "&nbsp;<font color=gray size=-1>" + value.getDescription() + "</font><br />";
+					}
+
+					html+= "&nbsp;" + value.getUrl();
+				}
+				html+= "</html>";
+
+				JLabel label = new JLabel();
+				label.setFont(new Font("Monospaced", Font.PLAIN, 12));
+				label.setOpaque(true);
+				label.setText(html);
+				label.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
+
+				if(isSelected)
+				{
+					label.setBackground(SystemColor.activeCaption);
+					label.setForeground(SystemColor.textHighlightText);
+				}
+				else
+				{
+					label.setBackground(SystemColor.window);
+					label.setForeground(SystemColor.textText);
+				}
+
+				return label;
+			}
+
+		});
 
 		JScrollPane scp = new JScrollPane(list);
 		scp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -143,10 +197,13 @@ public class Html extends SidebarHttpAbstract
 		resources.clear();
 
 		// parse html
-		this.parseLinks(html);
-		this.parseImages(html);
-		this.parseScripts(html);
-		this.parseObjects(html);
+		Document doc = Jsoup.parse(html);
+
+		this.parseLinks(doc);
+		this.parseImages(doc);
+		this.parseScripts(doc);
+		this.parseObjects(doc);
+		this.parseFrames(doc);
 
 		// call filter
 		SwingUtilities.invokeLater(new Runnable() {
@@ -159,122 +216,136 @@ public class Html extends SidebarHttpAbstract
 		});
 	}
 
-	private void parseLinks(String html)
+	private void parseLinks(Document doc)
 	{
-		// parse links
-		ArrayList<String> links = new ArrayList<String>();
-		links.add("-- LINKS --");
+		ArrayList<Resource> links = new ArrayList<Resource>();
+		Elements els = doc.getElementsByTag("a");
 
-		for(int i = 0; i < html.length(); i++)
+		links.add(new Resource(null, "-- LINKS --"));
+
+		for(Element a : els)
 		{
-			if(Parser.startsWith("<a", i, html))
+			String href = a.attr("href");
+			if(!href.isEmpty())
 			{
-				String tag = Parser.getTag(i, html);
-				String attr = Parser.getAttribute("href", tag);
-
-				if(attr != null && !attr.isEmpty())
-				{
-					links.add(attr);
-				}
+				links.add(new Resource(href, a.text()));
 			}
 		}
 
-		// add links to list
-		if(links.size() > 0)
+		if(links.size() > 1)
 		{
 			resources.addAll(links);
 		}
 	}
 
-	private void parseImages(String html)
+	private void parseImages(Document doc)
 	{
-		// parse links
-		ArrayList<String> images = new ArrayList<String>();
-		images.add("-- IMAGES --");
+		ArrayList<Resource> images = new ArrayList<Resource>();
+		Elements els = doc.getElementsByTag("img");
 
-		for(int i = 0; i < html.length(); i++)
+		images.add(new Resource(null, "-- IMAGES --"));
+
+		for(Element img : els)
 		{
-			if(Parser.startsWith("<img", i, html))
+			String src = img.attr("src");
+			if(!src.isEmpty())
 			{
-				String tag = Parser.getTag(i, html);
-				String attr = Parser.getAttribute("src", tag);
-
-				if(attr != null && !attr.isEmpty())
-				{
-					images.add(attr);
-				}
+				images.add(new Resource(src, img.attr("alt")));
 			}
 		}
 
-		// add links to list
-		if(images.size() > 0)
+		if(images.size() > 1)
 		{
 			resources.addAll(images);
 		}
 	}
 
-	private void parseScripts(String html)
+	private void parseScripts(Document doc)
 	{
-		// parse links
-		ArrayList<String> scripts = new ArrayList<String>();
-		scripts.add("-- SCRIPTS --");
+		ArrayList<Resource> scripts = new ArrayList<Resource>();
+		Elements els = doc.getElementsByTag("script");
 
-		for(int i = 0; i < html.length(); i++)
+		scripts.add(new Resource(null, "-- SCRIPTS --"));
+
+		for(Element script : els)
 		{
-			if(Parser.startsWith("<script", i, html))
-			{
-				String tag = Parser.getTag(i, html);
-				String attr = Parser.getAttribute("src", tag);
+			String src = script.attr("src");
 
-				if(attr != null && !attr.isEmpty())
-				{
-					scripts.add(attr);
-				}
+			if(!src.isEmpty())
+			{
+				scripts.add(new Resource(src));
 			}
 		}
 
-		// add links to list
-		if(scripts.size() > 0)
+		if(scripts.size() > 1)
 		{
 			resources.addAll(scripts);
 		}
 	}
 
-	private void parseObjects(String html)
+	private void parseObjects(Document doc)
 	{
-		// parse links
-		ArrayList<String> objects = new ArrayList<String>();
-		objects.add("-- OBJECTS --");
+		ArrayList<Resource> objects = new ArrayList<Resource>();
+		Elements els = doc.getElementsByTag("object");
 
-		for(int i = 0; i < html.length(); i++)
+		objects.add(new Resource(null, "-- OBJECTS --"));
+
+		for(Element object : els)
 		{
-			if(Parser.startsWith("<object", i, html))
+			String data = object.attr("data");
+			if(!data.isEmpty())
 			{
-				String tag = Parser.getTag(i, html);
-				String attr = Parser.getAttribute("data", tag);
-
-				if(attr != null && !attr.isEmpty())
-				{
-					objects.add(attr);
-				}
-			}
-
-			if(Parser.startsWith("<embed", i, html))
-			{
-				String tag = Parser.getTag(i, html);
-				String attr = Parser.getAttribute("src", tag);
-
-				if(attr != null && !attr.isEmpty())
-				{
-					objects.add(attr);
-				}
+				objects.add(new Resource(data));
 			}
 		}
 
-		// add links to list
-		if(objects.size() > 0)
+		els = doc.getElementsByTag("embed");
+
+		for(Element embed : els)
+		{
+			String src = embed.attr("src");
+			if(!src.isEmpty())
+			{
+				objects.add(new Resource(src));
+			}
+		}
+
+		if(objects.size() > 1)
 		{
 			resources.addAll(objects);
+		}
+	}
+
+	private void parseFrames(Document doc)
+	{
+		ArrayList<Resource> frames = new ArrayList<Resource>();
+		Elements els = doc.getElementsByTag("frame");
+
+		frames.add(new Resource(null, "-- FRAMES --"));
+
+		for(Element frame : els)
+		{
+			String src = frame.attr("src");
+			if(!src.isEmpty())
+			{
+				frames.add(new Resource(src));
+			}
+		}
+
+		els = doc.getElementsByTag("iframe");
+
+		for(Element iframe : els)
+		{
+			String src = iframe.attr("src");
+			if(!src.isEmpty())
+			{
+				frames.add(new Resource(src));
+			}
+		}
+
+		if(frames.size() > 1)
+		{
+			resources.addAll(frames);
 		}
 	}
 
@@ -284,7 +355,9 @@ public class Html extends SidebarHttpAbstract
 		{
 			for(int i = 0; i < lm.size(); i++)
 			{
-				if(!lm.get(i).startsWith("--") && lm.get(i).indexOf(text) == -1)
+				if(!lm.get(i).isHeading() && (
+						lm.get(i).getUrl().toLowerCase().indexOf(text.toLowerCase()) == -1 && 
+								lm.get(i).getDescription().toLowerCase().indexOf(text.toLowerCase()) == -1))
 				{
 					lm.remove(i);
 				}
@@ -303,13 +376,13 @@ public class Html extends SidebarHttpAbstract
 
 	private void callSelectedLink(boolean newTab)
 	{
-		String selectedUrl = list.getSelectedValue();
+		Resource selectedResource = list.getSelectedValue();
 
-		if(selectedUrl != null && !selectedUrl.startsWith("--"))
+		if(selectedResource != null && !selectedResource.isHeading())
 		{
 			try
 			{
-				String url = Util.resolveHref(baseUrl, selectedUrl);
+				String url = Util.resolveHref(baseUrl, selectedResource.getUrl());
 
 				if(newTab)
 				{
@@ -369,6 +442,38 @@ public class Html extends SidebarHttpAbstract
 
 		public void keyPressed(KeyEvent e) 
 		{
+		}
+	}
+	
+	class Resource
+	{
+		private String url;
+		private String description;
+		
+		public Resource(String url, String description)
+		{
+			this.url = url;
+			this.description = description;
+		}
+
+		public Resource(String url)
+		{
+			this(url, "");
+		}
+
+		public String getUrl()
+		{
+			return url;
+		}
+		
+		public String getDescription()
+		{
+			return description;
+		}
+		
+		public boolean isHeading()
+		{
+			return url == null;
 		}
 	}
 }

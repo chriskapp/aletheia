@@ -201,7 +201,7 @@ public class MenuBar extends JMenuBar
 		
 		// json
 		JMenuItem itemJson = new JMenuItem("JSON");
-		itemJson.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, ActionEvent.CTRL_MASK));
+		//itemJson.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, ActionEvent.CTRL_MASK));
 		itemJson.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) 

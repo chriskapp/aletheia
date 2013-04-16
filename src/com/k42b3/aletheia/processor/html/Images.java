@@ -62,9 +62,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.k42b3.aletheia.Aletheia;
-import com.k42b3.aletheia.Parser;
 import com.k42b3.aletheia.processor.ProcessorFactory;
 import com.k42b3.aletheia.processor.ProcessorInterface;
 import com.k42b3.aletheia.protocol.Response;
@@ -201,13 +204,15 @@ public class Images extends JFrame implements ProcessorInterface
 
 	private void parseImages(String html)
 	{
-		for(int i = 0; i < html.length(); i++)
-		{
-			if(Parser.startsWith("<img", i, html))
-			{
-				String inputTag = Parser.getTag(i, html);
-				String src = Parser.getAttribute("src", inputTag);
+		Document doc = Jsoup.parse(html);
+		Elements image = doc.getElementsByTag("img");
 
+		for(Element img : image)
+		{
+			String src = img.attr("src");
+
+			if(!src.isEmpty())
+			{
 				try
 				{
 					URL url = new URL(Util.resolveHref(baseUrl, src));

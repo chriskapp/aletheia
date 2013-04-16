@@ -1,5 +1,7 @@
 
 0.1.4
+[x] improved html and atom sidebar
+[x] use jsoup library for html parsing
 [ ] add support for websockets and spdy
 
 0.1.3

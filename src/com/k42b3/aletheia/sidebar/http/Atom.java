@@ -24,8 +24,10 @@ package com.k42b3.aletheia.sidebar.http;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.SystemColor;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -33,11 +35,14 @@ import java.awt.event.MouseListener;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -51,6 +56,7 @@ import org.xml.sax.InputSource;
 
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.TextFieldUrl;
+import com.k42b3.aletheia.sidebar.http.Html.Resource;
 
 /**
  * Atom
@@ -122,6 +128,39 @@ public class Atom extends SidebarHttpAbstract
 		list.addKeyListener(new LinkKeyListener());
 		list.addMouseListener(new LinkMouseListener());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.setCellRenderer(new ListCellRenderer<Entry>() {
+
+			public Component getListCellRendererComponent(JList<? extends Entry> list, Entry value, int index, boolean isSelected, boolean cellHasFocus)
+			{
+				String html = "<html>";
+				if(!value.getTitle().isEmpty())
+				{
+					html+= "&nbsp;<font color=gray size=-1>" + value.getTitle() + "</font><br />";
+				}
+				html+= "&nbsp;" + value.getUrl();
+				html+= "</html>";
+
+				JLabel label = new JLabel();
+				label.setFont(new Font("Monospaced", Font.PLAIN, 12));
+				label.setOpaque(true);
+				label.setText(html);
+				label.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
+
+				if(isSelected)
+				{
+					label.setBackground(SystemColor.activeCaption);
+					label.setForeground(SystemColor.textHighlightText);
+				}
+				else
+				{
+					label.setBackground(SystemColor.window);
+					label.setForeground(SystemColor.textText);
+				}
+
+				return label;
+			}
+
+		});
 
 		JScrollPane scp = new JScrollPane(list);
 		scp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -189,7 +228,7 @@ public class Atom extends SidebarHttpAbstract
 		{
 			for(int i = 0; i < lm.size(); i++)
 			{
-				if(lm.get(i).getTitle().indexOf(text) == -1)
+				if(lm.get(i).getTitle().toLowerCase().indexOf(text.toLowerCase()) == -1)
 				{
 					lm.remove(i);
 				}

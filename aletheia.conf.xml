@@ -4,7 +4,7 @@
 		<in>
 			<filter name="com.k42b3.aletheia.filter.request.Cookie" />
 			<filter name="com.k42b3.aletheia.filter.request.UserAgent">
-				<property name="agent">Lynx 2.8.7</property>
+				<property name="agent">Aletheia 0.1.4 beta</property>
 			</filter>
 		</in>
 		<out>

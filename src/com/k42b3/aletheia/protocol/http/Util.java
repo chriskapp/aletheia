@@ -25,10 +25,14 @@ package com.k42b3.aletheia.protocol.http;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 import org.apache.http.Header;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicHeader;
 
 /**
@@ -168,6 +172,10 @@ public class Util
 		{
 			return currentUrl.getProtocol() + ":" + href;
 		}
+		else if(href.startsWith("?"))
+		{
+			return currentUrl.getProtocol() + "://" + currentUrl.getHost() + currentUrl.getPath() + href;
+		}
 		else
 		{
 			// we have an path wich must be resolved to the base url
@@ -179,7 +187,19 @@ public class Util
 			}
 			else
 			{
-				completePath = currentUrl.getPath() + "/" + href;
+				int pos = currentUrl.getPath().lastIndexOf('/');
+				String path;
+
+				if(pos != -1)
+				{
+					path = currentUrl.getPath().substring(0, pos);
+				}
+				else
+				{
+					path = currentUrl.getPath();
+				}
+
+				completePath = path + "/" + href;
 			}
 
 			// remove dot segments from path

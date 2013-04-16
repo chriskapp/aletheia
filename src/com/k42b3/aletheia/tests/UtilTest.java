@@ -21,5 +21,8 @@ public class UtilTest extends TestCase
 		assertEquals("http://www.foobar.com/foo/bar/foo.php", Util.resolveHref("http://www.foobar.com/foo/bar/", "./foo.php"));
 		assertEquals("http://www.foobar.com/foo/bar/foo.php", Util.resolveHref("http://www.foobar.com/foo/bar/foo.php", "./foo.php"));
 		assertEquals("http://www.foobar.com/foo/foo.php", Util.resolveHref("http://www.foobar.com/foo/bar/", "../foo.php"));
+		assertEquals("http://www.foobar.com/foo/foo.php", Util.resolveHref("http://www.foobar.com/foo/bar.php", "foo.php"));
+		assertEquals("http://www.foobar.com/foo/bar.php?foo=bar", Util.resolveHref("http://www.foobar.com/foo/bar.php", "?foo=bar"));
+		assertEquals("http://www.foobar.com/foo/bar.php?foo=bar", Util.resolveHref("http://www.foobar.com/foo/bar.php?bar=foo", "?foo=bar"));
 	}
 }
