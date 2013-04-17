@@ -1,8 +1,18 @@
 
 0.1.4
+[ ] add webdav, soap, xmlrpc, opensocial, cmis, oauth2 sample requests
+[ ] add flow system for demonstration how a specific system works. In abstract a 
+	flow are multiple http calls where each call can modify the next call or ask 
+	for user input. In this way we could implement every system. It should be 
+	possible to adjust the speed how fast the calls are made
+    [ ] add oauth 1.0 flow
+    [ ] add oauth 2.0 flow
+    [ ] add openid 2.0 flow
+    [ ] add pingback flow
+    [ ] add oembed flow
+[ ] add support for websockets and spdy
 [x] improved html and atom sidebar
 [x] use jsoup library for html parsing
-[ ] add support for websockets and spdy
 
 0.1.3
 [x] added syntaxhighliting
