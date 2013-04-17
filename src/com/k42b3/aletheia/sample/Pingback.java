@@ -22,25 +22,23 @@
 
 package com.k42b3.aletheia.sample;
 
-import java.math.BigInteger;
 import java.net.URL;
-import java.security.SecureRandom;
 import java.util.Properties;
 
 import com.k42b3.aletheia.protocol.Request;
 
 /**
- * Upload
+ * Form
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class Upload implements SampleInterface
+public class Pingback implements SampleInterface
 {
 	public String getName()
 	{
-		return "Upload";
+		return "Pingback";
 	}
 
 	public void process(URL url, Request request, Properties properties) throws Exception
@@ -49,25 +47,35 @@ public class Upload implements SampleInterface
 		{
 			com.k42b3.aletheia.protocol.http.Request httpRequest = (com.k42b3.aletheia.protocol.http.Request) request;
 
-			SecureRandom random = new SecureRandom();
-			String boundary = "----" + new BigInteger(160, random).toString(32);
-			String body = "";
-			body+= "--" + boundary + "\n";
-			body+= "Content-Disposition: form-data; name=\"userfile\"; filename=\"foo.txt\"" + "\n";
-			body+= "Content-Type: text/plain" + "\n";
-			body+= "\n";
-			body+= "foobar\n";
-			body+= "--" + boundary + "--" + "\n";
+			String body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+			body+= "<methodCall>\n";
+			body+= "	<methodName>pingback.ping</methodName>\n";
+			body+= "	<params>\n";
+			body+= "		<param>\n";
+			body+= "			<value>\n";
+			body+= "				<string>" + properties.getProperty("source_uri") + "</string>\n";
+			body+= "			</value>\n";
+			body+= "		</param>\n";
+			body+= "		<param>\n";
+			body+= "			<value>\n";
+			body+= "				<string>" + properties.getProperty("target_uri") + "</string>\n";
+			body+= "			</value>\n";
+			body+= "		</param>\n";
+			body+= "	</params>\n";
+			body+= "</methodCall>\n";
 
 			httpRequest.setLine("POST", url.getPath());
-			httpRequest.setHeader("Host", url.getHost());
-			httpRequest.setHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+			httpRequest.setHeader("Content-Type", "text/xml");
 			httpRequest.setBody(body);
 		}
 	}
 
 	public Properties getProperties()
 	{
-		return null;
+		Properties props = new Properties();
+		props.setProperty("source_uri", "");
+		props.setProperty("target_uri", "");
+
+		return props;
 	}
 }

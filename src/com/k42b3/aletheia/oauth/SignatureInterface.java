@@ -4,7 +4,7 @@
  * debugging and finding security issues in web applications. For the current 
  * version and more informations visit <http://code.google.com/p/aletheia>
  * 
- * Copyright (c) 2010-2013 Christoph Kappestein <k42b3.x@gmail.com>
+ * Copyright (c) 2010-2012 Christoph Kappestein <k42b3.x@gmail.com>
  * 
  * This file is part of Aletheia. Aletheia is free software: you can 
  * redistribute it and/or modify it under the terms of the GNU 
@@ -20,42 +20,16 @@
  * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.k42b3.aletheia.sample;
-
-import java.net.URL;
-import java.util.Properties;
-
-import com.k42b3.aletheia.protocol.Request;
+package com.k42b3.aletheia.oauth;
 
 /**
- * Form
+ * SignatureInterface
  *
  * @author     Christoph Kappestein <k42b3.x@gmail.com>
  * @license    http://www.gnu.org/licenses/gpl.html GPLv3
  * @link       http://aletheia.k42b3.com
  */
-public class Form implements SampleInterface
+public interface SignatureInterface 
 {
-	public String getName()
-	{
-		return "Form";
-	}
-
-	public void process(URL url, Request request, Properties properties) throws Exception
-	{
-		if(request instanceof com.k42b3.aletheia.protocol.http.Request)
-		{
-			com.k42b3.aletheia.protocol.http.Request httpRequest = (com.k42b3.aletheia.protocol.http.Request) request;
-
-			httpRequest.setLine("POST", url.getPath());
-			httpRequest.setHeader("Host", url.getHost());
-			httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
-			httpRequest.setBody("foo=bar");
-		}
-	}
-
-	public Properties getProperties()
-	{
-		return null;
-	}
+	public String build(String baseString, String consumerSecret, String tokenSecret);
 }

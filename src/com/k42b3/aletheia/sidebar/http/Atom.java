@@ -56,7 +56,6 @@ import org.xml.sax.InputSource;
 
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.TextFieldUrl;
-import com.k42b3.aletheia.sidebar.http.Html.Resource;
 
 /**
  * Atom

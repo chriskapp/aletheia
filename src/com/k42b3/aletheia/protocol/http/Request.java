@@ -72,14 +72,29 @@ public class Request extends com.k42b3.aletheia.protocol.Request
 		return this.host;
 	}
 
+	public void setHost(String host)
+	{
+		this.host = host;
+	}
+
 	public String getMethod()
 	{
 		return this.method;
 	}
 
+	public void setMethod(String method)
+	{
+		this.method = method;
+	}
+
 	public String getPath()
 	{
 		return this.path;
+	}
+
+	public void setPath(String path)
+	{
+		this.path = path;
 	}
 
 	/**
@@ -120,6 +135,11 @@ public class Request extends com.k42b3.aletheia.protocol.Request
 		return params;
 	}
 
+	public String getLine()
+	{
+		return this.line;
+	}
+
 	public void setLine(String line)
 	{
 		this.line = line;
@@ -128,11 +148,6 @@ public class Request extends com.k42b3.aletheia.protocol.Request
 	public void setLine(String method, String path)
 	{
 		this.setLine(method + " " + path + " " + HttpProtocol.type);
-	}
-
-	public String getLine()
-	{
-		return this.line;
 	}
 
 	public void setHeaders(LinkedList<Header> headers)
@@ -190,14 +205,14 @@ public class Request extends com.k42b3.aletheia.protocol.Request
 		return this.getHeader(key) != null;
 	}
 
-	public void setBody(String body)
-	{
-		this.body = body;
-	}
-
 	public String getBody()
 	{
 		return this.body;
+	}
+
+	public void setBody(String body)
+	{
+		this.body = body;
 	}
 
 	private void parseUrl(URL url)

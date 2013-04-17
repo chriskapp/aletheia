@@ -96,11 +96,6 @@ public class Html extends SidebarHttpAbstract
 					if(!list.hasFocus())
 					{
 						list.requestFocus();
-						
-						if(lm.getSize() > 0)
-						{
-							list.setSelectedIndex(0);
-						}
 					}
 				}
 				else

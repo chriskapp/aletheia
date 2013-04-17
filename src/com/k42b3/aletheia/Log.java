@@ -23,7 +23,9 @@
 package com.k42b3.aletheia;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.LogRecord;
@@ -57,11 +59,14 @@ public class Log extends JFrame
 		this.setMinimumSize(this.getSize());
 		this.setResizable(false);
 		this.setLayout(new BorderLayout());
-
+		this.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
 		// tab panel
 		txtLog = new JTextPane();
 		txtLog.setEditable(false);
+		txtLog.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		txtLog.setBackground(new Color(255, 255, 255));
+		txtLog.setForeground(new Color(0, 0, 0));
 
 		this.add(new JScrollPane(txtLog), BorderLayout.CENTER);
 

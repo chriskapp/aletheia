@@ -174,21 +174,23 @@ public class Images extends JFrame implements ProcessorInterface
 		}
 
 		// set visible
+		this.pack();
 		this.setVisible(true);
 	}
 
 	private void close()
 	{
+		this.dispose();
 		this.setVisible(false);
 	}
 
 	private void reset()
 	{
-		this.model.clear();
-		this.images.clear();
-
 		this.imagesLoaded = 0;
 		this.imageCache.clear();
+		this.images.clear();
+
+		this.model.clear();
 	}
 
 	private void buildElements()

@@ -22,6 +22,11 @@
 
 package com.k42b3.aletheia.sample;
 
+import java.net.URL;
+import java.util.Properties;
+
+import com.k42b3.aletheia.protocol.Request;
+
 /**
  * SampleInterface
  *
@@ -31,6 +36,21 @@ package com.k42b3.aletheia.sample;
  */
 public interface SampleInterface 
 {
+	/**
+	 * The name of the sample
+	 * 
+	 * @return String
+	 */
 	public String getName();
-	public void process() throws Exception;
+
+	public void process(URL url, Request request, Properties properties) throws Exception;
+
+	/**
+	 * Returns the properties wich the user has to provide in order to run the
+	 * sample. A dialog box gets displayed where the user has to enter the 
+	 * properties
+	 * 
+	 * @return Properties
+	 */
+	public Properties getProperties();
 }

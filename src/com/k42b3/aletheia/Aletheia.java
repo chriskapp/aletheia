@@ -91,6 +91,9 @@ import com.k42b3.aletheia.protocol.ProtocolInterface;
 import com.k42b3.aletheia.protocol.Request;
 import com.k42b3.aletheia.protocol.Response;
 import com.k42b3.aletheia.sample.SampleFactory;
+import com.k42b3.aletheia.sample.SampleInterface;
+import com.k42b3.aletheia.sample.SampleProperties;
+import com.k42b3.aletheia.sample.SamplePropertiesCallback;
 
 /**
  * Aletheia
@@ -101,7 +104,7 @@ import com.k42b3.aletheia.sample.SampleFactory;
  */
 public class Aletheia extends JFrame
 {
-	public static final String VERSION = "0.1.3 beta";
+	public static final String VERSION = "0.1.4 beta";
 
 	public static Aletheia instance;
 
@@ -116,6 +119,8 @@ public class Aletheia extends JFrame
 
 	private Log logWin;
 	private Logger logger = Logger.getLogger("com.k42b3.aletheia");
+
+	private SampleInterface sample;
 
 	private Aletheia()
 	{
@@ -642,18 +647,75 @@ public class Aletheia extends JFrame
 	{
 		try
 		{
-			if(getActiveIn().hasRequest())
-			{
-				SampleFactory.factory(name).process();
-			}
-			else
-			{
-				JOptionPane.showMessageDialog(this, "Please make a request in order to call a sample", "Information", JOptionPane.INFORMATION_MESSAGE);
-			}
+			sample = SampleFactory.factory(name);
 		}
 		catch(Exception e)
 		{
-			Aletheia.handleException(e);
+			JOptionPane.showMessageDialog(this, "Invalid sample", "Information", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
+		if(getActiveIn().hasRequest())
+		{
+			// check for properties
+			Properties properties = sample.getProperties();
+			if(properties != null && properties.size() > 0)
+			{
+				SampleProperties win = new SampleProperties(properties, new SamplePropertiesCallback() {
+
+					public void onSubmit(Properties properties)
+					{
+						try
+						{
+							// execute sample
+							URL url = new URL(getActiveUrl().getText());
+							Request request = getActiveIn().getRequest();
+
+							sample.process(url, request, properties);
+
+							getActiveIn().update();
+						}
+						catch(Exception e)
+						{
+							Aletheia.handleException(e);
+						}
+
+						sample = null;
+					}
+
+					public void onCancel()
+					{
+						sample = null;
+					}
+
+				});
+
+				win.pack();
+				win.setVisible(true);
+			}
+			else
+			{
+				try
+				{
+					// execute sample
+					URL url = new URL(getActiveUrl().getText());
+					Request request = getActiveIn().getRequest();
+
+					sample.process(url, request, properties);
+
+					getActiveIn().update();
+				}
+				catch(Exception e)
+				{
+					Aletheia.handleException(e);
+				}
+
+				sample = null;
+			}
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(this, "Please make a request in order to call a sample", "Information", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -847,19 +909,29 @@ public class Aletheia extends JFrame
 				callProcessor("cookies");
 			}
 
+			public void onSampleBasicAuth()
+			{
+				callSample("basicAuth");
+			}
+
 			public void onSampleForm()
 			{
 				callSample("form");
 			}
 
+			public void onSampleOauthRequestToken()
+			{
+				callSample("oauthRequestToken");
+			}
+
+			public void onSamplePingback()
+			{
+				callSample("pingback");
+			}
+
 			public void onSampleUpload()
 			{
 				callSample("upload");
-			}
-
-			public void onSampleWsHandshake()
-			{
-				callSample("wshandshake");
 			}
 
 			public void onHelpLog()

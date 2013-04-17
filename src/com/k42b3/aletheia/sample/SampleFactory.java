@@ -42,9 +42,21 @@ public class SampleFactory
 			return samples.get(name);
 		}
 
-		if(name.equals("form"))
+		if(name.equals("basicAuth"))
+		{
+			samples.put(name, new BasicAuth());
+		}
+		else if(name.equals("form"))
 		{
 			samples.put(name, new Form());
+		}
+		else if(name.equals("oauthRequestToken"))
+		{
+			samples.put(name, new OauthRequestToken());
+		}
+		else if(name.equals("pingback"))
+		{
+			samples.put(name, new Pingback());
 		}
 		else if(name.equals("upload"))
 		{

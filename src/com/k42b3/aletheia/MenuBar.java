@@ -245,6 +245,17 @@ public class MenuBar extends JMenuBar
 	{
 		JMenu menu = new JMenu("Sample");
 
+		JMenuItem itemBasicAuth = new JMenuItem("Basic Auth");
+		itemBasicAuth.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onSampleBasicAuth();
+			}
+
+		});
+		menu.add(itemBasicAuth);
+
 		JMenuItem itemForm = new JMenuItem("Form");
 		itemForm.addActionListener(new ActionListener() {
 
@@ -256,7 +267,29 @@ public class MenuBar extends JMenuBar
 		});
 		menu.add(itemForm);
 
-		JMenuItem itemUpload = new JMenuItem("File Upload");
+		JMenuItem itemOauthRequestToken = new JMenuItem("Oauth Request Token");
+		itemOauthRequestToken.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onSampleOauthRequestToken();
+			}
+
+		});
+		menu.add(itemOauthRequestToken);
+
+		JMenuItem itemPingback = new JMenuItem("Pingback");
+		itemPingback.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onSamplePingback();
+			}
+
+		});
+		menu.add(itemPingback);
+
+		JMenuItem itemUpload = new JMenuItem("Upload");
 		itemUpload.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) 
@@ -314,9 +347,11 @@ public class MenuBar extends JMenuBar
 		public void onProcessorFormatJson();
 		public void onProcessorCertificates();
 		public void onProcessorCookies();
+		public void onSampleBasicAuth();
 		public void onSampleForm();
+		public void onSampleOauthRequestToken();
+		public void onSamplePingback();
 		public void onSampleUpload();
-		public void onSampleWsHandshake();
 		public void onHelpLog();
 		public void onHelpAbout();
 	}

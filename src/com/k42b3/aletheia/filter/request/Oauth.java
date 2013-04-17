@@ -22,21 +22,10 @@
 
 package com.k42b3.aletheia.filter.request;
 
-import java.net.URL;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Random;
-
-import org.apache.commons.codec.digest.DigestUtils;
 
 import com.k42b3.aletheia.filter.RequestFilterAbstract;
-import com.k42b3.aletheia.filter.request.oauth.SignatureInterface;
-import com.k42b3.aletheia.filter.request.oauth.Util;
+import com.k42b3.aletheia.oauth.SignatureInterface;
 import com.k42b3.aletheia.protocol.Request;
 
 /**
@@ -53,7 +42,7 @@ public class Oauth extends RequestFilterAbstract
 		if(request instanceof com.k42b3.aletheia.protocol.http.Request)
 		{
 			com.k42b3.aletheia.protocol.http.Request httpRequest = (com.k42b3.aletheia.protocol.http.Request) request;
-			
+
 			// get config
 			String consumerKey = getConfig().getProperty("consumer_key");
 			String consumerSecret = getConfig().getProperty("consumer_secret");
@@ -67,22 +56,18 @@ public class Oauth extends RequestFilterAbstract
 			values.put("oauth_consumer_key", consumerKey);
 			values.put("oauth_token", token);
 			values.put("oauth_signature_method", method);
-			values.put("oauth_timestamp", this.getTimestamp());
-			values.put("oauth_nonce", this.getNonce());
-			values.put("oauth_version", this.getVersion());
+			values.put("oauth_timestamp", com.k42b3.aletheia.oauth.Oauth.getTimestamp());
+			values.put("oauth_nonce", com.k42b3.aletheia.oauth.Oauth.getNonce());
+			values.put("oauth_version", com.k42b3.aletheia.oauth.Oauth.getVersion());
 
 			// add get vars to values
 			values.putAll(httpRequest.getParams());
 
 			// build base string
-			String baseString = this.buildBaseString(httpRequest.getMethod(), request.getUrl().toString(), values);
+			String baseString = com.k42b3.aletheia.oauth.Oauth.buildBaseString(httpRequest.getMethod(), request.getUrl().toString(), values);
 
 			// get signature
-			SignatureInterface sig;
-			String cls = "com.k42b3.aletheia.filter.request.oauth." + this.resolveMethod(method);
-			Class c = Class.forName(cls);
-
-			sig = (SignatureInterface) c.newInstance();
+			SignatureInterface sig = com.k42b3.aletheia.oauth.Oauth.getSignature(method);
 
 			// build signature
 			values.put("oauth_signature", sig.build(baseString, consumerSecret, tokenSecret));
@@ -90,164 +75,10 @@ public class Oauth extends RequestFilterAbstract
 			// add header to request
 			if(!httpRequest.hasHeader("Authorization"))
 			{
-				httpRequest.setHeader("Authorization", "OAuth realm=\"Aletheia\", " + this.buildAuthString(values));
+				httpRequest.setHeader("Authorization", "OAuth realm=\"Aletheia\", " + com.k42b3.aletheia.oauth.Oauth.buildAuthString(values));
 			}
 		}
 	}
 
-	protected String buildAuthString(HashMap<String, String> values)
-	{
-		StringBuilder authString = new StringBuilder();
 
-		Iterator<Entry<String, String>> it = values.entrySet().iterator();
-
-		while(it.hasNext())
-		{
-			Entry<String, String> e = it.next();
-
-			authString.append(Util.urlEncode(e.getKey()) + "=\"" + Util.urlEncode(e.getValue()) + "\", ");
-		}
-
-		String str = authString.toString();
-
-
-		// remove ", " from string
-		str = str.substring(0, str.length() - 2);
-
-
-		return str;
-	}
-
-	protected String buildBaseString(String requestMethod, String url, HashMap<String, String> params)
-	{
-		StringBuilder base = new StringBuilder();
-
-		base.append(Util.urlEncode(this.getNormalizedMethod(requestMethod)));
-
-		base.append('&');
-
-		base.append(Util.urlEncode(this.getNormalizedUrl(url)));
-
-		base.append('&');
-
-		base.append(Util.urlEncode(this.getNormalizedParameters(params)));
-
-		return base.toString();
-	}
-	
-	protected String getNormalizedParameters(HashMap<String, String> params)
-	{
-		Iterator<Entry<String, String>> it = params.entrySet().iterator();
-
-		List<String> keys = new ArrayList<String>();
-
-		while(it.hasNext())
-		{
-			Entry<String, String> e = it.next();
-
-			keys.add(e.getKey());
-		}
-
-
-		// sort params
-		Collections.sort(keys);
-
-
-		// build normalized params
-		StringBuilder normalizedParams = new StringBuilder();
-
-		for(int i = 0; i < keys.size(); i++)
-		{
-			normalizedParams.append(Util.urlEncode(keys.get(i)) + "=" + Util.urlEncode(params.get(keys.get(i))) + "&");
-		}
-
-		String str = normalizedParams.toString();
-
-
-		// remove trailing &
-		str = str.substring(0, str.length() - 1);
-
-
-		return str;
-	}
-
-	protected String getNormalizedUrl(String rawUrl)
-	{
-		try
-		{
-			rawUrl = rawUrl.toLowerCase();
-
-			URL url = new URL(rawUrl);
-
-			int port = url.getPort();
-
-			if(port == -1 || port == 80 || port == 443)
-			{
-				return url.getProtocol() + "://" + url.getHost() + url.getPath();
-			}
-			else
-			{
-				return url.getProtocol() + "://" + url.getHost() + ":" + port + url.getPath();
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-
-			return null;
-		}
-	}
-
-	protected String getNormalizedMethod(String method)
-	{
-		return method.toUpperCase();
-	}
-
-	protected String getTimestamp()
-	{
-		return "" + (System.currentTimeMillis() / 1000);
-	}
-
-	protected String getNonce()
-	{
-		try
-		{
-			byte[] nonce = new byte[32];
-
-			Random rand;
-
-			rand = SecureRandom.getInstance("SHA1PRNG");
-
-			rand.nextBytes(nonce);
-
-
-			return DigestUtils.md5Hex(rand.toString());
-		}
-		catch(Exception e)
-		{
-			return DigestUtils.md5Hex("" + System.currentTimeMillis());
-		}
-	}
-
-	protected String getVersion()
-	{
-		return "1.0";
-	}
-
-	protected String resolveMethod(String method) throws Exception
-	{
-		HashMap<String, String> map = new HashMap<String, String>();
-		
-		map.put("PLAINTEXT", "PLAINTEXT");
-		map.put("HMAC-SHA1", "HMACSHA1");
-		
-		if(map.containsKey(method))
-		{
-			return map.get(method);
-		}
-		else
-		{
-			throw new Exception("Invalid signature method");
-		}
-	}
 }

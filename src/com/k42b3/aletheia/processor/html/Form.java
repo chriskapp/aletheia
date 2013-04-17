@@ -134,6 +134,11 @@ public class Form extends JFrame implements ProcessorInterface
 		}
 	}
 
+	private void close()
+	{
+		this.setVisible(false);
+	}
+
 	private void reset()
 	{
 		this.forms.clear();
@@ -312,7 +317,7 @@ public class Form extends JFrame implements ProcessorInterface
 			Elements selects = form.getElementsByTag("select");
 			for(Element select : selects)
 			{
-				Elements options = select.select("option:selected");
+				Elements options = select.select("option[selected]");
 				String value = "";
 				if(options.size() > 0)
 				{

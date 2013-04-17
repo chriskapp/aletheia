@@ -25,14 +25,13 @@ package com.k42b3.aletheia.protocol.http;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 
 import org.apache.http.Header;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicHeader;
 
 /**
@@ -100,6 +99,31 @@ public class Util
 		}
 
 		return headers;
+	}
+
+	public static String buildHttpQuery(Map<String, String> params)
+	{
+		String query = "";
+		Iterator<Entry<String, String>> it = params.entrySet().iterator();
+
+		while(it.hasNext())
+		{
+			Entry<String, String> entry = it.next();
+
+			query+= entry.getKey() + "=";
+
+			if(entry.getValue() != null)
+			{
+				query+= urlEncode(entry.getValue());
+			}
+
+			if(it.hasNext())
+			{
+				query+= "&";	
+			}
+		}
+
+		return query;
 	}
 
 	public static String buildMessage(String statusLine, LinkedList<Header> header, String body, String delimter)
