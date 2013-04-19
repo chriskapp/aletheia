@@ -24,6 +24,7 @@ package com.k42b3.aletheia.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -37,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.border.EmptyBorder;
 
 import com.k42b3.aletheia.Aletheia;
 
@@ -58,8 +60,7 @@ public class About extends JFrame
 		// settings
 		this.setTitle("About");
 		this.setLocation(100, 100);
-		this.setSize(360, 400);
-		this.setMinimumSize(this.getSize());
+		this.setPreferredSize(new Dimension(440, 380));
 		this.setResizable(false);
 		this.setLayout(new BorderLayout());
 		this.setFont(new Font("Monospaced", Font.PLAIN, 12));
@@ -72,9 +73,10 @@ public class About extends JFrame
 		out.append("Website: http://aletheia.k42b3.com" + "\n");
 		out.append("License: GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>" + "\n");
 		out.append("\n");
-		out.append("A browser like application to send raw http requests. It is designed for" + "\n");
-		out.append("debugging and finding security issues in web applications. For the current" + "\n");
-		out.append("version and more informations visit <http://code.google.com/p/aletheia>." + "\n");
+		out.append("A browser like application to send raw http requests." + "\n");
+		out.append("It is designed for debugging and finding security issues" + "\n");
+		out.append("in web applications. For the current version and more" + "\n");
+		out.append("informations visit <http://code.google.com/p/aletheia>." + "\n");
 
 		txtAbout = new JTextArea();
 		txtAbout.setEditable(false);

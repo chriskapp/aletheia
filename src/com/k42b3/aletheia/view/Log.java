@@ -24,6 +24,7 @@ package com.k42b3.aletheia.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -56,8 +57,7 @@ public class Log extends JFrame
 		// settings
 		this.setTitle("Log");
 		this.setLocation(100, 100);
-		this.setSize(360, 400);
-		this.setMinimumSize(this.getSize());
+		this.setPreferredSize(new Dimension(360, 400));
 		this.setResizable(false);
 		this.setLayout(new BorderLayout());
 		this.setFont(new Font("Monospaced", Font.PLAIN, 12));
