@@ -25,12 +25,14 @@ package com.k42b3.aletheia;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
@@ -84,16 +86,21 @@ import com.k42b3.aletheia.filter.FilterIn;
 import com.k42b3.aletheia.filter.FilterOut;
 import com.k42b3.aletheia.filter.RequestFilterAbstract;
 import com.k42b3.aletheia.filter.ResponseFilterAbstract;
+import com.k42b3.aletheia.processor.DefaultProcessProperties;
+import com.k42b3.aletheia.processor.ProcessPropertiesAbstract;
+import com.k42b3.aletheia.processor.ProcessPropertiesCallback;
 import com.k42b3.aletheia.processor.ProcessorFactory;
+import com.k42b3.aletheia.processor.RequestProcessorInterface;
+import com.k42b3.aletheia.processor.ResponseProcessorInterface;
 import com.k42b3.aletheia.protocol.CallbackInterface;
 import com.k42b3.aletheia.protocol.ProtocolFactory;
 import com.k42b3.aletheia.protocol.ProtocolInterface;
 import com.k42b3.aletheia.protocol.Request;
 import com.k42b3.aletheia.protocol.Response;
-import com.k42b3.aletheia.sample.SampleFactory;
-import com.k42b3.aletheia.sample.SampleInterface;
-import com.k42b3.aletheia.sample.SampleProperties;
-import com.k42b3.aletheia.sample.SamplePropertiesCallback;
+import com.k42b3.aletheia.view.About;
+import com.k42b3.aletheia.view.Certificates;
+import com.k42b3.aletheia.view.Cookies;
+import com.k42b3.aletheia.view.Log;
 
 /**
  * Aletheia
@@ -108,6 +115,7 @@ public class Aletheia extends JFrame
 
 	public static Aletheia instance;
 
+	private Logger logger = Logger.getLogger("com.k42b3.aletheia");
 	private Config config;
 	private History history;
 	private JTabbedPane tp;
@@ -117,10 +125,13 @@ public class Aletheia extends JFrame
 
 	private ExecutorService executor = Executors.newFixedThreadPool(8);
 
+	private Certificates certificatesWin;
+	private Cookies cookiesWin;
 	private Log logWin;
-	private Logger logger = Logger.getLogger("com.k42b3.aletheia");
+	private About aboutWin;
 
-	private SampleInterface sample;
+	private RequestProcessorInterface requestProcessor;
+	private ResponseProcessorInterface responseProcessor;
 
 	private Aletheia()
 	{
@@ -622,46 +633,29 @@ public class Aletheia extends JFrame
 	}
 
 	/**
-	 * Calls an processor wich in some way interpret or modify the response
+	 * Calls an request processor
 	 * 
 	 * @param String name
 	 */
-	public void callProcessor(String name)
+	public void callRequestProcessor(String name)
 	{
 		try
 		{
-			ProcessorFactory.factory(name).process(getActiveOut().getResponse());
+			requestProcessor = ProcessorFactory.getRequest(name);
 		}
 		catch(Exception e)
 		{
-			Aletheia.handleException(e);
-		}
-	}
-
-	/**
-	 * Calls an sample wich gets inserted as request
-	 * 
-	 * @param String name
-	 */
-	public void callSample(String name)
-	{
-		try
-		{
-			sample = SampleFactory.factory(name);
-		}
-		catch(Exception e)
-		{
-			JOptionPane.showMessageDialog(this, "Invalid sample", "Information", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Invalid request processor", "Information", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
 
 		if(getActiveIn().hasRequest())
 		{
 			// check for properties
-			Properties properties = sample.getProperties();
-			if(properties != null && properties.size() > 0)
+			ProcessPropertiesAbstract win = requestProcessor.getProperties();
+			if(win != null)
 			{
-				SampleProperties win = new SampleProperties(properties, new SamplePropertiesCallback() {
+				win.setCallback(new ProcessPropertiesCallback() {
 
 					public void onSubmit(Properties properties)
 					{
@@ -671,7 +665,7 @@ public class Aletheia extends JFrame
 							URL url = new URL(getActiveUrl().getText());
 							Request request = getActiveIn().getRequest();
 
-							sample.process(url, request, properties);
+							requestProcessor.process(url, request, properties);
 
 							getActiveIn().update();
 						}
@@ -680,12 +674,12 @@ public class Aletheia extends JFrame
 							Aletheia.handleException(e);
 						}
 
-						sample = null;
+						requestProcessor = null;
 					}
 
 					public void onCancel()
 					{
-						sample = null;
+						requestProcessor = null;
 					}
 
 				});
@@ -701,7 +695,7 @@ public class Aletheia extends JFrame
 					URL url = new URL(getActiveUrl().getText());
 					Request request = getActiveIn().getRequest();
 
-					sample.process(url, request, properties);
+					requestProcessor.process(url, request, null);
 
 					getActiveIn().update();
 				}
@@ -710,30 +704,94 @@ public class Aletheia extends JFrame
 					Aletheia.handleException(e);
 				}
 
-				sample = null;
+				requestProcessor = null;
 			}
 		}
 		else
 		{
-			JOptionPane.showMessageDialog(this, "Please make a request in order to call a sample", "Information", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Please make a request in order to call a processor", "Information", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
-	public void log()
+	/**
+	 * Calls an response processor
+	 * 
+	 * @param String name
+	 */
+	public void callResponseProcessor(String name)
 	{
-		SwingUtilities.invokeLater(new Runnable() {
-			
-			public void run()
+		try
+		{
+			responseProcessor = ProcessorFactory.getResponse(name);
+		}
+		catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(this, "Invalid response processor", "Information", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
+		if(getActiveOut().hasResponse())
+		{
+			// check for properties
+			ProcessPropertiesAbstract win = responseProcessor.getProperties();
+			if(win != null)
 			{
-				if(!logWin.isVisible())
+				win.setCallback(new ProcessPropertiesCallback() {
+
+					public void onSubmit(Properties properties)
+					{
+						try
+						{
+							// execute sample
+							URL url = new URL(getActiveUrl().getText());
+							Response response = getActiveOut().getResponse();
+
+							responseProcessor.process(url, response, properties);
+
+							getActiveOut().update();
+						}
+						catch(Exception e)
+						{
+							Aletheia.handleException(e);
+						}
+
+						responseProcessor = null;
+					}
+
+					public void onCancel()
+					{
+						responseProcessor = null;
+					}
+
+				});
+
+				win.pack();
+				win.setVisible(true);
+			}
+			else
+			{
+				try
 				{
-					logWin.setVisible(true);
+					// execute sample
+					URL url = new URL(getActiveUrl().getText());
+					Response response = getActiveOut().getResponse();
+
+					responseProcessor.process(url, response, null);
+
+					getActiveOut().update();
+				}
+				catch(Exception e)
+				{
+					Aletheia.handleException(e);
 				}
 
-				logWin.requestFocus();
+				responseProcessor = null;
 			}
-
-		});
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(this, "Please make a request in order to call a processor", "Information", JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 
 	public void about()
@@ -879,69 +937,158 @@ public class Aletheia extends JFrame
 				getActiveUrl().setSelectionEnd(getActiveUrl().getText().length());
 			}
 
-			public void onProcessorHtmlForm()
+			public void onResponseHtmlForm()
 			{
-				callProcessor("html.form");
+				callResponseProcessor("html.Form");
 			}
 
-			public void onProcessorHtmlImages()
+			public void onResponseHtmlImages()
 			{
-				callProcessor("html.images");
+				callResponseProcessor("html.Images");
 			}
 
-			public void onProcessorFormatXml()
+			public void onResponseFormatHtml()
 			{
-				callProcessor("format.xml");
+				callResponseProcessor("format.Html");
 			}
 
-			public void onProcessorFormatJson()
+			public void onResponseFormatJson()
 			{
-				callProcessor("format.json");
+				callResponseProcessor("format.Json");
 			}
 
-			public void onProcessorCertificates()
+			public void onResponseFormatXml()
 			{
-				callProcessor("certificates");
+				callResponseProcessor("format.Xml");
 			}
 
-			public void onProcessorCookies()
+			public void onRequestBasicAuth()
 			{
-				callProcessor("cookies");
+				callRequestProcessor("BasicAuth");
 			}
 
-			public void onSampleBasicAuth()
+			public void onRequestForm()
 			{
-				callSample("basicAuth");
+				callRequestProcessor("Form");
 			}
 
-			public void onSampleForm()
+			public void onRequestOauthRequestToken()
 			{
-				callSample("form");
+				callRequestProcessor("OauthRequestToken");
 			}
 
-			public void onSampleOauthRequestToken()
+			public void onRequestPingback()
 			{
-				callSample("oauthRequestToken");
+				callRequestProcessor("Pingback");
 			}
 
-			public void onSamplePingback()
+			public void onRequestUpload()
 			{
-				callSample("pingback");
+				callRequestProcessor("Upload");
 			}
 
-			public void onSampleUpload()
+			public void onViewCertificates()
 			{
-				callSample("upload");
+				SwingUtilities.invokeLater(new Runnable() {
+
+					public void run()
+					{
+						if(certificatesWin == null)
+						{
+							certificatesWin = new Certificates();
+							certificatesWin.pack();
+						}
+
+						try
+						{
+							certificatesWin.load(new URL(getActiveUrl().getText()));
+
+							if(!certificatesWin.isVisible())
+							{
+								certificatesWin.setVisible(true);
+							}
+
+							certificatesWin.requestFocus();
+						}
+						catch(Exception e)
+						{
+							Aletheia.handleException(e);
+						}
+					}
+
+				});
 			}
 
-			public void onHelpLog()
+			public void onViewCookies()
 			{
-				log();
+				SwingUtilities.invokeLater(new Runnable() {
+
+					public void run()
+					{
+						if(cookiesWin == null)
+						{
+							cookiesWin = new Cookies();
+							cookiesWin.pack();
+						}
+
+						try
+						{
+							cookiesWin.load(new URL(getActiveUrl().getText()));
+
+							if(!cookiesWin.isVisible())
+							{
+								cookiesWin.setVisible(true);
+							}
+
+							cookiesWin.requestFocus();
+						}
+						catch(Exception e)
+						{
+							Aletheia.handleException(e);
+						}
+					}
+
+				});
 			}
 
-			public void onHelpAbout()
+			public void onViewLog()
 			{
-				about();
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					public void run()
+					{
+						if(!logWin.isVisible())
+						{
+							logWin.setVisible(true);
+						}
+
+						logWin.requestFocus();
+					}
+
+				});
+			}
+
+			public void onViewAbout()
+			{
+				SwingUtilities.invokeLater(new Runnable() {
+
+					public void run()
+					{
+						if(aboutWin == null)
+						{
+							aboutWin = new About();
+							aboutWin.pack();
+						}
+
+						if(!aboutWin.isVisible())
+						{
+							aboutWin.setVisible(true);
+						}
+
+						aboutWin.requestFocus();
+					}
+
+				});
 			}
 
 		});

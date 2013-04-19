@@ -96,7 +96,6 @@ public class Atom extends SidebarHttpAbstract
 					if(!list.hasFocus())
 					{
 						list.requestFocus();
-						list.setSelectedIndex(0);
 					}
 				}
 				else

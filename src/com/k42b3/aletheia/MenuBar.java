@@ -47,9 +47,9 @@ public class MenuBar extends JMenuBar
 		super();
 
 		buildUrl();
-		buildProcessor();
-		buildSample();
-		buildHelp();
+		buildRequest();
+		buildResponse();
+		buildView();
 	}
 
 	public void setActionListener(MenuBarActionListener listener)
@@ -148,9 +148,71 @@ public class MenuBar extends JMenuBar
 		this.add(menu);
 	}
 	
-	protected void buildProcessor()
+	protected void buildRequest()
 	{
-		JMenu menu = new JMenu("Processor");
+		JMenu menu = new JMenu("Request");
+
+		JMenuItem itemBasicAuth = new JMenuItem("Basic Auth");
+		itemBasicAuth.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onRequestBasicAuth();
+			}
+
+		});
+		menu.add(itemBasicAuth);
+
+		JMenuItem itemForm = new JMenuItem("Form");
+		itemForm.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onRequestForm();
+			}
+
+		});
+		menu.add(itemForm);
+
+		JMenuItem itemOauthRequestToken = new JMenuItem("Oauth Request Token");
+		itemOauthRequestToken.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onRequestOauthRequestToken();
+			}
+
+		});
+		menu.add(itemOauthRequestToken);
+
+		JMenuItem itemPingback = new JMenuItem("Pingback");
+		itemPingback.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onRequestPingback();
+			}
+
+		});
+		menu.add(itemPingback);
+
+		JMenuItem itemUpload = new JMenuItem("Upload");
+		itemUpload.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onRequestUpload();
+			}
+
+		});
+		menu.add(itemUpload);
+
+		this.add(menu);
+	}
+
+	protected void buildResponse()
+	{
+		JMenu menu = new JMenu("Response");
 
 		// html
 		JMenu menuHtml = new JMenu("Html");
@@ -162,7 +224,7 @@ public class MenuBar extends JMenuBar
 
 			public void actionPerformed(ActionEvent e) 
 			{
-				listener.onProcessorHtmlForm();
+				listener.onResponseHtmlForm();
 			}
 
 		});
@@ -175,7 +237,7 @@ public class MenuBar extends JMenuBar
 
 			public void actionPerformed(ActionEvent e) 
 			{
-				listener.onProcessorHtmlImages();
+				listener.onResponseHtmlImages();
 			}
 
 		});
@@ -186,18 +248,18 @@ public class MenuBar extends JMenuBar
 		// format
 		JMenu menuFormat = new JMenu("Format");
 
-		// xml
-		JMenuItem itemXml = new JMenuItem("XML");
-		//itemXml.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-		itemXml.addActionListener(new ActionListener() {
+		// html
+		JMenuItem itemHtml = new JMenuItem("HTML");
+		//itemJson.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+		itemHtml.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) 
 			{
-				listener.onProcessorFormatXml();
+				listener.onResponseFormatHtml();
 			}
 
 		});
-		menuFormat.add(itemXml);
+		menuFormat.add(itemHtml);
 		
 		// json
 		JMenuItem itemJson = new JMenuItem("JSON");
@@ -206,13 +268,33 @@ public class MenuBar extends JMenuBar
 
 			public void actionPerformed(ActionEvent e) 
 			{
-				listener.onProcessorFormatJson();
+				listener.onResponseFormatJson();
 			}
 
 		});
 		menuFormat.add(itemJson);
 
+		// xml
+		JMenuItem itemXml = new JMenuItem("XML");
+		//itemXml.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+		itemXml.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onResponseFormatXml();
+			}
+
+		});
+		menuFormat.add(itemXml);
+
 		menu.add(menuFormat);
+
+		this.add(menu);
+	}
+
+	protected void buildView()
+	{
+		JMenu menu = new JMenu("View");
 
 		// certificates
 		JMenuItem itemCerts = new JMenuItem("Certificates");
@@ -220,7 +302,7 @@ public class MenuBar extends JMenuBar
 
 			public void actionPerformed(ActionEvent e) 
 			{
-				listener.onProcessorCertificates();
+				listener.onViewCertificates();
 			}
 
 		});
@@ -232,98 +314,31 @@ public class MenuBar extends JMenuBar
 
 			public void actionPerformed(ActionEvent e) 
 			{
-				listener.onProcessorCookies();
+				listener.onViewCookies();
 			}
 
 		});
 		menu.add(itemCookies);
 
-		this.add(menu);
-	}
-	
-	protected void buildSample()
-	{
-		JMenu menu = new JMenu("Sample");
-
-		JMenuItem itemBasicAuth = new JMenuItem("Basic Auth");
-		itemBasicAuth.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onSampleBasicAuth();
-			}
-
-		});
-		menu.add(itemBasicAuth);
-
-		JMenuItem itemForm = new JMenuItem("Form");
-		itemForm.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onSampleForm();
-			}
-
-		});
-		menu.add(itemForm);
-
-		JMenuItem itemOauthRequestToken = new JMenuItem("Oauth Request Token");
-		itemOauthRequestToken.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onSampleOauthRequestToken();
-			}
-
-		});
-		menu.add(itemOauthRequestToken);
-
-		JMenuItem itemPingback = new JMenuItem("Pingback");
-		itemPingback.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onSamplePingback();
-			}
-
-		});
-		menu.add(itemPingback);
-
-		JMenuItem itemUpload = new JMenuItem("Upload");
-		itemUpload.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onSampleUpload();
-			}
-
-		});
-		menu.add(itemUpload);
-
-		this.add(menu);
-	}
-
-	protected void buildHelp()
-	{
-		JMenu menu = new JMenu("Help");
-
+		// log
 		JMenuItem itemLog = new JMenuItem("Log");
 		itemLog.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) 
 			{
-				listener.onHelpLog();
+				listener.onViewLog();
 			}
 
 		});
 		menu.add(itemLog);
 
+		// about
 		JMenuItem itemAbout = new JMenuItem("About");
 		itemAbout.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) 
 			{
-				listener.onHelpAbout();
+				listener.onViewAbout();
 			}
 
 		});
@@ -341,18 +356,19 @@ public class MenuBar extends JMenuBar
 		public void onUrlSave();
 		public void onUrlOpen();
 		public void onUrlFocus();
-		public void onProcessorHtmlForm();
-		public void onProcessorHtmlImages();
-		public void onProcessorFormatXml();
-		public void onProcessorFormatJson();
-		public void onProcessorCertificates();
-		public void onProcessorCookies();
-		public void onSampleBasicAuth();
-		public void onSampleForm();
-		public void onSampleOauthRequestToken();
-		public void onSamplePingback();
-		public void onSampleUpload();
-		public void onHelpLog();
-		public void onHelpAbout();
+		public void onRequestBasicAuth();
+		public void onRequestForm();
+		public void onRequestOauthRequestToken();
+		public void onRequestPingback();
+		public void onRequestUpload();
+		public void onResponseHtmlForm();
+		public void onResponseHtmlImages();
+		public void onResponseFormatHtml();
+		public void onResponseFormatJson();
+		public void onResponseFormatXml();
+		public void onViewCertificates();
+		public void onViewCookies();
+		public void onViewLog();
+		public void onViewAbout();
 	}
 }

@@ -60,7 +60,7 @@ public class TextPaneOut extends RSyntaxTextArea
 		this.setText(response.toString());
 	}
 
-	public boolean hasRequest()
+	public boolean hasResponse()
 	{
 		return this.response != null;
 	}

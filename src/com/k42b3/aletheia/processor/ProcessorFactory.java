@@ -22,12 +22,6 @@
 
 package com.k42b3.aletheia.processor;
 
-import java.util.HashMap;
-
-import com.k42b3.aletheia.processor.format.Json;
-import com.k42b3.aletheia.processor.format.Xml;
-import com.k42b3.aletheia.processor.html.Form;
-import com.k42b3.aletheia.processor.html.Images;
 import com.k42b3.aletheia.protocol.Response;
 
 /**
@@ -39,54 +33,19 @@ import com.k42b3.aletheia.protocol.Response;
  */
 public class ProcessorFactory
 {
-	public static HashMap<String, ProcessorInterface> processors = new HashMap<String, ProcessorInterface>();
-
-	public static ProcessorInterface factory(String name) throws Exception
+	public static ResponseProcessorInterface getResponse(String name) throws Exception
 	{
-		if(processors.containsKey(name))
-		{
-			return processors.get(name);
-		}
+		String cls = "com.k42b3.aletheia.response." + name;
+		Class<ResponseProcessorInterface> c = (Class<ResponseProcessorInterface>) Class.forName(cls);
 
-		if(name.equals("certificates"))
-		{
-			processors.put(name, new Certificates());
-		}
-		else if(name.equals("cookies"))
-		{
-			processors.put(name, new Cookies());
-		}
-		else if(name.equals("html.form"))
-		{
-			processors.put(name, new Form());
-		}
-		else if(name.equals("html.images"))
-		{
-			processors.put(name, new Images());
-		}
-		else if(name.equals("format.xml"))
-		{
-			processors.put(name, new Xml());
-		}
-		else if(name.equals("format.json"))
-		{
-			processors.put(name, new Json());
-		}
-		else
-		{
-			throw new Exception("Invalid processor");
-		}
-
-		return factory(name);
+		return c.newInstance();
 	}
 
-	public static String getResponseContent(Response response)
+	public static RequestProcessorInterface getRequest(String name) throws Exception
 	{
-		if(response instanceof com.k42b3.aletheia.protocol.http.Response)
-		{
-			return ((com.k42b3.aletheia.protocol.http.Response) response).getBody();
-		}
+		String cls = "com.k42b3.aletheia.request." + name;
+		Class<RequestProcessorInterface> c = (Class<RequestProcessorInterface>) Class.forName(cls);
 
-		return null;
+		return c.newInstance();
 	}
 }
