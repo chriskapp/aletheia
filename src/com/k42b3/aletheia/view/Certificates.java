@@ -31,7 +31,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -48,7 +47,6 @@ import javax.swing.table.DefaultTableModel;
 
 import com.k42b3.aletheia.Aletheia;
 import com.k42b3.aletheia.CertificateStore;
-import com.k42b3.aletheia.protocol.Response;
 
 /**
  * Form

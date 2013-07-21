@@ -53,7 +53,7 @@ public class Sidebar extends JPanel
 		// settings
 		this.setPreferredSize(new Dimension(240, 400));
 		this.setLayout(new CardLayout());
-		this.setBorder(new EmptyBorder(4, 0, 4, 4));
+		this.setBorder(new EmptyBorder(4, 0, 2, 4));
 		this.setVisible(false);
 
 		// add sidebar panels

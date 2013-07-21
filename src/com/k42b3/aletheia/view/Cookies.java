@@ -29,7 +29,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 
@@ -43,7 +42,6 @@ import javax.swing.table.DefaultTableModel;
 
 import com.k42b3.aletheia.Cookie;
 import com.k42b3.aletheia.CookieStore;
-import com.k42b3.aletheia.protocol.Response;
 
 /**
  * Form

@@ -100,7 +100,14 @@ public class Html extends SidebarHttpAbstract
 				}
 				else
 				{
-					filter(search.getText());
+					String text = search.getText();
+
+					if(search.getSelectedText() != null && search.getSelectedText().equals(search.getText()))
+					{
+						text = "";
+					}
+
+					filter(text);
 				}
 			}
 
@@ -344,7 +351,7 @@ public class Html extends SidebarHttpAbstract
 		}
 	}
 
-	private void filter(String text)
+	private synchronized void filter(String text)
 	{
 		if(text != null && !text.isEmpty())
 		{

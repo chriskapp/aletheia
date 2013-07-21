@@ -25,8 +25,6 @@ package com.k42b3.aletheia.processor;
 import java.net.URL;
 import java.util.Properties;
 
-import javax.swing.JFrame;
-
 import com.k42b3.aletheia.protocol.Response;
 
 /**

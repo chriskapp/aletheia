@@ -25,14 +25,12 @@ package com.k42b3.aletheia;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
@@ -86,7 +84,6 @@ import com.k42b3.aletheia.filter.FilterIn;
 import com.k42b3.aletheia.filter.FilterOut;
 import com.k42b3.aletheia.filter.RequestFilterAbstract;
 import com.k42b3.aletheia.filter.ResponseFilterAbstract;
-import com.k42b3.aletheia.processor.DefaultProcessProperties;
 import com.k42b3.aletheia.processor.ProcessPropertiesAbstract;
 import com.k42b3.aletheia.processor.ProcessPropertiesCallback;
 import com.k42b3.aletheia.processor.ProcessorFactory;
@@ -97,6 +94,8 @@ import com.k42b3.aletheia.protocol.ProtocolFactory;
 import com.k42b3.aletheia.protocol.ProtocolInterface;
 import com.k42b3.aletheia.protocol.Request;
 import com.k42b3.aletheia.protocol.Response;
+import com.k42b3.aletheia.search.SearchFactory;
+import com.k42b3.aletheia.search.SearchInterface;
 import com.k42b3.aletheia.view.About;
 import com.k42b3.aletheia.view.Certificates;
 import com.k42b3.aletheia.view.Cookies;
@@ -409,6 +408,49 @@ public class Aletheia extends JFrame
 
 		panelOut.add(scrOut, BorderLayout.CENTER);
 
+		// search
+		TextFieldUrl search = new TextFieldUrl();
+		search.addKeyListener(new KeyListener() {
+
+			public void keyTyped(KeyEvent e) 
+			{
+			}
+
+			public void keyReleased(KeyEvent e) 
+			{
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					String text = getActiveSearch().getText();
+
+					if(text.length() == 0)
+					{
+						return;
+					}
+
+					// do the search
+					try
+					{
+						Response response = getActiveOut().getResponse();
+						SearchInterface engine = SearchFactory.getFittingEngine(response);
+
+						engine.search(text, getActiveOut());
+					}
+					catch(Exception ex)
+					{
+						Aletheia.handleException(ex);
+					}
+				}
+			}
+
+			public void keyPressed(KeyEvent e) 
+			{
+			}
+
+		});
+		search.setPreferredSize(new Dimension(200, 24));
+
+		panelOut.add(search, BorderLayout.SOUTH);
+		
 		sp.add(panelIn);
 		sp.add(panelOut);
 
@@ -864,6 +906,21 @@ public class Aletheia extends JFrame
 	}
 
 	/**
+	 * Returns the search textfield of the current selected tab
+	 * 
+	 * @return TextFieldUrl
+	 */
+	public TextFieldUrl getActiveSearch()
+	{
+		JPanel mp = (JPanel) this.tp.getSelectedComponent();
+		JSplitPane sp = (JSplitPane) mp.getComponent(1);
+		JPanel pa = (JPanel) sp.getComponent(2);
+		TextFieldUrl url = (TextFieldUrl) pa.getComponent(2);
+
+		return url;
+	}
+
+	/**
 	 * Returns the sidebar of the current selected tab
 	 * 
 	 * @return Sidebar
@@ -935,6 +992,20 @@ public class Aletheia extends JFrame
 
 				getActiveUrl().setSelectionStart(0);
 				getActiveUrl().setSelectionEnd(getActiveUrl().getText().length());
+			}
+
+			public void onResponseHtmlSearch()
+			{
+				if(!getActiveSearch().hasFocus())
+				{
+					getActiveSearch().requestFocus();
+				}
+				
+				if(!getActiveSearch().getText().isEmpty())
+				{
+					getActiveSearch().setSelectionStart(0);
+					getActiveSearch().setSelectionEnd(getActiveSearch().getText().length());
+				}
 			}
 
 			public void onResponseHtmlForm()

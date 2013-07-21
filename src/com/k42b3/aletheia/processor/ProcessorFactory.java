@@ -22,7 +22,6 @@
 
 package com.k42b3.aletheia.processor;
 
-import com.k42b3.aletheia.protocol.Response;
 
 /**
  * ProcessorFactory

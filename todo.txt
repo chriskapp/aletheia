@@ -1,5 +1,5 @@
 
-0.1.4
+0.1.5
 [ ] add webdav, soap, xmlrpc, opensocial, cmis, oauth2 sample requests
 [ ] add flow system for demonstration how a specific system works. In abstract a 
 	flow are multiple http calls where each call can modify the next call or ask 
@@ -11,6 +11,10 @@
     [ ] add pingback flow
     [ ] add oembed flow
 [ ] add support for websockets and spdy
+
+0.1.4
+[x] improve sidebar search
+[x] add search engine (text and css selector)
 [x] improved html and atom sidebar
 [x] use jsoup library for html parsing
 

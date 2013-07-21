@@ -217,9 +217,22 @@ public class MenuBar extends JMenuBar
 		// html
 		JMenu menuHtml = new JMenu("Html");
 
+		// search
+		JMenuItem itemSearch = new JMenuItem("Search");
+		itemSearch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+		itemSearch.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onResponseHtmlSearch();
+			}
+
+		});
+		menuHtml.add(itemSearch);
+		
 		// form
 		JMenuItem itemForm = new JMenuItem("Form");
-		itemForm.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+		itemForm.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
 		itemForm.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) 
@@ -361,6 +374,7 @@ public class MenuBar extends JMenuBar
 		public void onRequestOauthRequestToken();
 		public void onRequestPingback();
 		public void onRequestUpload();
+		public void onResponseHtmlSearch();
 		public void onResponseHtmlForm();
 		public void onResponseHtmlImages();
 		public void onResponseFormatHtml();
