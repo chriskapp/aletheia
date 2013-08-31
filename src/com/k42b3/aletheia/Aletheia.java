@@ -110,7 +110,7 @@ import com.k42b3.aletheia.view.Log;
  */
 public class Aletheia extends JFrame
 {
-	public static final String VERSION = "0.1.4 beta";
+	public static final String VERSION = "0.1.5 beta";
 
 	public static Aletheia instance;
 
@@ -1031,6 +1031,11 @@ public class Aletheia extends JFrame
 			public void onResponseFormatXml()
 			{
 				callResponseProcessor("format.Xml");
+			}
+
+			public void onResponseProcessReCaptcha()
+			{
+				callResponseProcessor("process.ReCaptcha");
 			}
 
 			public void onRequestBasicAuth()

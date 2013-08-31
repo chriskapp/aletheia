@@ -70,8 +70,8 @@ public class Form extends JFrame implements ResponseProcessorInterface
 {
 	private ArrayList<FormData> forms = new ArrayList<FormData>();
 	private ArrayList<FormTableModel> fields = new ArrayList<FormTableModel>();
-	private JTabbedPane tb;
 
+	private JTabbedPane tb;
 	private String baseUrl;
 
 	public Form()

@@ -302,6 +302,23 @@ public class MenuBar extends JMenuBar
 
 		menu.add(menuFormat);
 
+		// processor
+		JMenu menuProcessor = new JMenu("Process");
+		
+		// xml
+		JMenuItem itemReCaptcha = new JMenuItem("ReCaptcha");
+		itemReCaptcha.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onResponseProcessReCaptcha();
+			}
+
+		});
+		menuProcessor.add(itemReCaptcha);
+
+		menu.add(menuProcessor);
+
 		this.add(menu);
 	}
 
@@ -380,6 +397,7 @@ public class MenuBar extends JMenuBar
 		public void onResponseFormatHtml();
 		public void onResponseFormatJson();
 		public void onResponseFormatXml();
+		public void onResponseProcessReCaptcha();
 		public void onViewCertificates();
 		public void onViewCookies();
 		public void onViewLog();
