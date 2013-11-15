@@ -1,16 +1,13 @@
 
-0.1.5
+0.1.6
+[ ] probably split request textarea on the right an textarea where you can use a 
+    script language to create the request on the left
 [ ] add webdav, soap, xmlrpc, opensocial, cmis, oauth2 sample requests
-[ ] add flow system for demonstration how a specific system works. In abstract a 
-	flow are multiple http calls where each call can modify the next call or ask 
-	for user input. In this way we could implement every system. It should be 
-	possible to adjust the speed how fast the calls are made
-    [ ] add oauth 1.0 flow
-    [ ] add oauth 2.0 flow
-    [ ] add openid 2.0 flow
-    [ ] add pingback flow
-    [ ] add oembed flow
 [ ] add support for websockets and spdy
+
+0.1.5
+[x] added bookmark function
+[x] added recaptcha processor
 
 0.1.4
 [x] improve sidebar search
