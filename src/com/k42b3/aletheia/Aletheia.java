@@ -99,7 +99,6 @@ import com.k42b3.aletheia.protocol.Request;
 import com.k42b3.aletheia.protocol.Response;
 import com.k42b3.aletheia.search.SearchFactory;
 import com.k42b3.aletheia.search.SearchInterface;
-import com.k42b3.aletheia.view.About;
 import com.k42b3.aletheia.view.Certificates;
 import com.k42b3.aletheia.view.Cookies;
 import com.k42b3.aletheia.view.Log;
@@ -130,7 +129,6 @@ public class Aletheia extends JFrame
 	private Certificates certificatesWin;
 	private Cookies cookiesWin;
 	private Log logWin;
-	private About aboutWin;
 
 	private RequestProcessorInterface requestProcessor;
 	private ResponseProcessorInterface responseProcessor;
@@ -888,14 +886,15 @@ public class Aletheia extends JFrame
 	{
 		StringBuilder out = new StringBuilder();
 
-		out.append("Version: Aletheia " + VERSION + "\n");
+		out.append("Version: Aletheia " + Aletheia.VERSION + "\n");
 		out.append("Author: Christoph \"k42b3\" Kappestein" + "\n");
 		out.append("Website: http://aletheia.k42b3.com" + "\n");
 		out.append("License: GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>" + "\n");
 		out.append("\n");
-		out.append("A browser like application to send raw http requests. It is designed for" + "\n");
-		out.append("debugging and finding security issues in web applications. For the current" + "\n");
-		out.append("version and more informations visit <http://code.google.com/p/aletheia>." + "\n");
+		out.append("A browser like application to send raw http requests." + "\n");
+		out.append("It is designed for debugging and finding security issues" + "\n");
+		out.append("in web applications. For the current version and more" + "\n");
+		out.append("informations visit <https://github.com/k42b3/aletheia>." + "\n");
 
 		JOptionPane.showMessageDialog(this, out, "About", JOptionPane.INFORMATION_MESSAGE);
 	}
@@ -1204,25 +1203,7 @@ public class Aletheia extends JFrame
 
 			public void onViewAbout()
 			{
-				SwingUtilities.invokeLater(new Runnable() {
-
-					public void run()
-					{
-						if(aboutWin == null)
-						{
-							aboutWin = new About();
-							aboutWin.pack();
-						}
-
-						if(!aboutWin.isVisible())
-						{
-							aboutWin.setVisible(true);
-						}
-
-						aboutWin.requestFocus();
-					}
-
-				});
+				about();
 			}
 
 		});
