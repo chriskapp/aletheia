@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aletheia>
-	<filters>
-		<in>
-			<filter name="com.k42b3.aletheia.filter.request.Cookie" />
-			<filter name="com.k42b3.aletheia.filter.request.UserAgent">
-				<property name="agent">Aletheia 0.1.4 beta</property>
-			</filter>
-		</in>
-		<out>
-			<filter name="com.k42b3.aletheia.filter.response.Cookie" />
-			<filter name="com.k42b3.aletheia.filter.response.Location" />
-			<filter name="com.k42b3.aletheia.filter.response.Application" />
-			<!--<filter name="com.k42b3.aletheia.filter.response.Syntax" />-->
-		</out>
-	</filters>
-	<applications>
-		<!-- <application contentType="application/x-shockwave-flash" path="J:\application\flashplayer\flashplayer_11_sa.exe ${url}" /> -->
-	</applications>
+    <filters>
+        <in>
+            <filter name="com.k42b3.aletheia.filter.request.Cookie"/>
+            <filter name="com.k42b3.aletheia.filter.request.UserAgent">
+                <property name="agent">Aletheia 0.1.4 beta</property>
+            </filter>
+        </in>
+        <out>
+            <filter name="com.k42b3.aletheia.filter.response.Cookie"/>
+            <filter name="com.k42b3.aletheia.filter.response.Location"/>
+            <filter name="com.k42b3.aletheia.filter.response.Application"/>
+            <!--<filter name="com.k42b3.aletheia.filter.response.Syntax" />-->
+        </out>
+    </filters>
+    <applications>
+        <!-- <application contentType="application/x-shockwave-flash" path="J:\application\flashplayer\flashplayer_11_sa.exe ${url}" /> -->
+    </applications>
+    <bookmarks>
+    </bookmarks>
 </aletheia>

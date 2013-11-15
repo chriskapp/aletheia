@@ -25,6 +25,8 @@ package com.k42b3.aletheia;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -41,14 +43,18 @@ import javax.swing.KeyStroke;
 public class MenuBar extends JMenuBar
 {
 	protected MenuBarActionListener listener;
+	protected Config config;
 
-	public MenuBar()
+	public MenuBar(Config config)
 	{
 		super();
+
+		this.config = config;
 
 		buildUrl();
 		buildRequest();
 		buildResponse();
+		buildBookmark();
 		buildView();
 	}
 
@@ -133,6 +139,18 @@ public class MenuBar extends JMenuBar
 		});
 		menu.add(itemLoad);
 
+		JMenuItem itemBookmark = new JMenuItem("Bookmark");
+		itemBookmark.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+		itemBookmark.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				listener.onBookmark();
+			}
+
+		});
+		menu.add(itemBookmark);
+			
 		JMenuItem itemFocus = new JMenuItem("Focus");
 		itemFocus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK));
 		itemFocus.addActionListener(new ActionListener() {
@@ -322,6 +340,30 @@ public class MenuBar extends JMenuBar
 		this.add(menu);
 	}
 
+	protected void buildBookmark()
+	{
+		ArrayList<URL> bookmarks = config.getBookmarks();
+		JMenu menu = new JMenu("Bookmark");
+
+		for(int i = 0; i < bookmarks.size(); i++)
+		{
+			JMenuItem itemBookmark = new JMenuItem(bookmarks.get(i).toString());
+			itemBookmark.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) 
+				{
+					JMenuItem item = (JMenuItem) e.getSource();
+
+					listener.onBookmarkOpen(item.getText());
+				}
+
+			});
+			menu.add(itemBookmark);
+		}
+		
+		this.add(menu);
+	}
+
 	protected void buildView()
 	{
 		JMenu menu = new JMenu("View");
@@ -385,6 +427,8 @@ public class MenuBar extends JMenuBar
 		public void onUrlCloseTab();
 		public void onUrlSave();
 		public void onUrlOpen();
+		public void onBookmark();
+		public void onBookmarkOpen(String url);
 		public void onUrlFocus();
 		public void onRequestBasicAuth();
 		public void onRequestForm();

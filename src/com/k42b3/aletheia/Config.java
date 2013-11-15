@@ -23,6 +23,9 @@
 package com.k42b3.aletheia;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
@@ -34,6 +37,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 
 import com.k42b3.aletheia.filter.RequestFilterAbstract;
 import com.k42b3.aletheia.filter.ResponseFilterAbstract;
@@ -52,6 +59,7 @@ public class Config
 	private ArrayList<RequestFilterAbstract> filtersIn = new ArrayList<RequestFilterAbstract>();
 	private ArrayList<ResponseFilterAbstract> filtersOut = new ArrayList<ResponseFilterAbstract>();
 	private HashMap<String, String> applications = new HashMap<String, String>();
+	private ArrayList<URL> bookmarks = new ArrayList<URL>();
 
 	private Logger logger = Logger.getLogger("com.k42b3.aletheia");
 
@@ -77,6 +85,96 @@ public class Config
 		return applications;
 	}
 
+	public ArrayList<URL> getBookmarks()
+	{
+		return bookmarks;
+	}
+
+	public boolean addBookmark(URL url)
+	{
+		try
+		{
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.parse(this.configFile);
+
+			// check whether bookmark exist
+			Element bookmark = (Element) doc.getElementsByTagName("bookmarks").item(0);
+			
+			if(bookmark != null)
+			{
+				NodeList bookmarks = bookmark.getChildNodes();
+				boolean removed = false;
+				
+				for(int i = 0; i < bookmarks.getLength(); i++)
+				{
+					if(bookmarks.item(i) instanceof Element)
+					{
+						Element existingbookmark = (Element) bookmarks.item(i);
+						
+						// if the bookmark exists remove it
+						if(url.toString().equals(existingbookmark.getAttribute("url")))
+						{
+							bookmark.removeChild(existingbookmark);
+
+							this.bookmarks.remove(url);
+
+							removed = true;
+							break;
+						}
+					}
+				}
+
+				// if the bookmark dosent exist add it
+				if(!removed)
+				{
+					Element newBookmark = doc.createElement("bookmark");
+					newBookmark.setAttribute("url", url.toString());
+
+					bookmark.appendChild(newBookmark);
+
+					this.bookmarks.add(url);
+				}
+
+				// save
+				DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+				DOMImplementationLS impl = (DOMImplementationLS)registry.getDOMImplementation("LS");
+
+				LSSerializer writer = impl.createLSSerializer();
+				LSOutput output = impl.createLSOutput();
+
+				output.setByteStream(new FileOutputStream(configFile));
+
+				writer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
+				writer.write(doc, output);
+				
+				return !removed;
+			}
+			else
+			{
+				throw new Exception("Found no bookmarks tag");
+			}
+		}
+		catch(Exception e)
+		{
+			Aletheia.handleException(e);
+		}
+
+		return false;
+	}
+
+	public boolean hasBookmark(URL url)
+	{
+		for(int i = 0; i < bookmarks.size(); i++)
+		{
+			if(bookmarks.get(i).equals(url))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void parse()
 	{
 		try
@@ -100,6 +198,11 @@ public class Config
 			NodeList applicationsList = doc.getElementsByTagName("application");
 
 			parseApplications(applicationsList);
+			
+			// parse applications
+			NodeList bookmarksList = doc.getElementsByTagName("bookmark");
+
+			parseBookmarks(bookmarksList);
 		}
 		catch(Exception e)
 		{
@@ -193,19 +296,19 @@ public class Config
 		}
 	}
 	
-	private void parseApplications(NodeList filtersList)
+	private void parseApplications(NodeList applicationsList)
 	{
-		for(int i = 0; i < filtersList.getLength(); i++)
+		for(int i = 0; i < applicationsList.getLength(); i++)
 		{
 			try
 			{
-				Element filterElement = (Element) filtersList.item(i);
+				Element applicationElement = (Element) applicationsList.item(i);
 
 				// out
-				if(filterElement.getParentNode().getNodeName().equals("applications"))
+				if(applicationElement.getParentNode().getNodeName().equals("applications"))
 				{
-					String contentType = filterElement.getAttribute("contentType");
-					String path = filterElement.getAttribute("path");
+					String contentType = applicationElement.getAttribute("contentType");
+					String path = applicationElement.getAttribute("path");
 
 					if(!contentType.isEmpty() && !path.isEmpty())
 					{
@@ -222,6 +325,43 @@ public class Config
 		if(applications.size() > 0)
 		{
 			logger.info("Loaded " + applications.size() + " application associations");
+		}
+	}
+
+	private void parseBookmarks(NodeList bookmarksList)
+	{
+		for(int i = 0; i < bookmarksList.getLength(); i++)
+		{
+			try
+			{
+				Element bookmarkElement = (Element) bookmarksList.item(i);
+
+				// out
+				if(bookmarkElement.getParentNode().getNodeName().equals("bookmarks"))
+				{
+					String url = bookmarkElement.getAttribute("url");
+
+					if(!url.isEmpty())
+					{
+						try
+						{
+							bookmarks.add(new URL(url));
+						}
+						catch(MalformedURLException e)
+						{
+						}
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				Aletheia.handleException(e);
+			}
+		}
+
+		if(bookmarks.size() > 0)
+		{
+			logger.info("Loaded " + bookmarks.size() + " bookmarks");
 		}
 	}
 }

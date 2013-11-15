@@ -31,6 +31,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
@@ -52,7 +53,9 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -210,7 +213,7 @@ public class Aletheia extends JFrame
 
 			// set url
 			this.getActiveUrl().setText(currentUrl.toString());
-
+			
 			// add to history
 			history.add(currentUrl.toString());
 
@@ -640,6 +643,51 @@ public class Aletheia extends JFrame
 		}
 	}
 
+	public void saveBookmark()
+	{
+		try
+		{
+			String url = getActiveUrl().getText();
+			boolean added = config.addBookmark(new URL(url));
+
+			// update menu
+			JMenu menu = (JMenu) this.getJMenuBar().getComponent(3);
+			
+			if(added)
+			{
+				JMenuItem itemBookmark = new JMenuItem(url);
+				itemBookmark.addActionListener(new ActionListener() {
+
+					public void actionPerformed(ActionEvent e) 
+					{
+						JMenuItem item = (JMenuItem) e.getSource();
+
+						run(item.getText());
+					}
+
+				});
+				menu.add(itemBookmark);
+			}
+			else
+			{
+				for(int i = 0; i < menu.getItemCount(); i++)
+				{
+					JMenuItem itemBookmark = menu.getItem(i);
+
+					if(itemBookmark.getText().equals(url))
+					{
+						menu.remove(i);
+						break;
+					}
+				}
+			}
+		}
+		catch(MalformedURLException e)
+		{
+			Aletheia.handleException(e);
+		}
+	}
+
 	public void open(File file)
 	{
 		try
@@ -950,7 +998,7 @@ public class Aletheia extends JFrame
 	 */
 	private JMenuBar buildMenuBar()
 	{
-		MenuBar menuBar = new MenuBar();
+		MenuBar menuBar = new MenuBar(config);
 		menuBar.setActionListener(new MenuBarActionListener(){
 
 			public void onUrlRun()
@@ -981,6 +1029,16 @@ public class Aletheia extends JFrame
 			public void onUrlOpen()
 			{
 				openDialog();
+			}
+
+			public void onBookmark()
+			{
+				saveBookmark();
+			}
+
+			public void onBookmarkOpen(String url)
+			{
+				run(url);
 			}
 
 			public void onUrlFocus()
