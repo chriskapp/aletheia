@@ -52,7 +52,7 @@ public class ReCaptcha extends JFrame implements ResponseProcessorInterface
 		// settings
 		this.setTitle("ReCaptcha");
 		this.setLocation(100, 100);
-		this.setPreferredSize(new Dimension(360, 220));
+		this.setPreferredSize(new Dimension(360, 190));
 		this.setMinimumSize(this.getSize());
 		this.setResizable(false);
 		this.setLayout(new BorderLayout());
@@ -109,6 +109,11 @@ public class ReCaptcha extends JFrame implements ResponseProcessorInterface
 
 				if(!src.isEmpty() && src.indexOf("/recaptcha/api/noscript") != -1)
 				{
+					if(src.startsWith("//"))
+					{
+						src = url.getProtocol() + ":" + src;
+					}
+
 					iframeSrc = new URL(src);
 					break;
 				}
