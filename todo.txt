@@ -1,8 +1,10 @@
 
 0.1.6
+[x] Added SOAP request example
+[x] Added timer button which can execute the given request every second
 [ ] probably split request textarea on the right an textarea where you can use a 
     script language to create the request on the left
-[ ] add webdav, soap, xmlrpc, opensocial, cmis, oauth2 sample requests
+[ ] add webdav, xmlrpc, opensocial, cmis, oauth2 sample requests
 [ ] add support for websockets and spdy
 
 0.1.5

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="aletheia" default="build-release">
+	<target name="build-release">
+		<exec executable="mvn.bat" failonerror="true">
+			<arg line="clean compile assembly:single" />
+		</exec>
+	</target>
+</project>
