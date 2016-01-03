@@ -267,7 +267,12 @@ public class Request extends com.k42b3.aletheia.protocol.Request
 
 		// parse header
 		this.setHeaders(Util.parseHeader(header, "\n"));
-		this.setHeader("Host", this.host);
+
+		// add host header if not available
+		if(!this.hasHeader("Host"))
+		{
+			this.setHeader("Host", this.host);
+		}
 
 		// set body
 		this.setBody(body);
