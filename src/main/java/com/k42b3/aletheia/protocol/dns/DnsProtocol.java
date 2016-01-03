@@ -30,11 +30,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.xbill.DNS.DClass;
-import org.xbill.DNS.Message;
-import org.xbill.DNS.Name;
+import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
-import org.xbill.DNS.Section;
 import org.xbill.DNS.SimpleResolver;
 
 import com.k42b3.aletheia.Aletheia;
@@ -64,8 +61,6 @@ public class DnsProtocol extends ProtocolAbstract
 		types.put(org.xbill.DNS.Type.GPOS, "GPOS (Geographical position)");
 		types.put(org.xbill.DNS.Type.HINFO, "HINFO (Host information)");
 		types.put(org.xbill.DNS.Type.LOC, "LOC (Location)");
-		types.put(org.xbill.DNS.Type.MAILA, "MAILA (Transfer mail agent records)");
-		types.put(org.xbill.DNS.Type.MAILB, "MAILB (Transfer mailbox records)");
 		types.put(org.xbill.DNS.Type.MB, "MB (Mailbox domain name)");
 		types.put(org.xbill.DNS.Type.MD, "MD (Mail destination)");
 		types.put(org.xbill.DNS.Type.MF, "MF (Mail forwarder)");
@@ -99,6 +94,9 @@ public class DnsProtocol extends ProtocolAbstract
 			}
 
 			service.shutdown();
+
+			Aletheia.getInstance().getActiveOut().append("Requesting DNS records ...");
+
 			service.awaitTermination(10000, TimeUnit.MILLISECONDS);
 
 			// create response
@@ -135,13 +133,13 @@ public class DnsProtocol extends ProtocolAbstract
 	
 	private class RequestWorker implements Runnable
 	{
-		private String url;
+		private String host;
 		private int type;
 		private String desc;
 
-		public RequestWorker(String url, int type, String desc)
+		public RequestWorker(String host, int type, String desc)
 		{
-			this.url = url;
+			this.host = host;
 			this.type = type;
 			this.desc = desc;
 		}
@@ -154,17 +152,12 @@ public class DnsProtocol extends ProtocolAbstract
 
 			try
 			{
-				SimpleResolver res = new SimpleResolver();
+				Lookup lookup = new Lookup(host, type);
+				lookup.setResolver(new SimpleResolver("8.8.8.8"));
 
-				Name name = Name.fromString(url, Name.root);
-				Record rec = Record.newRecord(name, type, DClass.IN);
+				Record [] records = lookup.run();
 
-				Message query = Message.newQuery(rec);
-				Message response = res.send(query);
-
-				Record [] records = response.getSectionArray(Section.ANSWER);
-
-				if(records.length > 0)
+				if(records != null && records.length > 0)
 				{
 					for(int j = 0; j < records.length; j++)
 					{
