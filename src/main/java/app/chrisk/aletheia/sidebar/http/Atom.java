@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,12 +22,18 @@
 
 package app.chrisk.aletheia.sidebar.http;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.SystemColor;
+import app.chrisk.aletheia.Aletheia;
+import app.chrisk.aletheia.TextFieldUrl;
+import app.chrisk.aletheia.protocol.http.Response;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -35,41 +41,18 @@ import java.awt.event.MouseListener;
 import java.io.StringReader;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import app.chrisk.aletheia.protocol.http.Response;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
-import app.chrisk.aletheia.Aletheia;
-import app.chrisk.aletheia.TextFieldUrl;
-
 /**
  * Atom
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class Atom extends SidebarHttpAbstract
+public class Atom extends SidebarHTTPAbstract
 {
-	private ArrayList<Entry> resources;
-	private DefaultListModel<Entry> lm;
-	private JList<Entry> list;
-	private JTextField search;
+	private final ArrayList<Entry> resources;
+	private final DefaultListModel<Entry> lm;
+	private final JList<Entry> list;
+	private final JTextField search;
 
 	public Atom()
 	{
@@ -126,39 +109,30 @@ public class Atom extends SidebarHttpAbstract
 		list.addKeyListener(new LinkKeyListener());
 		list.addMouseListener(new LinkMouseListener());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setCellRenderer(new ListCellRenderer<Entry>() {
+		list.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            String html = "<html>";
+            if (!value.getTitle().isEmpty()) {
+                html+= "&nbsp;<font color=gray size=-1>" + value.getTitle() + "</font><br />";
+            }
+            html+= "&nbsp;" + value.getUrl();
+            html+= "</html>";
 
-			public Component getListCellRendererComponent(JList<? extends Entry> list, Entry value, int index, boolean isSelected, boolean cellHasFocus)
-			{
-				String html = "<html>";
-				if(!value.getTitle().isEmpty())
-				{
-					html+= "&nbsp;<font color=gray size=-1>" + value.getTitle() + "</font><br />";
-				}
-				html+= "&nbsp;" + value.getUrl();
-				html+= "</html>";
+            JLabel label = new JLabel();
+            label.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            label.setOpaque(true);
+            label.setText(html);
+            label.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
 
-				JLabel label = new JLabel();
-				label.setFont(new Font("Monospaced", Font.PLAIN, 12));
-				label.setOpaque(true);
-				label.setText(html);
-				label.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
+            if (isSelected) {
+                label.setBackground(SystemColor.activeCaption);
+                label.setForeground(SystemColor.textHighlightText);
+            } else {
+                label.setBackground(SystemColor.window);
+                label.setForeground(SystemColor.textText);
+            }
 
-				if(isSelected)
-				{
-					label.setBackground(SystemColor.activeCaption);
-					label.setForeground(SystemColor.textHighlightText);
-				}
-				else
-				{
-					label.setBackground(SystemColor.window);
-					label.setForeground(SystemColor.textText);
-				}
-
-				return label;
-			}
-
-		});
+            return label;
+        });
 
 		JScrollPane scp = new JScrollPane(list);
 		scp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -184,14 +158,7 @@ public class Atom extends SidebarHttpAbstract
 		this.parseEntries(xml);
 
 		// call filter
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run()
-			{
-				filter("");
-			}
-
-		});
+		SwingUtilities.invokeLater(() -> filter(""));
 	}
 
 	private void parseEntries(String xml) throws Exception
@@ -207,14 +174,12 @@ public class Atom extends SidebarHttpAbstract
 
 		NodeList entries = doc.getElementsByTagName("entry");
 
-		for(int i = 0; i < entries.getLength(); i++)
-		{
+		for (int i = 0; i < entries.getLength(); i++) {
 			Element entry = (Element) entries.item(i);
 			Element title = (Element) entry.getElementsByTagName("title").item(0);
 			Element link = (Element) entry.getElementsByTagName("link").item(0);
 
-			if(title != null && link != null)
-			{
+			if (title != null && link != null) {
 				resources.add(new Entry(title.getTextContent(), link.getAttribute("href")));
 			}
 		}
@@ -222,24 +187,18 @@ public class Atom extends SidebarHttpAbstract
 
 	private void filter(String text)
 	{
-		if(text != null && !text.isEmpty())
-		{
-			for(int i = 0; i < lm.size(); i++)
-			{
-				if(lm.get(i).getTitle().toLowerCase().indexOf(text.toLowerCase()) == -1)
-				{
+		if (text != null && !text.isEmpty()) {
+			for (int i = 0; i < lm.size(); i++) {
+				if (!lm.get(i).getTitle().toLowerCase().contains(text.toLowerCase())) {
 					lm.remove(i);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			lm.clear();
 
-			for(int i = 0; i < resources.size(); i++)
-			{
-				lm.addElement(resources.get(i));
-			}
+            for (Entry resource : resources) {
+                lm.addElement(resource);
+            }
 		}
 	}
 
@@ -247,21 +206,16 @@ public class Atom extends SidebarHttpAbstract
 	{
 		Entry selectedUrl = list.getSelectedValue();
 
-		if(selectedUrl != null)
-		{
-			try
-			{
+		if (selectedUrl != null) {
+			try {
 				String url = selectedUrl.getUrl();
 
-				if(newTab)
-				{
+				if (newTab) {
 					Aletheia.getInstance().newTab(true);
 				}
 
 				Aletheia.getInstance().run(url);
-			}
-			catch(Exception e)
-			{
+			} catch(Exception e) {
 				Aletheia.handleException(e);
 			}
 		}
@@ -299,12 +253,9 @@ public class Atom extends SidebarHttpAbstract
 
 		public void keyReleased(KeyEvent e)
 		{
-			if(e.getKeyCode() == KeyEvent.VK_ENTER)
-			{
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				callSelectedLink(e.isControlDown());
-			}
-			else if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
-			{
+			} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 				setVisible(false);
 			}
 		}
@@ -313,8 +264,8 @@ public class Atom extends SidebarHttpAbstract
 		{
 		}
 	}
-	
-	class Entry
+
+	static class Entry
 	{
 		private String title;
 		private String url;

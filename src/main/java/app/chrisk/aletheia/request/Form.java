@@ -1,10 +1,10 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
  * version and more information visit <https://github.com/chriskapp/aletheia>
  * 
- * Copyright (c) 2010-2013 Christoph Kappestein <k42b3.x@gmail.com>
+ * Copyright (c) 2010-2025 Christoph Kappestein <christoph.kappestein@gmail.com>
  * 
  * This file is part of Aletheia. Aletheia is free software: you can 
  * redistribute it and/or modify it under the terms of the GNU 
@@ -22,12 +22,12 @@
 
 package app.chrisk.aletheia.request;
 
-import java.net.URL;
-import java.util.Properties;
-
-import app.chrisk.aletheia.protocol.http.Request;
 import app.chrisk.aletheia.processor.ProcessPropertiesAbstract;
 import app.chrisk.aletheia.processor.RequestProcessorInterface;
+import app.chrisk.aletheia.protocol.http.Request;
+
+import java.net.URL;
+import java.util.Properties;
 
 /**
  * Form

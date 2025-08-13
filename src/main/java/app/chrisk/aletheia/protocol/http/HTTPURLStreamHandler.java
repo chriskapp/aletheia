@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -20,47 +20,22 @@
  * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package app.chrisk.aletheia.response.format;
+package app.chrisk.aletheia.protocol.http;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.Properties;
-
-import app.chrisk.aletheia.protocol.http.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import app.chrisk.aletheia.processor.ProcessPropertiesAbstract;
-import app.chrisk.aletheia.processor.ResponseProcessorInterface;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 
 /**
- * Html
+ * HTTPURLStreamHandler
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class Html implements ResponseProcessorInterface
+public class HTTPURLStreamHandler extends URLStreamHandler
 {
-	public String getName()
-	{
-		return "HTML Formatter";
-	}
-
-	public void process(URL url, app.chrisk.aletheia.protocol.Response response, Properties properties) throws Exception
-	{
-		if(response instanceof Response)
-		{
-			Response httpResponse = (Response) response;
-
-			// read html
-			Document doc = Jsoup.parse(httpResponse.getBody());
-			doc.outputSettings().prettyPrint(true);
-
-			// set content
-			httpResponse.setBody(doc.html());
-		}
-	}
-	
-	public ProcessPropertiesAbstract getProperties()
+	protected URLConnection openConnection(URL u) throws IOException 
 	{
 		return null;
 	}

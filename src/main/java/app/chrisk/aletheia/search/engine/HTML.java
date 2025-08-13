@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for
  * debugging and finding security issues in web applications. For the current
@@ -27,12 +27,12 @@ import app.chrisk.aletheia.search.SearchFactory;
 import app.chrisk.aletheia.search.SearchInterface;
 
 /**
- * Html
+ * HTML
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class Html implements SearchInterface
+public class HTML implements SearchInterface
 {
 	public String getName()
 	{
@@ -43,7 +43,7 @@ public class Html implements SearchInterface
 	{
 		// if the search string is an css selector
 		if (search.startsWith("css:")) {
-			SearchFactory.getEngine("CssSelector").search(search.substring(4), out);
+			SearchFactory.getEngine("CSSSelector").search(search.substring(4), out);
 		} else {
 			SearchFactory.getEngine("Text").search(search, out);
 		}

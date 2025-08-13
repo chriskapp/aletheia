@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,14 +22,14 @@
 
 package app.chrisk.aletheia.protocol.http;
 
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.LinkedList;
-
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
 
 /**
  * Request
@@ -146,7 +146,7 @@ public class Request extends app.chrisk.aletheia.protocol.Request
 
 	public void setLine(String method, String path)
 	{
-		this.setLine(method + " " + path + " " + HttpProtocol.type);
+		this.setLine(method + " " + path + " " + HTTPProtocol.type);
 	}
 
 	public void setHeaders(LinkedList<Header> headers)
@@ -290,19 +290,19 @@ public class Request extends app.chrisk.aletheia.protocol.Request
 		{
 			method = parts[0];
 			path = this.path;
-			type = HttpProtocol.type;
+			type = HTTPProtocol.type;
 		}
 		else
 		{
-			method = HttpProtocol.method;
+			method = HTTPProtocol.method;
 			path = this.path;
-			type = HttpProtocol.type;
+			type = HTTPProtocol.type;
 		}
 
 		// check method
 		if(!Util.isValidMethod(method))
 		{
-			method = HttpProtocol.method;
+			method = HTTPProtocol.method;
 		}
 
 		// check path
@@ -319,7 +319,7 @@ public class Request extends app.chrisk.aletheia.protocol.Request
 		// check type
 		if(!Util.isValidType(type))
 		{
-			type = HttpProtocol.type;
+			type = HTTPProtocol.type;
 		}
 
 		this.method = method;

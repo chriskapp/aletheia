@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for
  * debugging and finding security issues in web applications. For the current
@@ -20,38 +20,52 @@
  * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package app.chrisk.aletheia.sidebar.http;
+package app.chrisk.aletheia.search.engine;
 
-import javax.swing.JPanel;
-
+import app.chrisk.aletheia.TextPaneOut;
 import app.chrisk.aletheia.protocol.http.Response;
-import app.chrisk.aletheia.sidebar.SidebarInterface;
+import app.chrisk.aletheia.search.SearchInterface;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
- * SidebarHttpAbstract
+ * CSSSelector
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public abstract class SidebarHttpAbstract extends JPanel implements SidebarInterface
+public class CSSSelector implements SearchInterface
 {
-	abstract public String getContentType();
-	abstract public void process(Response response) throws Exception;
-
-	public SidebarHttpAbstract()
+	public String getName()
 	{
-		super();
-
-		this.setName(this.getContentType());
+		return "CSS Selector";
 	}
 
-	public void process(app.chrisk.aletheia.protocol.Response response) throws Exception
+	public void search(String search, TextPaneOut out) throws Exception
 	{
-		if(response instanceof Response)
-		{
-			Response httpResponse = (Response) response;
+		if (!search.isEmpty()) {
+			app.chrisk.aletheia.protocol.Response response = out.getResponse();
 
-			this.process(httpResponse);
+			if (response instanceof Response) {
+				Response httpResponse = (Response) response;
+
+				String html = httpResponse.getBody();
+				Document doc = Jsoup.parse(html);
+				
+				Elements els = doc.select(search);
+				StringBuilder result = new StringBuilder();
+				
+				for (Element el : els) {
+					result.append(el.outerHtml());
+					result.append("\n");
+				}
+
+				httpResponse.setBody(result.toString());
+
+				out.update();
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,16 +22,11 @@
 
 package app.chrisk.aletheia.filter.response;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.util.Properties;
-
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import app.chrisk.aletheia.filter.ConfigFilterAbstract;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Properties;
 
 /**
  * LocationConfig
@@ -41,7 +36,7 @@ import app.chrisk.aletheia.filter.ConfigFilterAbstract;
  */
 public class LocationConfig extends ConfigFilterAbstract
 {
-	private JCheckBox ckbActive;
+	private final JCheckBox ckbActive;
 
 	public LocationConfig()
 	{
@@ -81,9 +76,7 @@ public class LocationConfig extends ConfigFilterAbstract
 
 	public Properties onSave() 
 	{
-		Properties config = new Properties();
-
-		return config;
+        return new Properties();
 	}
 	
 	public boolean isActive()

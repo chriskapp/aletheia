@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for
  * debugging and finding security issues in web applications. For the current
@@ -32,17 +32,15 @@ public class ProcessorFactory
 {
 	public static ResponseProcessorInterface getResponse(String name) throws Exception
 	{
-		String cls = "com.k42b3.aletheia.response." + name;
-		Class<ResponseProcessorInterface> c = (Class<ResponseProcessorInterface>) Class.forName(cls);
+		Class<?> responseClass = Class.forName("app.chrisk.aletheia.response." + name);
 
-		return c.newInstance();
+		return (ResponseProcessorInterface) responseClass.newInstance();
 	}
 
 	public static RequestProcessorInterface getRequest(String name) throws Exception
 	{
-		String cls = "com.k42b3.aletheia.request." + name;
-		Class<RequestProcessorInterface> c = (Class<RequestProcessorInterface>) Class.forName(cls);
+		Class<?> requestClass = Class.forName("app.chrisk.aletheia.request." + name);
 
-		return c.newInstance();
+		return (RequestProcessorInterface) requestClass.newInstance();
 	}
 }

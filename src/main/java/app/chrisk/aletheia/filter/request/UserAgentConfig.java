@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,21 +22,14 @@
 
 package app.chrisk.aletheia.filter.request;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.Properties;
-
-import javax.swing.ComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.event.ListDataListener;
-
 import app.chrisk.aletheia.Aletheia;
 import app.chrisk.aletheia.filter.ConfigFilterAbstract;
+
+import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * UserAgentConfig
@@ -46,8 +39,8 @@ import app.chrisk.aletheia.filter.ConfigFilterAbstract;
  */
 public class UserAgentConfig extends ConfigFilterAbstract
 {
-	private JCheckBox ckbActive;
-	private JComboBox cboAgent;
+	private final JCheckBox ckbActive;
+	private final JComboBox<AgentModel> cboAgent;
 
 	public UserAgentConfig()
 	{
@@ -91,8 +84,7 @@ public class UserAgentConfig extends ConfigFilterAbstract
 
 
 		// add agents
-		ArrayList<AgentEntry> agents = new ArrayList<AgentEntry>();
-
+		ArrayList<AgentEntry> agents = new ArrayList<>();
 		agents.add(new AgentEntry("Aletheia " + Aletheia.VERSION, "Aletheia/" + Aletheia.VERSION));
 		agents.add(new AgentEntry("Firefox 4.0", "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.3) Gecko/20100401 Firefox/4.0 (.NET CLR 3.5.30729)"));
 		agents.add(new AgentEntry("Firefox 3.8", "Mozilla/5.0 (X11; U; Linux i686; pl-PL; rv:1.9.0.2) Gecko/20121223 Ubuntu/9.25 (jaunty) Firefox/3.8"));
@@ -142,8 +134,8 @@ public class UserAgentConfig extends ConfigFilterAbstract
 
 	class AgentModel implements ComboBoxModel
 	{
-		ArrayList<AgentEntry> agents = new ArrayList<AgentEntry>();
-		ArrayList<ListDataListener> listener = new ArrayList<ListDataListener>();
+		ArrayList<AgentEntry> agents = new ArrayList<>();
+		ArrayList<ListDataListener> listener = new ArrayList<>();
 		
 		private Object selected;
 
@@ -188,10 +180,10 @@ public class UserAgentConfig extends ConfigFilterAbstract
 		}
 	}
 	
-	class AgentEntry
+	static class AgentEntry
 	{
-		private String key;
-		private String value;
+		private final String key;
+		private final String value;
 
 		public AgentEntry(String key, String value)
 		{

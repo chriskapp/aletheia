@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,56 +22,39 @@
 
 package app.chrisk.aletheia.sidebar.http;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.SystemColor;
+import app.chrisk.aletheia.Aletheia;
+import app.chrisk.aletheia.TextFieldUrl;
+import app.chrisk.aletheia.protocol.http.Response;
+import app.chrisk.aletheia.protocol.http.Util;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
-
-import app.chrisk.aletheia.protocol.http.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import app.chrisk.aletheia.Aletheia;
-import app.chrisk.aletheia.TextFieldUrl;
-import app.chrisk.aletheia.protocol.http.Util;
-
 /**
- * Html
+ * HTML
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class Html extends SidebarHttpAbstract
+public class HTML extends SidebarHTTPAbstract
 {
-	private ArrayList<Resource> resources;
-	private DefaultListModel<Resource> lm;
-	private JList<Resource> list;
-	private JTextField search;
+	private final ArrayList<Resource> resources;
+	private final DefaultListModel<Resource> lm;
+	private final JList<Resource> list;
+	private final JTextField search;
 
 	private String baseUrl;
 
-	public Html()
+	public HTML()
 	{
 		super();
 

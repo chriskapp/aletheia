@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,21 +22,9 @@
 
 package app.chrisk.aletheia.view;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.*;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 /**
  * Log
@@ -46,9 +34,7 @@ import javax.swing.JTextArea;
  */
 public class Log extends JFrame
 {
-	private JTextArea txtLog;
-
-	private Logger logger = Logger.getLogger("app.chrisk.aletheia");
+	private final JTextArea txtLog;
 
 	public Log()
 	{
@@ -80,14 +66,7 @@ public class Log extends JFrame
 
 		JButton btnReset = new JButton("Reset");
 		btnReset.setMnemonic(java.awt.event.KeyEvent.VK_R);
-		btnReset.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e)
-			{
-				txtLog.setText("");
-			}
-
-		});
+		btnReset.addActionListener(e -> txtLog.setText(""));
 
 		panelButtons.add(btnReset);
 

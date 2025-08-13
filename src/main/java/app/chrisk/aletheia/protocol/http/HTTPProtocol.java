@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,19 +22,11 @@
 
 package app.chrisk.aletheia.protocol.http;
 
-import java.net.Socket;
-import java.net.URL;
-import java.net.URLStreamHandler;
-import java.util.ArrayList;
-import java.util.LinkedList;
-
-import org.apache.http.ConnectionReuseStrategy;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
+import app.chrisk.aletheia.Aletheia;
+import app.chrisk.aletheia.protocol.CallbackInterface;
+import app.chrisk.aletheia.protocol.ProtocolAbstract;
+import org.apache.http.*;
+import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpClientConnection;
@@ -43,28 +35,22 @@ import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.params.SyncBasicHttpParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
-import org.apache.http.protocol.HttpRequestExecutor;
-import org.apache.http.protocol.ImmutableHttpProcessor;
-import org.apache.http.protocol.RequestConnControl;
-import org.apache.http.protocol.RequestContent;
-import org.apache.http.protocol.RequestExpectContinue;
-import org.apache.http.protocol.RequestTargetHost;
+import org.apache.http.protocol.*;
 
-import app.chrisk.aletheia.Aletheia;
-import app.chrisk.aletheia.protocol.CallbackInterface;
-import app.chrisk.aletheia.protocol.ProtocolAbstract;
+import java.net.Socket;
+import java.net.URL;
+import java.net.URLStreamHandler;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
- * HttpProtocol
+ * HTTPProtocol
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class HttpProtocol extends ProtocolAbstract
+public class HTTPProtocol extends ProtocolAbstract
 {
 	public final static String newLine = "\r\n";
 	public final static String type = "HTTP/1.1";
@@ -72,15 +58,14 @@ public class HttpProtocol extends ProtocolAbstract
 
 	protected HttpParams params;
 	protected HttpHost host;
-	protected HttpProcessor httpproc;
-	protected HttpRequestExecutor httpexecutor;
+	protected HttpProcessor httpProcessor;
+	protected HttpRequestExecutor httpExecutor;
 	protected HttpContext context;
-	protected ConnectionReuseStrategy connStrategy;
-	protected DefaultHttpClientConnection conn;
+	protected ConnectionReuseStrategy connectionStrategy;
+	protected DefaultHttpClientConnection connection;
 
-	public HttpProtocol()
+	public HTTPProtocol()
 	{
-		// http settings
 		params = new SyncBasicHttpParams();
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 		HttpProtocolParams.setContentCharset(params, "UTF-8");
@@ -93,8 +78,8 @@ public class HttpProtocol extends ProtocolAbstract
 			new RequestExpectContinue()
 		};
 
-		httpproc = new ImmutableHttpProcessor(interceptors);
-		httpexecutor = new HttpRequestExecutor();
+		httpProcessor = new ImmutableHttpProcessor(interceptors);
+		httpExecutor = new HttpRequestExecutor();
 	}
 
 	public void setRequest(app.chrisk.aletheia.protocol.Request request, CallbackInterface callback) throws Exception
@@ -104,14 +89,10 @@ public class HttpProtocol extends ProtocolAbstract
 		// request settings
 		int port = request.getUrl().getPort();
 
-		if(port == -1)
-		{
-			if(request.getUrl().getProtocol().equalsIgnoreCase("https"))
-			{
+		if (port == -1) {
+			if (request.getUrl().getProtocol().equalsIgnoreCase("https")) {
 				port = 443;
-			}
-			else
-			{
+			} else {
 				port = 80;
 			}
 		}
@@ -119,69 +100,55 @@ public class HttpProtocol extends ProtocolAbstract
 		context = new BasicHttpContext(null);
 		host = new HttpHost(request.getUrl().getHost(), port);
 
-		conn = new DefaultHttpClientConnection();
-		connStrategy = new DefaultConnectionReuseStrategy();
+		connection = new DefaultHttpClientConnection();
+		connectionStrategy = new DefaultConnectionReuseStrategy();
 
-		context.setAttribute(ExecutionContext.HTTP_CONNECTION, conn);
+		context.setAttribute(ExecutionContext.HTTP_CONNECTION, connection);
 		context.setAttribute(ExecutionContext.HTTP_TARGET_HOST, host);
 	}
 
 	public void run()
 	{
-		try
-		{
-			// get socket
+		try {
 			Socket socket = this.getSocket();
-			conn.bind(socket, params);
+			connection.bind(socket, params);
 
-			// build request
 			BasicHttpRequest request;
-
-			if(!this.getRequest().getBody().isEmpty())
-			{
+			if (!this.getRequest().getBody().isEmpty()) {
 				request = new BasicHttpEntityEnclosingRequest(this.getRequest().getMethod(), this.getRequest().getPath());
-			}
-			else
-			{
+			} else {
 				request = new BasicHttpRequest(this.getRequest().getMethod(), this.getRequest().getPath());
 			}
 
 			// add headers
 			String boundary = null;
-			ArrayList<String> ignoreHeader = new ArrayList<String>();
+			ArrayList<String> ignoreHeader = new ArrayList<>();
 			ignoreHeader.add("Content-Length");
 			ignoreHeader.add("Expect");
 
 			LinkedList<Header> headers = this.getRequest().getHeaders();
 
-			for(int i = 0; i < headers.size(); i++)
-			{
-				if(!ignoreHeader.contains(headers.get(i).getName()))
-				{
-					// if the content-type header gets set the conent-length
-					// header is automatically added
-					request.addHeader(headers.get(i));
-				}
+            for (Header value : headers) {
+                if (!ignoreHeader.contains(value.getName())) {
+                    // if the content-type header gets set the conent-length
+                    // header is automatically added
+                    request.addHeader(value);
+                }
 
-				if(headers.get(i).getName().equals("Content-Type") && headers.get(i).getValue().startsWith("multipart/form-data"))
-				{
-					String header = headers.get(i).getValue().substring(headers.get(i).getValue().indexOf(";") + 1).trim();
-					
-					if(!header.isEmpty())
-					{
-						String parts[] = header.split("=");
+                if (value.getName().equals("Content-Type") && value.getValue().startsWith("multipart/form-data")) {
+                    String header = value.getValue().substring(value.getValue().indexOf(";") + 1).trim();
 
-						if(parts.length >= 2)
-						{
-							boundary = parts[1];
-						}
-					}
-				}
-			}
+                    if (!header.isEmpty()) {
+                        String[] parts = header.split("=");
 
-			// set body
-			if(request instanceof BasicHttpEntityEnclosingRequest && boundary != null)
-			{
+                        if (parts.length >= 2) {
+                            boundary = parts[1];
+                        }
+                    }
+                }
+            }
+
+			if (request instanceof BasicHttpEntityEnclosingRequest && boundary != null) {
 				boundary = "--" + boundary;
 				StringBuilder body = new StringBuilder();
 				String req = this.getRequest().getBody();
@@ -190,38 +157,28 @@ public class HttpProtocol extends ProtocolAbstract
 				String partHeader;
 				String partBody;
 
-				while((i = req.indexOf(boundary, i)) != -1)
-				{
+				while ((i = req.indexOf(boundary, i)) != -1) {
 					int hPos = req.indexOf("\n\n", i + 1);
-					if(hPos != -1)
-					{
+					if (hPos != -1) {
 						partHeader = req.substring(i + boundary.length() + 1, hPos).trim();
-					}
-					else
-					{
+					} else {
 						partHeader = null;
 					}
 
 					int bpos = req.indexOf(boundary, i + 1);
-					if(bpos != -1)
-					{
+					if (bpos != -1) {
 						partBody = req.substring(hPos == -1 ? i : hPos + 2, bpos);
-					}
-					else
-					{
+					} else {
 						partBody = req.substring(hPos == -1 ? i : hPos + 2);
 					}
 
-					if(partBody.equals(boundary + "--"))
-					{
-						body.append(boundary + "--" + "\r\n");
+					if (partBody.equals(boundary + "--")) {
+						body.append(boundary).append("--").append("\r\n");
 						break;
 					}
-					else if(!partBody.isEmpty())
-					{
-						body.append(boundary + "\r\n");
-						if(partHeader != null && !partHeader.isEmpty())
-						{
+					else if (!partBody.isEmpty()) {
+						body.append(boundary).append("\r\n");
+						if (partHeader != null && !partHeader.isEmpty()) {
 							body.append(partHeader.replaceAll("\n", "\r\n"));
 							body.append("\r\n");
 							body.append("\r\n");
@@ -237,9 +194,7 @@ public class HttpProtocol extends ProtocolAbstract
 				HttpEntity entity = new StringEntity(this.getRequest().getBody());
 
 				((BasicHttpEntityEnclosingRequest) request).setEntity(entity);
-			}
-			else if(request instanceof BasicHttpEntityEnclosingRequest)
-			{
+			} else if (request instanceof BasicHttpEntityEnclosingRequest) {
 				HttpEntity entity = new StringEntity(this.getRequest().getBody());
 
 				((BasicHttpEntityEnclosingRequest) request).setEntity(entity);
@@ -249,50 +204,36 @@ public class HttpProtocol extends ProtocolAbstract
 
 			// request
 			request.setParams(params);
-			httpexecutor.preProcess(request, httpproc, context);
+			httpExecutor.preProcess(request, httpProcessor, context);
 
-			HttpResponse response = httpexecutor.execute(request, conn, context);
+			HttpResponse response = httpExecutor.execute(request, connection, context);
 			response.setParams(params);
-			httpexecutor.postProcess(response, httpproc, context);
+			httpExecutor.postProcess(response, httpProcessor, context);
 
 			logger.info("< " + response.getStatusLine());
 
-			// update request headers 
-			LinkedList<Header> header = new LinkedList<Header>();
+			LinkedList<Header> header = new LinkedList<>();
 			Header[] allHeaders = request.getAllHeaders();
 
-			for(int i = 0; i < allHeaders.length; i++)
-			{
-				header.add(allHeaders[i]);
-			}
+            Collections.addAll(header, allHeaders);
 
 			this.getRequest().setHeaders(header);
 
-			// create response
 			this.response = new Response(response);
 
-			// call callback
 			callback.onResponse(this.request, this.response);
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			Aletheia.handleException(e);
-		}
-		finally
-		{
-			try
-			{
-				conn.close();
-			}
-			catch(Exception e)
-			{
+		} finally {
+			try {
+				connection.close();
+			} catch(Exception e) {
 				Aletheia.handleException(e);
 			}
 		}
 	}
 
-	public Request buildRequest(URL url, String content) throws Exception
-	{
+	public Request buildRequest(URL url, String content) {
 		return new Request(url, content);
 	}
 
@@ -308,7 +249,7 @@ public class HttpProtocol extends ProtocolAbstract
 	
 	public URLStreamHandler getStreamHandler()
 	{
-		return new HttpURLStreamHandler();
+		return new HTTPURLStreamHandler();
 	}
 
 	public Socket getSocket() throws Exception

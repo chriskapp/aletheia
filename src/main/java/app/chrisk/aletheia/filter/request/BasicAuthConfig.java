@@ -1,9 +1,9 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
  * version and more information visit <https://github.com/chriskapp/aletheia>
- * 
+ *
  * Copyright (c) 2010-2025 Christoph Kappestein <christoph.kappestein@gmail.com>
  * 
  * This file is part of Aletheia. Aletheia is free software: you can 
@@ -22,17 +22,11 @@
 
 package app.chrisk.aletheia.filter.request;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.util.Properties;
-
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import app.chrisk.aletheia.filter.ConfigFilterAbstract;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Properties;
 
 /**
  * BasicAuthConfig
@@ -42,9 +36,9 @@ import app.chrisk.aletheia.filter.ConfigFilterAbstract;
  */
 public class BasicAuthConfig extends ConfigFilterAbstract
 {
-	private JCheckBox ckbActive;
-	private JTextField txtUser;
-	private JTextField txtPw;
+	private final JCheckBox ckbActive;
+	private final JTextField txtUser;
+	private final JTextField txtPw;
 
 	public BasicAuthConfig()
 	{

@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,9 +22,8 @@
 
 package app.chrisk.aletheia;
 
-import java.awt.Font;
-
-import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * TextFieldUrl

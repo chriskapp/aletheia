@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -35,28 +35,24 @@ public class CookieStore
 {
 	private static CookieStore instance;
 
-	private HashMap<String, LinkedList<Cookie>> store;
+	private final HashMap<String, LinkedList<Cookie>> store;
 
 	private CookieStore()
 	{
-		store = new HashMap<String, LinkedList<Cookie>>();
+		store = new HashMap<>();
 	}
 
 	public void addCookie(String domain, Cookie cookie)
 	{
-		if(!store.containsKey(domain))
-		{
+		if (!store.containsKey(domain)) {
 			store.put(domain, new LinkedList<Cookie>());
 		}
 
 		LinkedList<Cookie> cookies = store.get(domain);
 
-		if(cookies.indexOf(cookie) != -1)
-		{
+		if (cookies.contains(cookie)) {
 			cookies.set(cookies.indexOf(cookie), cookie);
-		}
-		else
-		{
+		} else {
 			cookies.add(cookie);
 		}
 	}
@@ -68,36 +64,26 @@ public class CookieStore
 
 	public void deleteCookie(String domain, Cookie cookie)
 	{
-		if(store.containsKey(domain))
-		{
+		if (store.containsKey(domain)) {
 			store.get(domain).remove(cookie);
 		}
 	}
 
 	public void deleteCookies(String domain)
 	{
-		if(store.containsKey(domain))
-		{
+		if (store.containsKey(domain)) {
 			store.get(domain).clear();
 		}
 	}
 
 	public LinkedList<Cookie> getCookies(String domain)
 	{
-		if(store.containsKey(domain))
-		{
-			return store.get(domain);
-		}
-		else
-		{
-			return null;
-		}
+        return store.getOrDefault(domain, null);
 	}
 
 	public static CookieStore getInstance()
 	{
-		if(instance == null)
-		{
+		if (instance == null) {
 			instance = new CookieStore();
 		}
 

@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,8 +22,7 @@
 
 package app.chrisk.aletheia;
 
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 /**
  * Entry
@@ -35,31 +34,19 @@ public class Entry
 {
 	public static void main(String[] args)
 	{
-		if(args.length == 2)
-		{
+		if (args.length == 2) {
 			System.setProperty("http.proxyHost", args[0]);
 			System.setProperty("http.proxyPort", args[1]);
 		}
 
-		try
-		{
+		try {
 			String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
 			//String lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
 
 			UIManager.setLookAndFeel(lookAndFeel);
 
-
-			SwingUtilities.invokeLater(new Runnable(){
-				
-				public void run() 
-				{
-					Aletheia.getInstance().display();
-				}
-
-			});
-		}
-		catch(Exception e)
-		{
+			SwingUtilities.invokeLater(() -> Aletheia.getInstance().display());
+		} catch(Exception e) {
 			Aletheia.handleException(e);
 		}
 	}

@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,15 +22,14 @@
 
 package app.chrisk.aletheia.protocol.whois;
 
+import app.chrisk.aletheia.Aletheia;
+import app.chrisk.aletheia.protocol.ProtocolAbstract;
+import org.apache.commons.net.whois.WhoisClient;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.util.HashMap;
-
-import org.apache.commons.net.whois.WhoisClient;
-
-import app.chrisk.aletheia.Aletheia;
-import app.chrisk.aletheia.protocol.ProtocolAbstract;
 
 /**
  * WhoisProtocol

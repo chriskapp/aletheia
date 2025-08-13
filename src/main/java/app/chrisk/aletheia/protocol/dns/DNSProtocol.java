@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,33 +22,31 @@
 
 package app.chrisk.aletheia.protocol.dns;
 
-import java.net.URL;
-import java.net.URLStreamHandler;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
+import app.chrisk.aletheia.Aletheia;
+import app.chrisk.aletheia.protocol.ProtocolAbstract;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
 
-import app.chrisk.aletheia.Aletheia;
-import app.chrisk.aletheia.protocol.ProtocolAbstract;
+import java.net.URL;
+import java.net.URLStreamHandler;
+import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
- * DnsProtocol
+ * DNSProtocol
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class DnsProtocol extends ProtocolAbstract
+public class DNSProtocol extends ProtocolAbstract
 {
-	private HashMap<Integer, String> types;
-	private ExecutorService service;
+	private final HashMap<Integer, String> types;
+	private final ExecutorService service;
 
-	public DnsProtocol()
+	public DNSProtocol()
 	{
 		// dns types
 		types = new HashMap<Integer, String>();
@@ -81,16 +79,10 @@ public class DnsProtocol extends ProtocolAbstract
 
 	public void run() 
 	{
-		try
-		{
-			Iterator<Integer> keys = types.keySet().iterator();
-
-			while(keys.hasNext())
-			{
-				int key = keys.next();
-
-				service.submit(new RequestWorker(request.getUrl().getHost(), key, types.get(key)));
-			}
+		try {
+            for (int key : types.keySet()) {
+                service.submit(new RequestWorker(request.getUrl().getHost(), key, types.get(key)));
+            }
 
 			service.shutdown();
 
@@ -103,9 +95,7 @@ public class DnsProtocol extends ProtocolAbstract
 
 			// call callback
             callback.onResponse(this.request, this.response);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			Aletheia.handleException(e);
 		}
 	}
@@ -127,14 +117,14 @@ public class DnsProtocol extends ProtocolAbstract
 	
 	public URLStreamHandler getStreamHandler()
 	{
-		return new DnsURLStreamHandler();
+		return new DNSURLStreamHandler();
 	}
 	
-	private class RequestWorker implements Runnable
+	private static class RequestWorker implements Runnable
 	{
-		private String host;
-		private int type;
-		private String desc;
+		private final String host;
+		private final int type;
+		private final String desc;
 
 		public RequestWorker(String host, int type, String desc)
 		{
@@ -147,31 +137,24 @@ public class DnsProtocol extends ProtocolAbstract
 		{
 			StringBuilder result = new StringBuilder();
 
-			result.append("> " + desc + "\n");
+			result.append("> ").append(desc).append("\n");
 
-			try
-			{
+			try {
 				Lookup lookup = new Lookup(host, type);
 				lookup.setResolver(new SimpleResolver("8.8.8.8"));
 
 				Record [] records = lookup.run();
 
-				if(records != null && records.length > 0)
-				{
-					for(int j = 0; j < records.length; j++)
-					{
-						result.append(records[j] + "\n");
-					}
-				}
-				else
-				{
+				if (records != null && records.length > 0) {
+                    for (Record record : records) {
+                        result.append(record).append("\n");
+                    }
+				} else {
 					return;
 				}
 
 				result.append("\n");
-			}
-			catch(Exception e)
-			{
+			} catch(Exception e) {
 				Aletheia.handleException(e);
 			}
 

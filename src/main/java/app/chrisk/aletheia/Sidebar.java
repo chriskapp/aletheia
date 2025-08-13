@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,17 +22,14 @@
 
 package app.chrisk.aletheia;
 
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
 import app.chrisk.aletheia.protocol.http.Response;
 import app.chrisk.aletheia.sidebar.SidebarInterface;
 import app.chrisk.aletheia.sidebar.http.Atom;
-import app.chrisk.aletheia.sidebar.http.Html;
+import app.chrisk.aletheia.sidebar.http.HTML;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 /**
  * Sidebar
@@ -42,10 +39,7 @@ import app.chrisk.aletheia.sidebar.http.Html;
  */
 public class Sidebar extends JPanel
 {
-	private Html html;
-	private Atom atom;
-
-	public Sidebar()
+    public Sidebar()
 	{
 		super();
 
@@ -57,58 +51,46 @@ public class Sidebar extends JPanel
 
 		// add sidebar panels
 
-		// http
-		// html
-		this.html = new Html();
-		this.add(this.html, this.html.getContentType());
+        HTML html = new HTML();
+		this.add(html, html.getContentType());
 
-		// atom
-		this.atom = new Atom();
-		this.add(this.atom, this.atom.getContentType());
+        Atom atom = new Atom();
+		this.add(atom, atom.getContentType());
 	}
 
 	public void update(app.chrisk.aletheia.protocol.Response response)
 	{
-		try
-		{
-			if(response instanceof Response)
-			{
+		try {
+			if (response instanceof Response) {
 				Response httpResponse = (Response) response;
 
 				Component[] components = this.getComponents();
 				String contentType = httpResponse.getHeader("Content-Type");
 				
-				if(contentType != null)
-				{
-					for(int i = 0; i < components.length; i++)
-					{
-						JPanel panel = (JPanel) components[i];
+				if (contentType != null) {
+                    for (Component component : components) {
+                        JPanel panel = (JPanel) component;
 
-						if(panel != null && contentType.indexOf(panel.getName()) != -1)
-						{
-							((SidebarInterface) components[i]).process(response);
+                        if (panel != null && contentType.contains(panel.getName())) {
+                            ((SidebarInterface) component).process(response);
 
-							CardLayout cl = (CardLayout) this.getLayout();
-							cl.show(this, components[i].getName());
+                            CardLayout cl = (CardLayout) this.getLayout();
+                            cl.show(this, component.getName());
 
-							this.setVisible(true);
+                            this.setVisible(true);
 
-							return;
-						}
-					}
+                            return;
+                        }
+                    }
 				}
 
 				// no sidebar available for this content type
 				this.setVisible(false);
-			}
-			else
-			{
+			} else {
 				// no sidebar available for this response type
 				this.setVisible(false);
 			}
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			Aletheia.handleException(e);
 		}
 	}

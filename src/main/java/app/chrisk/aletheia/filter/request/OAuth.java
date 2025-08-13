@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,11 +22,11 @@
 
 package app.chrisk.aletheia.filter.request;
 
-import java.util.HashMap;
-
-import app.chrisk.aletheia.protocol.http.Request;
 import app.chrisk.aletheia.filter.RequestFilterAbstract;
 import app.chrisk.aletheia.oauth.SignatureInterface;
+import app.chrisk.aletheia.protocol.http.Request;
+
+import java.util.HashMap;
 
 /**
  * Oauth

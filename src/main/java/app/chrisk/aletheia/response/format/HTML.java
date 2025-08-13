@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,26 +22,26 @@
 
 package app.chrisk.aletheia.response.format;
 
+import app.chrisk.aletheia.processor.ProcessPropertiesAbstract;
+import app.chrisk.aletheia.processor.ResponseProcessorInterface;
+import app.chrisk.aletheia.protocol.http.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.net.URL;
 import java.util.Properties;
 
-import app.chrisk.aletheia.protocol.http.Response;
-import org.apache.sling.commons.json.JSONObject;
-
-import app.chrisk.aletheia.processor.ProcessPropertiesAbstract;
-import app.chrisk.aletheia.processor.ResponseProcessorInterface;
-
 /**
- * Json
+ * HTML
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class Json implements ResponseProcessorInterface
+public class HTML implements ResponseProcessorInterface
 {
 	public String getName()
 	{
-		return "JSON Formatter";
+		return "HTML Formatter";
 	}
 
 	public void process(URL url, app.chrisk.aletheia.protocol.Response response, Properties properties) throws Exception
@@ -50,11 +50,12 @@ public class Json implements ResponseProcessorInterface
 		{
 			Response httpResponse = (Response) response;
 
-			// read json
-			JSONObject json = new JSONObject(httpResponse.getBody());
+			// read html
+			Document doc = Jsoup.parse(httpResponse.getBody());
+			doc.outputSettings().prettyPrint(true);
 
 			// set content
-			httpResponse.setBody(json.toString(4));
+			httpResponse.setBody(doc.html());
 		}
 	}
 	

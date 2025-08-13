@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -20,22 +20,44 @@
  * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package app.chrisk.aletheia.protocol.http;
+package app.chrisk.aletheia.response.format;
 
-import java.io.IOException;
+import app.chrisk.aletheia.processor.ProcessPropertiesAbstract;
+import app.chrisk.aletheia.processor.ResponseProcessorInterface;
+import app.chrisk.aletheia.protocol.http.Response;
+import org.apache.sling.commons.json.JSONObject;
+
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+import java.util.Properties;
 
 /**
- * HttpURLStreamHandler
+ * JSON
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class HttpURLStreamHandler extends URLStreamHandler
+public class JSON implements ResponseProcessorInterface
 {
-	protected URLConnection openConnection(URL u) throws IOException 
+	public String getName()
+	{
+		return "JSON Formatter";
+	}
+
+	public void process(URL url, app.chrisk.aletheia.protocol.Response response, Properties properties) throws Exception
+	{
+		if(response instanceof Response)
+		{
+			Response httpResponse = (Response) response;
+
+			// read json
+			JSONObject json = new JSONObject(httpResponse.getBody());
+
+			// set content
+			httpResponse.setBody(json.toString(4));
+		}
+	}
+	
+	public ProcessPropertiesAbstract getProperties()
 	{
 		return null;
 	}

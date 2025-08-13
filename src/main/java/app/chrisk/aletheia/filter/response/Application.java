@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,12 +22,11 @@
 
 package app.chrisk.aletheia.filter.response;
 
+import app.chrisk.aletheia.Aletheia;
+import app.chrisk.aletheia.filter.ResponseFilterAbstract;
 import app.chrisk.aletheia.protocol.http.Response;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
-
-import app.chrisk.aletheia.Aletheia;
-import app.chrisk.aletheia.filter.ResponseFilterAbstract;
 
 /**
  * Application

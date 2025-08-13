@@ -1,17 +1,35 @@
+/*
+ * aletheia
+ * A browser like application to send raw http requests. It is designed for
+ * debugging and finding security issues in web applications. For the current
+ * version and more information visit <https://github.com/chriskapp/aletheia>
+ *
+ * Copyright (c) 2010-2025 Christoph Kappestein <christoph.kappestein@gmail.com>
+ *
+ * This file is part of Aletheia. Aletheia is free software: you can
+ * redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or at any later version.
+ *
+ * Aletheia is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package app.chrisk.aletheia.oauth;
+
+import app.chrisk.aletheia.Aletheia;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * OAuth
@@ -94,37 +112,30 @@ public class OAuth
 
 	public static SignatureInterface getSignature(String method) throws Exception
 	{
-		HashMap<String, String> map = new HashMap<String, String>();
+		HashMap<String, String> map = new HashMap<>();
 		map.put("PLAINTEXT", "PLAINTEXT");
 		map.put("HMAC-SHA1", "HMACSHA1");
 
-		if(map.containsKey(method))
-		{
-			String cls = "com.k42b3.aletheia.oauth." + map.get(method);
-			Class<SignatureInterface> c = (Class<SignatureInterface>) Class.forName(cls);
+		if (map.containsKey(method)) {
+			Class<?> signatureClass = Class.forName("app.chrisk.aletheia.oauth." + map.get(method));
 
-			return c.newInstance();
-		}
-		else
-		{
+			return (SignatureInterface) signatureClass.newInstance();
+		} else {
 			throw new Exception("Invalid signature method");
 		}
 	}
 
 	public static String urlEncode(String content)
 	{
-		try
-		{
+		try {
 			String encoded = URLEncoder.encode(content, "UTF-8");
 
 			encoded = encoded.replaceAll("%7E", "~");
 					
 			return encoded;
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			
+		} catch(Exception e) {
+            Aletheia.handleException(e);
+
 			return null;
 		}
 	}
@@ -133,60 +144,48 @@ public class OAuth
 	{
 		Iterator<Entry<String, String>> it = params.entrySet().iterator();
 
-		List<String> keys = new ArrayList<String>();
+		List<String> keys = new ArrayList<>();
 
-		while(it.hasNext())
-		{
+		while (it.hasNext()) {
 			Entry<String, String> e = it.next();
 
 			keys.add(e.getKey());
 		}
 
-
 		// sort params
 		Collections.sort(keys);
-
 
 		// build normalized params
 		StringBuilder normalizedParams = new StringBuilder();
 
-		for(int i = 0; i < keys.size(); i++)
-		{
-			normalizedParams.append(urlEncode(keys.get(i)) + "=" + urlEncode(params.get(keys.get(i))) + "&");
-		}
+        for (String key : keys) {
+            normalizedParams.append(urlEncode(key)).append("=").append(urlEncode(params.get(key))).append("&");
+        }
 
 		String str = normalizedParams.toString();
 
-
 		// remove trailing &
 		str = str.substring(0, str.length() - 1);
-
 
 		return str;
 	}
 
 	protected static String getNormalizedUrl(String rawUrl)
 	{
-		try
-		{
+		try {
 			rawUrl = rawUrl.toLowerCase();
 
 			URL url = new URL(rawUrl);
 
 			int port = url.getPort();
 
-			if(port == -1 || port == 80 || port == 443)
-			{
+			if (port == -1 || port == 80 || port == 443) {
 				return url.getProtocol() + "://" + url.getHost() + url.getPath();
-			}
-			else
-			{
+			} else {
 				return url.getProtocol() + "://" + url.getHost() + ":" + port + url.getPath();
 			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
+		} catch(Exception e) {
+            Aletheia.handleException(e);
 
 			return null;
 		}

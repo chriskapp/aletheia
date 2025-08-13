@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -43,7 +43,7 @@ public class SearchFactory
 			Response httpResponse = (Response) response;
 
 			if (httpResponse.getHeader("Content-Type").contains("text/html")) {
-				name = "Html";
+				name = "HTML";
 			}
 		}
 
@@ -52,9 +52,8 @@ public class SearchFactory
 
 	public static SearchInterface getEngine(String name) throws Exception
 	{
-		String cls = "com.k42b3.aletheia.search.engine." + name;
-		Class<SearchInterface> c = (Class<SearchInterface>) Class.forName(cls);
+		Class<?> engineClass = Class.forName("app.chrisk.aletheia.search.engine." + name);
 
-		return c.newInstance();
+		return (SearchInterface) engineClass.newInstance();
 	}
 }

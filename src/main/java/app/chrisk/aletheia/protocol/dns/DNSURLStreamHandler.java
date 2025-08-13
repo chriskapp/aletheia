@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -28,12 +28,12 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 /**
- * DnsURLStreamHandler
+ * DNSURLStreamHandler
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class DnsURLStreamHandler extends URLStreamHandler
+public class DNSURLStreamHandler extends URLStreamHandler
 {
 	protected URLConnection openConnection(URL u) throws IOException 
 	{

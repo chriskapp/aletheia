@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -35,7 +35,7 @@ public class CertificateStore
 {
 	private static CertificateStore instance;
 
-	private LinkedList<X509Certificate> certs = new LinkedList<X509Certificate>();
+	private final LinkedList<X509Certificate> certs = new LinkedList<>();
 
 	public CertificateStore()
 	{

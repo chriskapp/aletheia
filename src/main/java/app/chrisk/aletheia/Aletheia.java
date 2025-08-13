@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -120,8 +120,8 @@ public class Aletheia extends JFrame
 		timer = new Timer();
 
 		// filter
-		filtersIn = new HashMap<Integer, ArrayList<RequestFilterAbstract>>();
-		filtersOut = new HashMap<Integer, ArrayList<ResponseFilterAbstract>>();
+		filtersIn = new HashMap<>();
+		filtersOut = new HashMap<>();
 
 		// logging handler
 		logger.addHandler(new Handler(){
@@ -167,15 +167,13 @@ public class Aletheia extends JFrame
 
 	public void run(String url)
 	{
-		if(url.indexOf("://") == -1)
-		{
+		if (!url.contains("://")) {
 			url = "http://" + url;
 		}
 
 		logger.info("Request " + url);
 
-		try
-		{
+		try {
 			// check whether valid url
 			URL currentUrl = new URL(url);
 
@@ -195,21 +193,16 @@ public class Aletheia extends JFrame
 			protocol.setRequest(request, new RunCallbackInterface(getActiveIn(), getActiveOut(), getActiveSidebar()));
 
 			// apply request filter 
-			if(this.filtersIn.containsKey(this.getSelectedIndex()))
-			{
+			if (this.filtersIn.containsKey(this.getSelectedIndex())) {
 				ArrayList<RequestFilterAbstract> filters = this.filtersIn.get(this.getSelectedIndex());
 
-				for(int i = 0; i < filters.size(); i++)
-				{
-					try
-					{
-						filters.get(i).exec(request);
-					}
-					catch(Exception e)
-					{
-						Aletheia.handleException(e);
-					}
-				}
+                for (RequestFilterAbstract filter : filters) {
+                    try {
+                        filter.exec(request);
+                    } catch (Exception e) {
+                        Aletheia.handleException(e);
+                    }
+                }
 			}
 
 			// reset text fields
@@ -218,9 +211,7 @@ public class Aletheia extends JFrame
 
 			// start thread
 			executor.execute(protocol);
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			// set message
 			getActiveOut().setText(e.getMessage());
 
@@ -235,14 +226,7 @@ public class Aletheia extends JFrame
 		getActiveOut().setText("");
 		getActiveSidebar().setVisible(false);
 
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() 
-			{
-				getActiveUrl().requestFocusInWindow();
-			}
-
-		});
+		SwingUtilities.invokeLater(() -> getActiveUrl().requestFocusInWindow());
 	}
 
 	public void newTab(boolean active)
@@ -366,15 +350,10 @@ public class Aletheia extends JFrame
 
 		// out textarea
 		TextPaneOut out = new TextPaneOut();
-		out.addHyperlinkListener(new HyperlinkListener() {
-
-			public void hyperlinkUpdate(HyperlinkEvent e)
-			{
-				newTab();
-				run(e.getURL().toString());
-			}
-
-		});
+		out.addHyperlinkListener(e -> {
+            newTab();
+            run(e.getURL().toString());
+        });
 
 		JScrollPane scrOut = new RTextScrollPane(out);
 		scrOut.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 4));
@@ -393,25 +372,20 @@ public class Aletheia extends JFrame
 
 			public void keyReleased(KeyEvent e) 
 			{
-				if(e.getKeyCode() == KeyEvent.VK_ENTER)
-				{
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					String text = getActiveSearch().getText();
 
-					if(text.length() == 0)
-					{
+					if (text.isEmpty()) {
 						return;
 					}
 
 					// do the search
-					try
-					{
+					try {
 						Response response = getActiveOut().getResponse();
 						SearchInterface engine = SearchFactory.getFittingEngine(response);
 
 						engine.search(text, getActiveOut());
-					}
-					catch(Exception ex)
-					{
+					} catch(Exception ex) {
 						Aletheia.handleException(ex);
 					}
 				}
@@ -438,8 +412,7 @@ public class Aletheia extends JFrame
 
 		this.tp.addTab("Request #" + this.tp.getTabCount(), panel);
 
-		if(active)
-		{
+		if (active) {
 			this.tp.setSelectedIndex(this.tp.getTabCount() - 1);
 
 			reset();
@@ -459,8 +432,7 @@ public class Aletheia extends JFrame
 
 	public void closeTab()
 	{
-		if(this.tp.getTabCount() > 1)
-		{
+		if (this.tp.getTabCount() > 1) {
 			this.tp.remove(this.tp.getSelectedIndex());
 		}
 	}
@@ -471,20 +443,16 @@ public class Aletheia extends JFrame
 		fc.setFileFilter(new XmlFilter());
 
 		int returnVal = fc.showSaveDialog(Aletheia.this);
-
-		if(returnVal == JFileChooser.APPROVE_OPTION)
-		{
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			save(fc.getSelectedFile());
 		}
 	}
 
 	public void save(File file)
 	{
-		try
-		{
+		try {
 			// check file extension
-			if(!file.getName().endsWith(".xml"))
-			{
+			if (!file.getName().endsWith(".xml")) {
 				file = new File(file.getAbsolutePath() + ".xml");
 			}
 
@@ -506,75 +474,65 @@ public class Aletheia extends JFrame
 			Element filters = doc.createElement("filters");
 
 			// in filters
-			if(this.filtersIn.containsKey(this.getSelectedIndex()))
-			{
+			if (this.filtersIn.containsKey(this.getSelectedIndex())) {
 				Element in = doc.createElement("in");
 
 				ArrayList<RequestFilterAbstract> filtersIn = this.filtersIn.get(this.getSelectedIndex());
-				
-				for(int i = 0; i < filtersIn.size(); i++)
-				{
-					Element filter = doc.createElement("filter");
-					filter.setAttribute("name", filtersIn.get(i).getName());
 
-					Properties config = filtersIn.get(i).getConfig();
+                for (RequestFilterAbstract requestFilterAbstract : filtersIn) {
+                    Element filter = doc.createElement("filter");
+                    filter.setAttribute("name", requestFilterAbstract.getName());
 
-					if(config != null)
-					{
-						Set set = config.entrySet();
-						Iterator iter = set.iterator();
+                    Properties config = requestFilterAbstract.getConfig();
 
-						while(iter.hasNext())
-						{
-							Map.Entry me = (Map.Entry) iter.next();
+                    if (config != null) {
+                        Set<Map.Entry<Object, Object>> set = config.entrySet();
 
-							Element property = doc.createElement("property");
-							property.setAttribute("name", me.getKey().toString());
-							property.setTextContent(me.getValue().toString());
+                        for (Object o : set) {
+                            Map.Entry me = (Map.Entry) o;
 
-							filter.appendChild(property);
-						}
-					}
+                            Element property = doc.createElement("property");
+                            property.setAttribute("name", me.getKey().toString());
+                            property.setTextContent(me.getValue().toString());
 
-					in.appendChild(filter);
-				}
+                            filter.appendChild(property);
+                        }
+                    }
+
+                    in.appendChild(filter);
+                }
 
 				filters.appendChild(in);
 			}
 
 			// out filters
-			if(this.filtersOut.containsKey(this.getSelectedIndex()))
-			{
+			if (this.filtersOut.containsKey(this.getSelectedIndex())) {
 				Element out = doc.createElement("out");
 
 				ArrayList<ResponseFilterAbstract> filtersIn = this.filtersOut.get(this.getSelectedIndex());
 
-				for(int i = 0; i < filtersIn.size(); i++)
-				{
-					Element filter = doc.createElement("filter");
-					filter.setAttribute("name", filtersIn.get(i).getName());
+                for (ResponseFilterAbstract responseFilterAbstract : filtersIn) {
+                    Element filter = doc.createElement("filter");
+                    filter.setAttribute("name", responseFilterAbstract.getName());
 
-					Properties config = filtersIn.get(i).getConfig();
+                    Properties config = responseFilterAbstract.getConfig();
 
-					if(config != null)
-					{
-						Set set = config.entrySet();
-						Iterator iter = set.iterator();
+                    if (config != null) {
+                        Set<Map.Entry<Object, Object>> set = config.entrySet();
 
-						while(iter.hasNext())
-						{
-							Map.Entry me = (Map.Entry) iter.next();
+                        for (Map.Entry<Object, Object> objectObjectEntry : set) {
+                            Map.Entry<Object, Object> me = objectObjectEntry;
 
-							Element property = doc.createElement("property");
-							property.setAttribute("name", me.getKey().toString());
-							property.setTextContent(me.getValue().toString());
+                            Element property = doc.createElement("property");
+                            property.setAttribute("name", me.getKey().toString());
+                            property.setTextContent(me.getValue().toString());
 
-							filter.appendChild(property);
-						}
-					}
+                            filter.appendChild(property);
+                        }
+                    }
 
-					out.appendChild(filter);
-				}
+                    out.appendChild(filter);
+                }
 
 				filters.appendChild(out);
 			}
@@ -595,9 +553,7 @@ public class Aletheia extends JFrame
 			transformer.transform(source, result);
 
 			logger.info("Saved successful to " + file.getAbsolutePath());
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			Aletheia.handleException(e);
 		}
 	}
@@ -617,79 +573,60 @@ public class Aletheia extends JFrame
 
 	public void saveBookmark()
 	{
-		try
-		{
+		try {
 			String url = getActiveUrl().getText();
 			boolean added = config.addBookmark(new URL(url));
 
 			// update menu
 			JMenu menu = (JMenu) this.getJMenuBar().getComponent(3);
 			
-			if(added)
-			{
+			if (added) {
 				JMenuItem itemBookmark = new JMenuItem(url);
-				itemBookmark.addActionListener(new ActionListener() {
+				itemBookmark.addActionListener(e -> {
+                    JMenuItem item = (JMenuItem) e.getSource();
 
-					public void actionPerformed(ActionEvent e) 
-					{
-						JMenuItem item = (JMenuItem) e.getSource();
-
-						run(item.getText());
-					}
-
-				});
+                    run(item.getText());
+                });
 				menu.add(itemBookmark);
-			}
-			else
-			{
-				for(int i = 0; i < menu.getItemCount(); i++)
-				{
+			} else {
+				for (int i = 0; i < menu.getItemCount(); i++) {
 					JMenuItem itemBookmark = menu.getItem(i);
 
-					if(itemBookmark.getText().equals(url))
-					{
+					if (itemBookmark.getText().equals(url)) {
 						menu.remove(i);
 						break;
 					}
 				}
 			}
-		}
-		catch(MalformedURLException e)
-		{
+		} catch(MalformedURLException e) {
 			Aletheia.handleException(e);
 		}
 	}
 
 	public void open(File file)
 	{
-		try
-		{
+		try {
 			// read xml
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(file);
 
-			Element rootElement = (Element) doc.getDocumentElement();
+			Element rootElement = doc.getDocumentElement();
 
 			rootElement.normalize();
 
 			NodeList uriList = doc.getElementsByTagName("uri");
 			NodeList requestList = doc.getElementsByTagName("request");
 
-			if(uriList.getLength() > 0 && requestList.getLength() > 0)
-			{
+			if (uriList.getLength() > 0 && requestList.getLength() > 0) {
 				getActiveUrl().setText(uriList.item(0).getTextContent());
 				getActiveIn().setText(requestList.item(0).getTextContent());
-			}
-			else
-			{
+			} else {
 				throw new Exception("Uri or request element not found");
 			}
 
 			logger.info("Loaded successful from " + file.getAbsolutePath());
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			Aletheia.handleException(e);
 		}
 	}
@@ -699,28 +636,22 @@ public class Aletheia extends JFrame
 	 */
 	public void callRequestProcessor(String name)
 	{
-		try
-		{
+		try {
 			requestProcessor = ProcessorFactory.getRequest(name);
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			JOptionPane.showMessageDialog(this, "Invalid request processor", "Information", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
 
-		if(getActiveIn().hasRequest())
-		{
+		if (getActiveIn().hasRequest()) {
 			// check for properties
 			ProcessPropertiesAbstract win = requestProcessor.getProperties();
-			if(win != null)
-			{
+			if (win != null) {
 				win.setCallback(new ProcessPropertiesCallback() {
 
 					public void onSubmit(Properties properties)
 					{
-						try
-						{
+						try {
 							// execute sample
 							URL url = new URL(getActiveUrl().getText());
 							Request request = getActiveIn().getRequest();
@@ -728,9 +659,7 @@ public class Aletheia extends JFrame
 							requestProcessor.process(url, request, properties);
 
 							getActiveIn().update();
-						}
-						catch(Exception e)
-						{
+						} catch(Exception e) {
 							Aletheia.handleException(e);
 						}
 
@@ -746,11 +675,8 @@ public class Aletheia extends JFrame
 
 				win.pack();
 				win.setVisible(true);
-			}
-			else
-			{
-				try
-				{
+			} else {
+				try {
 					// execute sample
 					URL url = new URL(getActiveUrl().getText());
 					Request request = getActiveIn().getRequest();
@@ -758,17 +684,13 @@ public class Aletheia extends JFrame
 					requestProcessor.process(url, request, null);
 
 					getActiveIn().update();
-				}
-				catch(Exception e)
-				{
+				} catch(Exception e) {
 					Aletheia.handleException(e);
 				}
 
 				requestProcessor = null;
 			}
-		}
-		else
-		{
+		} else {
 			JOptionPane.showMessageDialog(this, "Please make a request in order to call a processor", "Information", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
@@ -778,22 +700,17 @@ public class Aletheia extends JFrame
 	 */
 	public void callResponseProcessor(String name)
 	{
-		try
-		{
+		try {
 			responseProcessor = ProcessorFactory.getResponse(name);
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			JOptionPane.showMessageDialog(this, "Invalid response processor", "Information", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
 
-		if(getActiveOut().hasResponse())
-		{
+		if (getActiveOut().hasResponse()) {
 			// check for properties
 			ProcessPropertiesAbstract win = responseProcessor.getProperties();
-			if(win != null)
-			{
+			if (win != null) {
 				win.setCallback(new ProcessPropertiesCallback() {
 
 					public void onSubmit(Properties properties)
@@ -825,11 +742,8 @@ public class Aletheia extends JFrame
 
 				win.pack();
 				win.setVisible(true);
-			}
-			else
-			{
-				try
-				{
+			} else {
+				try {
 					// execute sample
 					URL url = new URL(getActiveUrl().getText());
 					Response response = getActiveOut().getResponse();
@@ -837,17 +751,13 @@ public class Aletheia extends JFrame
 					responseProcessor.process(url, response, null);
 
 					getActiveOut().update();
-				}
-				catch(Exception e)
-				{
+				} catch(Exception e) {
 					Aletheia.handleException(e);
 				}
 
 				responseProcessor = null;
 			}
-		}
-		else
-		{
+		} else {
 			JOptionPane.showMessageDialog(this, "Please make a request in order to call a processor", "Information", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
@@ -1070,16 +980,6 @@ public class Aletheia extends JFrame
 				callRequestProcessor("Form");
 			}
 
-			public void onRequestOauthRequestToken()
-			{
-				callRequestProcessor("OauthRequestToken");
-			}
-
-			public void onRequestPingback()
-			{
-				callRequestProcessor("Pingback");
-			}
-
 			public void onRequestUpload()
 			{
 				callRequestProcessor("Upload");
@@ -1092,83 +992,57 @@ public class Aletheia extends JFrame
 
 			public void onViewCertificates()
 			{
-				SwingUtilities.invokeLater(new Runnable() {
+				SwingUtilities.invokeLater(() -> {
+                    if (certificatesWin == null) {
+                        certificatesWin = new Certificates();
+                        certificatesWin.pack();
+                    }
 
-					public void run()
-					{
-						if(certificatesWin == null)
-						{
-							certificatesWin = new Certificates();
-							certificatesWin.pack();
-						}
+                    try {
+                        certificatesWin.load(new URL(getActiveUrl().getText()));
 
-						try
-						{
-							certificatesWin.load(new URL(getActiveUrl().getText()));
+                        if (!certificatesWin.isVisible()) {
+                            certificatesWin.setVisible(true);
+                        }
 
-							if(!certificatesWin.isVisible())
-							{
-								certificatesWin.setVisible(true);
-							}
-
-							certificatesWin.requestFocus();
-						}
-						catch(Exception e)
-						{
-							Aletheia.handleException(e);
-						}
-					}
-
-				});
+                        certificatesWin.requestFocus();
+                    } catch(Exception e) {
+                        Aletheia.handleException(e);
+                    }
+                });
 			}
 
 			public void onViewCookies()
 			{
-				SwingUtilities.invokeLater(new Runnable() {
+				SwingUtilities.invokeLater(() -> {
+                    if (cookiesWin == null) {
+                        cookiesWin = new Cookies();
+                        cookiesWin.pack();
+                    }
 
-					public void run()
-					{
-						if(cookiesWin == null)
-						{
-							cookiesWin = new Cookies();
-							cookiesWin.pack();
-						}
+                    try {
+                        cookiesWin.load(new URL(getActiveUrl().getText()));
 
-						try
-						{
-							cookiesWin.load(new URL(getActiveUrl().getText()));
+                        if (!cookiesWin.isVisible()) {
+                            cookiesWin.setVisible(true);
+                        }
 
-							if(!cookiesWin.isVisible())
-							{
-								cookiesWin.setVisible(true);
-							}
-
-							cookiesWin.requestFocus();
-						}
-						catch(Exception e)
-						{
-							Aletheia.handleException(e);
-						}
-					}
-
-				});
+                        cookiesWin.requestFocus();
+                    } catch(Exception e) {
+                        Aletheia.handleException(e);
+                    }
+                });
 			}
 
 			public void onViewLog()
 			{
-				SwingUtilities.invokeLater(new Runnable() {
-					
-					public void run()
-					{
-						if(!logWin.isVisible())
-						{
-							logWin.setVisible(true);
-						}
+				SwingUtilities.invokeLater(() -> {
+                    if (!logWin.isVisible()) {
+                        logWin.setVisible(true);
+                    }
 
-						logWin.requestFocus();
-					}
-
-				});
+                    logWin.requestFocus();
+                });
 			}
 
 			public void onViewAbout()

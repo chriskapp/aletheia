@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,6 +22,9 @@
 
 package app.chrisk.aletheia.protocol.http;
 
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -30,9 +33,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
-
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
 
 /**
  * Util

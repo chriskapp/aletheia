@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,16 +22,11 @@
 
 package app.chrisk.aletheia;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
 
 /**
  * MenuBar
@@ -67,99 +62,43 @@ public class MenuBar extends JMenuBar
 		JMenu menu = new JMenu("URL");
 
 		JMenuItem itemRun = new JMenuItem("Run");
-		itemRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
-		itemRun.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onUrlRun();
-			}
-
-		});
+		itemRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
+		itemRun.addActionListener(e -> listener.onUrlRun());
 		menu.add(itemRun);
 
 		JMenuItem itemReset = new JMenuItem("Reset");
-		itemReset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
-		itemReset.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onUrlReset();
-			}
-
-		});
+		itemReset.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+		itemReset.addActionListener(e -> listener.onUrlReset());
 		menu.add(itemReset);
 
 		JMenuItem itemNewTab = new JMenuItem("New Tab");
-		itemNewTab.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
-		itemNewTab.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onUrlNewTab();
-			}
-
-		});
+		itemNewTab.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
+		itemNewTab.addActionListener(e -> listener.onUrlNewTab());
 		menu.add(itemNewTab);
 
 		JMenuItem itemCloseTab = new JMenuItem("Close Tab");
-		itemCloseTab.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
-		itemCloseTab.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onUrlCloseTab();
-			}
-
-		});
+		itemCloseTab.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK));
+		itemCloseTab.addActionListener(e -> listener.onUrlCloseTab());
 		menu.add(itemCloseTab);
 
 		JMenuItem itemSave = new JMenuItem("Save");
-		itemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-		itemSave.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e)
-			{
-				listener.onUrlSave();
-			}
-
-		});
+		itemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+		itemSave.addActionListener(e -> listener.onUrlSave());
 		menu.add(itemSave);
 
 		JMenuItem itemLoad = new JMenuItem("Open");
-		itemLoad.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-		itemLoad.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onUrlOpen();
-			}
-
-		});
+		itemLoad.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+		itemLoad.addActionListener(e -> listener.onUrlOpen());
 		menu.add(itemLoad);
 
 		JMenuItem itemBookmark = new JMenuItem("Bookmark");
-		itemBookmark.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
-		itemBookmark.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onBookmark();
-			}
-
-		});
+		itemBookmark.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+		itemBookmark.addActionListener(e -> listener.onBookmark());
 		menu.add(itemBookmark);
 			
 		JMenuItem itemFocus = new JMenuItem("Focus");
-		itemFocus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK));
-		itemFocus.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onUrlFocus();
-			}
-
-		});
+		itemFocus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
+		itemFocus.addActionListener(e -> listener.onUrlFocus());
 		menu.add(itemFocus);
 
 		this.add(menu);
@@ -170,69 +109,19 @@ public class MenuBar extends JMenuBar
 		JMenu menu = new JMenu("Request");
 
 		JMenuItem itemBasicAuth = new JMenuItem("Basic Auth");
-		itemBasicAuth.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onRequestBasicAuth();
-			}
-
-		});
+		itemBasicAuth.addActionListener(e -> listener.onRequestBasicAuth());
 		menu.add(itemBasicAuth);
 
 		JMenuItem itemForm = new JMenuItem("Form");
-		itemForm.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onRequestForm();
-			}
-
-		});
+		itemForm.addActionListener(e -> listener.onRequestForm());
 		menu.add(itemForm);
 
-		JMenuItem itemOauthRequestToken = new JMenuItem("Oauth Request Token");
-		itemOauthRequestToken.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onRequestOauthRequestToken();
-			}
-
-		});
-		menu.add(itemOauthRequestToken);
-
-		JMenuItem itemPingback = new JMenuItem("Pingback");
-		itemPingback.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onRequestPingback();
-			}
-
-		});
-		menu.add(itemPingback);
-
 		JMenuItem itemUpload = new JMenuItem("Upload");
-		itemUpload.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onRequestUpload();
-			}
-
-		});
+		itemUpload.addActionListener(e -> listener.onRequestUpload());
 		menu.add(itemUpload);
 
 		JMenuItem itemSoap = new JMenuItem("SOAP");
-		itemSoap.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onRequestSoap();
-			}
-
-		});
+		itemSoap.addActionListener(e -> listener.onRequestSoap());
 		menu.add(itemSoap);
 
 		this.add(menu);
@@ -243,45 +132,24 @@ public class MenuBar extends JMenuBar
 		JMenu menu = new JMenu("Response");
 
 		// html
-		JMenu menuHtml = new JMenu("Html");
+		JMenu menuHtml = new JMenu("HTML");
 
 		// search
 		JMenuItem itemSearch = new JMenuItem("Search");
-		itemSearch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
-		itemSearch.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onResponseHtmlSearch();
-			}
-
-		});
+		itemSearch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
+		itemSearch.addActionListener(e -> listener.onResponseHtmlSearch());
 		menuHtml.add(itemSearch);
 		
 		// form
 		JMenuItem itemForm = new JMenuItem("Form");
-		itemForm.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
-		itemForm.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onResponseHtmlForm();
-			}
-
-		});
+		itemForm.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
+		itemForm.addActionListener(e -> listener.onResponseHtmlForm());
 		menuHtml.add(itemForm);
 
 		// images
 		JMenuItem itemImages = new JMenuItem("Images");
-		itemImages.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
-		itemImages.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onResponseHtmlImages();
-			}
-
-		});
+		itemImages.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
+		itemImages.addActionListener(e -> listener.onResponseHtmlImages());
 		menuHtml.add(itemImages);
 
 		menu.add(menuHtml);
@@ -292,40 +160,19 @@ public class MenuBar extends JMenuBar
 		// html
 		JMenuItem itemHtml = new JMenuItem("HTML");
 		//itemJson.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
-		itemHtml.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onResponseFormatHtml();
-			}
-
-		});
+		itemHtml.addActionListener(e -> listener.onResponseFormatHtml());
 		menuFormat.add(itemHtml);
 		
 		// json
 		JMenuItem itemJson = new JMenuItem("JSON");
 		//itemJson.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, ActionEvent.CTRL_MASK));
-		itemJson.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onResponseFormatJson();
-			}
-
-		});
+		itemJson.addActionListener(e -> listener.onResponseFormatJson());
 		menuFormat.add(itemJson);
 
 		// xml
 		JMenuItem itemXml = new JMenuItem("XML");
 		//itemXml.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-		itemXml.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onResponseFormatXml();
-			}
-
-		});
+		itemXml.addActionListener(e -> listener.onResponseFormatXml());
 		menuFormat.add(itemXml);
 
 		menu.add(menuFormat);
@@ -338,21 +185,16 @@ public class MenuBar extends JMenuBar
 		ArrayList<URL> bookmarks = config.getBookmarks();
 		JMenu menu = new JMenu("Bookmark");
 
-		for(int i = 0; i < bookmarks.size(); i++)
-		{
-			JMenuItem itemBookmark = new JMenuItem(bookmarks.get(i).toString());
-			itemBookmark.addActionListener(new ActionListener() {
+        for (URL bookmark : bookmarks) {
+            JMenuItem itemBookmark = new JMenuItem(bookmark.toString());
+            itemBookmark.addActionListener(e -> {
+                JMenuItem item = (JMenuItem) e.getSource();
 
-				public void actionPerformed(ActionEvent e) 
-				{
-					JMenuItem item = (JMenuItem) e.getSource();
+                listener.onBookmarkOpen(item.getText());
+            });
 
-					listener.onBookmarkOpen(item.getText());
-				}
-
-			});
-			menu.add(itemBookmark);
-		}
+            menu.add(itemBookmark);
+        }
 		
 		this.add(menu);
 	}
@@ -363,50 +205,22 @@ public class MenuBar extends JMenuBar
 
 		// certificates
 		JMenuItem itemCerts = new JMenuItem("Certificates");
-		itemCerts.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onViewCertificates();
-			}
-
-		});
+		itemCerts.addActionListener(e -> listener.onViewCertificates());
 		menu.add(itemCerts);
 
 		// cookies
 		JMenuItem itemCookies = new JMenuItem("Cookies");
-		itemCookies.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onViewCookies();
-			}
-
-		});
+		itemCookies.addActionListener(e -> listener.onViewCookies());
 		menu.add(itemCookies);
 
 		// log
 		JMenuItem itemLog = new JMenuItem("Log");
-		itemLog.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onViewLog();
-			}
-
-		});
+		itemLog.addActionListener(e -> listener.onViewLog());
 		menu.add(itemLog);
 
 		// about
 		JMenuItem itemAbout = new JMenuItem("About");
-		itemAbout.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) 
-			{
-				listener.onViewAbout();
-			}
-
-		});
+		itemAbout.addActionListener(e -> listener.onViewAbout());
 		menu.add(itemAbout);
 
 		this.add(menu);
@@ -414,30 +228,28 @@ public class MenuBar extends JMenuBar
 
 	public interface MenuBarActionListener
 	{
-		public void onUrlRun();
-		public void onUrlReset();
-		public void onUrlNewTab();
-		public void onUrlCloseTab();
-		public void onUrlSave();
-		public void onUrlOpen();
-		public void onBookmark();
-		public void onBookmarkOpen(String url);
-		public void onUrlFocus();
-		public void onRequestBasicAuth();
-		public void onRequestForm();
-		public void onRequestOauthRequestToken();
-		public void onRequestPingback();
-		public void onRequestUpload();
-		public void onRequestSoap();
-		public void onResponseHtmlSearch();
-		public void onResponseHtmlForm();
-		public void onResponseHtmlImages();
-		public void onResponseFormatHtml();
-		public void onResponseFormatJson();
-		public void onResponseFormatXml();
-		public void onViewCertificates();
-		public void onViewCookies();
-		public void onViewLog();
-		public void onViewAbout();
+		void onUrlRun();
+		void onUrlReset();
+		void onUrlNewTab();
+		void onUrlCloseTab();
+		void onUrlSave();
+		void onUrlOpen();
+		void onBookmark();
+		void onBookmarkOpen(String url);
+		void onUrlFocus();
+		void onRequestBasicAuth();
+		void onRequestForm();
+		void onRequestUpload();
+		void onRequestSoap();
+		void onResponseHtmlSearch();
+		void onResponseHtmlForm();
+		void onResponseHtmlImages();
+		void onResponseFormatHtml();
+		void onResponseFormatJson();
+		void onResponseFormatXml();
+		void onViewCertificates();
+		void onViewCookies();
+		void onViewLog();
+		void onViewAbout();
 	}
 }

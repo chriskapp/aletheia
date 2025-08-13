@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,25 +22,24 @@
 
 package app.chrisk.aletheia.protocol.https;
 
+import app.chrisk.aletheia.CertificateStore;
+import app.chrisk.aletheia.protocol.http.HTTPProtocol;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.net.Socket;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import app.chrisk.aletheia.CertificateStore;
-import app.chrisk.aletheia.protocol.http.HttpProtocol;
-
 /**
- * HttpsProtocol
+ * HTTPSProtocol
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class HttpsProtocol extends HttpProtocol
+public class HTTPSProtocol extends HTTPProtocol
 {
 	public Socket getSocket() throws Exception
 	{

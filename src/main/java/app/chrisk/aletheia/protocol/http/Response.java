@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,15 +22,15 @@
 
 package app.chrisk.aletheia.protocol.http;
 
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
-import java.util.LinkedList;
-
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
+
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.LinkedList;
 
 /**
  * Response

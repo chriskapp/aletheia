@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,12 +22,11 @@
 
 package app.chrisk.aletheia.oauth;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
+import app.chrisk.aletheia.Aletheia;
 import org.apache.commons.codec.binary.Base64;
 
-import app.chrisk.aletheia.Aletheia;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * HMACSHA1

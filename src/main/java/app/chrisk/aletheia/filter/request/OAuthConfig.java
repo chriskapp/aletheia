@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,18 +22,11 @@
 
 package app.chrisk.aletheia.filter.request;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.util.Properties;
-
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import app.chrisk.aletheia.filter.ConfigFilterAbstract;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Properties;
 
 /**
  * OauthConfig
@@ -43,12 +36,12 @@ import app.chrisk.aletheia.filter.ConfigFilterAbstract;
  */
 public class OAuthConfig extends ConfigFilterAbstract
 {
-	private JCheckBox ckbActive;
-	private JTextField txtConsumerKey;
-	private JTextField txtConsumerSecret;
-	private JTextField txtToken;
-	private JTextField txtTokenSecret;
-	private JComboBox<String> cboMethod;
+	private final JCheckBox ckbActive;
+	private final JTextField txtConsumerKey;
+	private final JTextField txtConsumerSecret;
+	private final JTextField txtToken;
+	private final JTextField txtTokenSecret;
+	private final JComboBox<String> cboMethod;
 
 	public OAuthConfig()
 	{
@@ -142,7 +135,7 @@ public class OAuthConfig extends ConfigFilterAbstract
 		panelMethod.add(lblMethod);
 
 		String[] methods = {"PLAINTEXT", "HMAC-SHA1"};
-		this.cboMethod = new JComboBox(methods);
+		this.cboMethod = new JComboBox<>(methods);
 		this.cboMethod.setPreferredSize(new Dimension(200, 24));
 		panelMethod.add(this.cboMethod);
 

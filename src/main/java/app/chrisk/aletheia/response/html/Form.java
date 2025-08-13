@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,42 +22,27 @@
 
 package app.chrisk.aletheia.response.html;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
-
+import app.chrisk.aletheia.Aletheia;
+import app.chrisk.aletheia.processor.ProcessPropertiesAbstract;
+import app.chrisk.aletheia.processor.ResponseProcessorInterface;
+import app.chrisk.aletheia.protocol.http.Request;
 import app.chrisk.aletheia.protocol.http.Response;
+import app.chrisk.aletheia.protocol.http.Util;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import app.chrisk.aletheia.Aletheia;
-import app.chrisk.aletheia.processor.ProcessPropertiesAbstract;
-import app.chrisk.aletheia.processor.ResponseProcessorInterface;
-import app.chrisk.aletheia.protocol.http.Request;
-import app.chrisk.aletheia.protocol.http.Util;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Form

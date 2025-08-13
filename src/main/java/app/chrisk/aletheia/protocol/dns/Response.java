@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,7 +22,7 @@
 
 package app.chrisk.aletheia.protocol.dns;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Response
@@ -34,11 +34,11 @@ public class Response extends app.chrisk.aletheia.protocol.Response
 {
 	public Response(String content) 
 	{
-		super(content.getBytes(Charset.forName("US-ASCII")));
+		super(content.getBytes(StandardCharsets.US_ASCII));
 	}
 
 	public String toString()
 	{
-		return new String(content, Charset.forName("US-ASCII"));
+		return new String(content, StandardCharsets.US_ASCII);
 	}
 }

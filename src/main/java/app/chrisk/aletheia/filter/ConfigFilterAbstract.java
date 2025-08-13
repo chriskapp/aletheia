@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,9 +22,8 @@
 
 package app.chrisk.aletheia.filter;
 
+import javax.swing.*;
 import java.util.Properties;
-
-import javax.swing.JPanel;
 
 /**
  * ConfigFilterAbstract

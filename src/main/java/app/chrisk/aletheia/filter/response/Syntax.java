@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,12 +22,11 @@
 
 package app.chrisk.aletheia.filter.response;
 
+import app.chrisk.aletheia.Aletheia;
+import app.chrisk.aletheia.filter.ResponseFilterAbstract;
 import app.chrisk.aletheia.protocol.http.Response;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-
-import app.chrisk.aletheia.Aletheia;
-import app.chrisk.aletheia.filter.ResponseFilterAbstract;
 
 /**
  * Application
@@ -39,31 +38,21 @@ public class Syntax extends ResponseFilterAbstract
 {
 	public void exec(app.chrisk.aletheia.protocol.Response response) throws Exception
 	{
-		if(response instanceof Response)
-		{
+		if (response instanceof Response) {
 			Response httpResponse = (Response) response;
 
 			String contentType = httpResponse.getHeader("Content-Type");
-			RSyntaxTextArea textarea = (RSyntaxTextArea) Aletheia.getInstance().getActiveOut();
+			RSyntaxTextArea textarea = Aletheia.getInstance().getActiveOut();
 
-			if(contentType.indexOf("text/html") != -1)
-			{
+			if (contentType.contains("text/html")) {
 				textarea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML);
-			}
-			else if(contentType.indexOf("text/css") != -1)
-			{
+			} else if(contentType.contains("text/css")) {
 				textarea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
-			}
-			else if(contentType.indexOf("/javascript") != -1)
-			{
+			} else if(contentType.contains("/javascript")) {
 				textarea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
-			}
-			else if(contentType.indexOf("/json") != -1)
-			{
+			} else if(contentType.contains("/json")) {
 				textarea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON);
-			}
-			else if(contentType.indexOf("/xml") != -1)
-			{
+			} else if(contentType.contains("/xml")) {
 				textarea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
 			}
 		}

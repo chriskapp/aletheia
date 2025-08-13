@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,9 +22,13 @@
 
 package app.chrisk.aletheia.view;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import app.chrisk.aletheia.Aletheia;
+import app.chrisk.aletheia.CertificateStore;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -35,19 +39,6 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
-
-import app.chrisk.aletheia.Aletheia;
-import app.chrisk.aletheia.CertificateStore;
-
 /**
  * Form
  *
@@ -56,9 +47,9 @@ import app.chrisk.aletheia.CertificateStore;
  */
 public class Certificates extends JFrame
 {
-	private CertTableModel model;
-	private JTable table;
-	private JButton btnDownload;
+	private final CertTableModel model;
+	private final JTable table;
+	private final JButton btnDownload;
 
 	private URL activeUrl;
 

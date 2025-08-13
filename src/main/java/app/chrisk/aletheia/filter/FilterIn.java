@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,22 +22,14 @@
 
 package app.chrisk.aletheia.filter;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import app.chrisk.aletheia.Aletheia;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.ScrollPaneConstants;
-
-import app.chrisk.aletheia.Aletheia;
 
 /**
  * FilterIn
@@ -47,17 +39,14 @@ import app.chrisk.aletheia.Aletheia;
  */
 public class FilterIn extends JFrame
 {
-	private ArrayList<ConfigFilterAbstract> filtersConfig = new ArrayList<ConfigFilterAbstract>();
-	private ArrayList<RequestFilterAbstract> filters = new ArrayList<RequestFilterAbstract>();
+	private final ArrayList<ConfigFilterAbstract> filtersConfig = new ArrayList<>();
+	private final ArrayList<RequestFilterAbstract> filters = new ArrayList<>();
 
-	private ArrayList<RequestFilterAbstract> activeFilters;
-
-	private Logger logger = Logger.getLogger("app.chrisk.aletheia");
+	private final ArrayList<RequestFilterAbstract> activeFilters;
 
 	public FilterIn(ArrayList<RequestFilterAbstract> activeFilters)
 	{
 		this.activeFilters = activeFilters;
-
 
 		// settings
 		this.setTitle("Request filter");
@@ -67,63 +56,52 @@ public class FilterIn extends JFrame
 		this.setResizable(false);
 		this.setLayout(new BorderLayout());
 
-
 		// tab panel
 		JTabbedPane panel = new JTabbedPane();
 		panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
-
 		// add filters
-		ArrayList<String> filters = new ArrayList<String>();
-
+		ArrayList<String> filters = new ArrayList<>();
 		filters.add("Cookie");
 		filters.add("BasicAuth");
-		filters.add("Oauth");
+		filters.add("OAuth");
 		filters.add("UserAgent");
 		filters.add("Process");
 
-
 		// parse filters
-		for(int i = 0; i < filters.size(); i++)
-		{
-			try
-			{
-				String clsConfig = "com.k42b3.aletheia.filter.request." + filters.get(i) + "Config";
-				String cls = "com.k42b3.aletheia.filter.request." + filters.get(i);
+        for (String s : filters) {
+            try {
+                String classNameConfig = "app.chrisk.aletheia.filter.request." + s + "Config";
+                String className = "app.chrisk.aletheia.filter.request." + s;
 
-				Class cConfig = Class.forName(clsConfig);
-				Class c = Class.forName(cls);
+                Class<?> classConfig = Class.forName(classNameConfig);
+                Class<?> classRequest = Class.forName(className);
 
-				ConfigFilterAbstract filterConfig = (ConfigFilterAbstract) cConfig.newInstance();
-				RequestFilterAbstract filter = (RequestFilterAbstract) c.newInstance();
+                ConfigFilterAbstract filterConfig = (ConfigFilterAbstract) classConfig.newInstance();
+                RequestFilterAbstract filter = (RequestFilterAbstract) classRequest.newInstance();
 
-				// load config
-				for(int j = 0; j < activeFilters.size(); j++)
-				{
-					if(activeFilters.get(j).getClass().getName().equals(filter.getClass().getName()))
-					{
-						filterConfig.onLoad(activeFilters.get(j).getConfig());
-					}
-				}
+                // load config
+                for (RequestFilterAbstract activeFilter : activeFilters) {
+                    if (activeFilter.getClass().getName().equals(filter.getClass().getName())) {
+                        filterConfig.onLoad(activeFilter.getConfig());
+                    }
+                }
 
-				this.filtersConfig.add(filterConfig);
-				this.filters.add(filter);
+                this.filtersConfig.add(filterConfig);
+                this.filters.add(filter);
 
-				JScrollPane scpFilter = new JScrollPane(filterConfig);
-				scpFilter.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-				scpFilter.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-				scpFilter.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);	
+                JScrollPane scpFilter = new JScrollPane(filterConfig);
+                scpFilter.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+                scpFilter.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                scpFilter.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-				panel.addTab(filterConfig.getName(), scpFilter);
-			}
-			catch(Exception e)
-			{
-				Aletheia.handleException(e);
-			}
-		}
+                panel.addTab(filterConfig.getName(), scpFilter);
+            } catch (Exception e) {
+                Aletheia.handleException(e);
+            }
+        }
 
 		this.add(panel, BorderLayout.CENTER);
-
 
 		// buttons
 		JPanel panelButtons = new JPanel();
@@ -151,10 +129,8 @@ public class FilterIn extends JFrame
 		{
 			activeFilters.clear();
 
-			for(int i = 0; i < filtersConfig.size(); i++)
-			{
-				if(filtersConfig.get(i).isActive())
-				{
+			for (int i = 0; i < filtersConfig.size(); i++) {
+				if (filtersConfig.get(i).isActive()) {
 					filters.get(i).setConfig(filtersConfig.get(i).onSave());
 
 					activeFilters.add(filters.get(i));

@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -32,7 +32,7 @@ import java.util.Stack;
  */
 public class History
 {
-	private Stack<String> urls = new Stack<String>();
+	private final Stack<String> urls = new Stack<>();
 	private int pointer = 0;
 	private int size = 16;
 
@@ -42,10 +42,8 @@ public class History
 
 	public void add(String url)
 	{
-		if(!urls.contains(url))
-		{
-			if(urls.size() == size)
-			{
+		if (!urls.contains(url)) {
+			if (urls.size() == size) {
 				urls.remove(0);
 			}
 

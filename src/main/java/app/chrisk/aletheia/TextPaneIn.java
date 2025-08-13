@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,12 +22,10 @@
 
 package app.chrisk.aletheia;
 
-import java.awt.Color;
-import java.awt.Font;
-
+import app.chrisk.aletheia.protocol.Request;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import app.chrisk.aletheia.protocol.Request;
+import java.awt.*;
 
 /**
  * TextPaneIn
@@ -67,9 +65,7 @@ public class TextPaneIn extends RSyntaxTextArea
 	public void setBody(String body)
 	{
 		int pos = this.getText().indexOf("\n\n");
-		
-		if(pos != -1)
-		{
+        if (pos != -1) {
 			this.setText(this.getText().substring(0, pos) + "\n\n" + body);
 		}
 	}

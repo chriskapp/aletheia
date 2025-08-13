@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for
  * debugging and finding security issues in web applications. For the current
@@ -20,53 +20,38 @@
  * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package app.chrisk.aletheia.search.engine;
+package app.chrisk.aletheia.sidebar.http;
 
 import app.chrisk.aletheia.protocol.http.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import app.chrisk.aletheia.sidebar.SidebarInterface;
 
-import app.chrisk.aletheia.TextPaneOut;
-import app.chrisk.aletheia.search.SearchInterface;
+import javax.swing.*;
 
 /**
- * CssSelector
+ * SidebarHTTPAbstract
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class CssSelector implements SearchInterface
+public abstract class SidebarHTTPAbstract extends JPanel implements SidebarInterface
 {
-	public String getName()
+	abstract public String getContentType();
+	abstract public void process(Response response) throws Exception;
+
+	public SidebarHTTPAbstract()
 	{
-		return "CSS Selector";
+		super();
+
+		this.setName(this.getContentType());
 	}
 
-	public void search(String search, TextPaneOut out) throws Exception
+	public void process(app.chrisk.aletheia.protocol.Response response) throws Exception
 	{
-		if (!search.isEmpty()) {
-			app.chrisk.aletheia.protocol.Response response = out.getResponse();
+		if(response instanceof Response)
+		{
+			Response httpResponse = (Response) response;
 
-			if (response instanceof Response) {
-				Response httpResponse = (Response) response;
-
-				String html = httpResponse.getBody();
-				Document doc = Jsoup.parse(html);
-				
-				Elements els = doc.select(search);
-				StringBuilder result = new StringBuilder();
-				
-				for (Element el : els) {
-					result.append(el.outerHtml());
-					result.append("\n");
-				}
-
-				httpResponse.setBody(result.toString());
-
-				out.update();
-			}
+			this.process(httpResponse);
 		}
 	}
 }

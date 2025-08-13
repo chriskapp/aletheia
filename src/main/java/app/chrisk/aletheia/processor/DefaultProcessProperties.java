@@ -1,8 +1,30 @@
+/*
+ * aletheia
+ * A browser like application to send raw http requests. It is designed for
+ * debugging and finding security issues in web applications. For the current
+ * version and more information visit <https://github.com/chriskapp/aletheia>
+ *
+ * Copyright (c) 2010-2025 Christoph Kappestein <christoph.kappestein@gmail.com>
+ *
+ * This file is part of Aletheia. Aletheia is free software: you can
+ * redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or at any later version.
+ *
+ * Aletheia is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Aletheia. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package app.chrisk.aletheia.processor;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
@@ -10,12 +32,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
 /**
  * DefaultProcessProperties
@@ -25,13 +41,12 @@ import javax.swing.table.DefaultTableModel;
  */
 public class DefaultProcessProperties extends ProcessPropertiesAbstract
 {
-	private Properties properties;
+	private final Properties properties;
 	private ProcessPropertiesCallback callback;
 
-	private PropertiesTableModel model;
-	private JTable table;
+	private final PropertiesTableModel model;
 
-	public DefaultProcessProperties(Properties properties)
+    public DefaultProcessProperties(Properties properties)
 	{
 		super();
 
@@ -47,7 +62,7 @@ public class DefaultProcessProperties extends ProcessPropertiesAbstract
 
 		// table
 		model = new PropertiesTableModel();
-		table = new JTable(model);
+        JTable table = new JTable(model);
 		table.setRowHeight(24);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.getColumnModel().getColumn(0).setPreferredWidth(150);
@@ -79,25 +94,11 @@ public class DefaultProcessProperties extends ProcessPropertiesAbstract
 
 		JButton btnInsert = new JButton("Insert");
 		btnInsert.setMnemonic(java.awt.event.KeyEvent.VK_I);
-		btnInsert.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e)
-			{
-				insert();
-			}
-
-		});
+		btnInsert.addActionListener(e -> insert());
 
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setMnemonic(java.awt.event.KeyEvent.VK_C);
-		btnCancel.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e)
-			{
-				close();
-			}
-
-		});
+		btnCancel.addActionListener(e -> close());
 
 		panelButtons.add(btnInsert);
 		panelButtons.add(btnCancel);
@@ -139,9 +140,9 @@ public class DefaultProcessProperties extends ProcessPropertiesAbstract
 		this.setVisible(false);
 	}
 
-	private class PropertiesTableModel extends DefaultTableModel
+	private static class PropertiesTableModel extends DefaultTableModel
 	{
-		private String[] columns = {"Key", "Value"};
+		private final String[] columns = {"Key", "Value"};
 
 		public PropertiesTableModel()
 		{

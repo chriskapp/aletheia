@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,9 +22,9 @@
 
 package app.chrisk.aletheia.protocol;
 
-import app.chrisk.aletheia.protocol.dns.DnsProtocol;
-import app.chrisk.aletheia.protocol.http.HttpProtocol;
-import app.chrisk.aletheia.protocol.https.HttpsProtocol;
+import app.chrisk.aletheia.protocol.dns.DNSProtocol;
+import app.chrisk.aletheia.protocol.http.HTTPProtocol;
+import app.chrisk.aletheia.protocol.https.HTTPSProtocol;
 import app.chrisk.aletheia.protocol.whois.WhoisProtocol;
 
 /**
@@ -37,30 +37,15 @@ public class ProtocolFactory
 {
 	public static ProtocolInterface factory(String protocol) throws Exception
 	{
-		if(protocol.equals("http"))
-		{
-			return new HttpProtocol();
-		}
-		else if(protocol.equals("https"))
-		{
-			return new HttpsProtocol();
-		}
-		/*
-		else if(protocol.equals("ftp"))
-		{
-			return new FtpProtocol();
-		}
-		*/
-		else if(protocol.equals("whois"))
-		{
+		if (protocol.equals("http")) {
+			return new HTTPProtocol();
+		} else if(protocol.equals("https")) {
+			return new HTTPSProtocol();
+		} else if(protocol.equals("whois")) {
 			return new WhoisProtocol();
-		}
-		else if(protocol.equals("dns"))
-		{
-			return new DnsProtocol();
-		}
-		else
-		{
+		} else if(protocol.equals("dns")) {
+			return new DNSProtocol();
+		} else {
 			throw new Exception("Unknown protocol " + protocol);
 		}
 	}

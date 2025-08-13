@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,14 +22,8 @@
 
 package app.chrisk.aletheia.response.format;
 
-import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.Properties;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import app.chrisk.aletheia.processor.ProcessPropertiesAbstract;
+import app.chrisk.aletheia.processor.ResponseProcessorInterface;
 import app.chrisk.aletheia.protocol.http.Response;
 import org.w3c.dom.Document;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -38,16 +32,20 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 
-import app.chrisk.aletheia.processor.ProcessPropertiesAbstract;
-import app.chrisk.aletheia.processor.ResponseProcessorInterface;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.Properties;
 
 /**
- * Xml
+ * XML
  *
  * @author Christoph Kappestein <christoph.kappestein@gmail.com>
  * @since 0.1
  */
-public class Xml implements ResponseProcessorInterface
+public class XML implements ResponseProcessorInterface
 {
 	public String getName()
 	{

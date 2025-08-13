@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -33,9 +33,9 @@ import java.net.URLStreamHandler;
  */
 public interface ProtocolInterface extends Runnable
 {
-	public void setRequest(Request request, CallbackInterface callback) throws Exception;
-	public Request buildRequest(URL url, String content) throws Exception;
-	public Request getRequest();
-	public Response getResponse();
-	public URLStreamHandler getStreamHandler();
+	void setRequest(Request request, CallbackInterface callback) throws Exception;
+	Request buildRequest(URL url, String content) throws Exception;
+	Request getRequest();
+	Response getResponse();
+	URLStreamHandler getStreamHandler();
 }

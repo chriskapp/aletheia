@@ -1,4 +1,4 @@
-/**
+/*
  * aletheia
  * A browser like application to send raw http requests. It is designed for 
  * debugging and finding security issues in web applications. For the current 
@@ -22,26 +22,19 @@
 
 package app.chrisk.aletheia.view;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import app.chrisk.aletheia.Cookie;
+import app.chrisk.aletheia.CookieStore;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URL;
 import java.util.LinkedList;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
-
-import app.chrisk.aletheia.Cookie;
-import app.chrisk.aletheia.CookieStore;
 
 /**
  * Form
@@ -51,9 +44,9 @@ import app.chrisk.aletheia.CookieStore;
  */
 public class Cookies extends JFrame
 {
-	private CookieTableModel model;
-	private JTable table;
-	private JButton btnRemove;
+	private final CookieTableModel model;
+	private final JTable table;
+	private final JButton btnRemove;
 
 	private URL activeUrl;
 
