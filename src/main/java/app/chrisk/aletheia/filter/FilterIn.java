@@ -29,7 +29,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 /**
  * FilterIn
@@ -77,8 +76,8 @@ public class FilterIn extends JFrame
                 Class<?> classConfig = Class.forName(classNameConfig);
                 Class<?> classRequest = Class.forName(className);
 
-                ConfigFilterAbstract filterConfig = (ConfigFilterAbstract) classConfig.newInstance();
-                RequestFilterAbstract filter = (RequestFilterAbstract) classRequest.newInstance();
+                ConfigFilterAbstract filterConfig = (ConfigFilterAbstract) classConfig.getConstructor().newInstance();
+                RequestFilterAbstract filter = (RequestFilterAbstract) classRequest.getConstructor().newInstance();
 
                 // load config
                 for (RequestFilterAbstract activeFilter : activeFilters) {
