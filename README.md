@@ -31,7 +31,7 @@ java -jar aletheia.jar
 
 ## Milestones
 
-* 13.08.2025 - Release of version 0.2.0
+* 16.08.2025 - Release of version 0.2.0
 * 03.01.2016 - Release of version 0.1.7 beta
 * 25.12.2014 - Release of version 0.1.6 beta
 * 15.11.2013 - Release of version 0.1.5 beta
