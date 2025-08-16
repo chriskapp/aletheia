@@ -161,10 +161,14 @@ public class Config
 		return false;
 	}
 
-	private void parse()
-	{
+	private void parse() {
 		try {
-			// read xml
+            if (!this.configFile.isFile()) {
+                // try to write default config if not available
+                Files.writeString(this.configFile.toPath(), getConfigXml());
+            }
+
+            // read xml
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(this.configFile);
@@ -193,7 +197,31 @@ public class Config
 		}
 	}
 
-	private void parseFiltersIn(NodeList filtersList)
+    private static String getConfigXml() {
+        String configXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        configXml += "<aletheia>\n";
+        configXml += "    <filters>\n";
+        configXml += "        <in>\n";
+        configXml += "            <filter name=\"app.chrisk.aletheia.filter.request.Cookie\"/>\n";
+        configXml += "            <filter name=\"app.chrisk.aletheia.filter.request.UserAgent\">\n";
+        configXml += "                <property name=\"agent\">Aletheia 0.2.0</property>\n";
+        configXml += "            </filter>\n";
+        configXml += "        </in>\n";
+        configXml += "        <out>\n";
+        configXml += "            <filter name=\"app.chrisk.aletheia.filter.response.Cookie\"/>\n";
+        configXml += "            <filter name=\"app.chrisk.aletheia.filter.response.Location\"/>\n";
+        configXml += "            <filter name=\"app.chrisk.aletheia.filter.response.Application\"/>\n";
+        configXml += "        </out>\n";
+        configXml += "    </filters>\n";
+        configXml += "    <applications>\n";
+        configXml += "    </applications>\n";
+        configXml += "    <bookmarks>\n";
+        configXml += "    </bookmarks>\n";
+        configXml += "</aletheia>\n";
+        return configXml;
+    }
+
+    private void parseFiltersIn(NodeList filtersList)
 	{
 		for (int i = 0; i < filtersList.getLength(); i++) {
 			try {
@@ -214,7 +242,7 @@ public class Config
 
 					Class<?> c = Class.forName(cls);
 
-					RequestFilterAbstract filter = (RequestFilterAbstract) c.newInstance();
+					RequestFilterAbstract filter = (RequestFilterAbstract) c.getConstructor().newInstance();
 					filter.setConfig(config);
 
 					filtersIn.add(filter);
@@ -251,7 +279,7 @@ public class Config
 
 					Class<?> c = Class.forName(cls);
 
-					ResponseFilterAbstract filter = (ResponseFilterAbstract) c.newInstance();
+					ResponseFilterAbstract filter = (ResponseFilterAbstract) c.getConstructor().newInstance();
 					filter.setConfig(config);
 
 					filtersOut.add(filter);
