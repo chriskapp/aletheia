@@ -69,16 +69,12 @@ public class DefaultProcessProperties extends ProcessPropertiesAbstract
 		table.getColumnModel().getColumn(1).setPreferredWidth(150);
 
 		Set<Entry<Object, Object>> set = properties.entrySet();
-		Iterator<Entry<Object, Object>> iter = set.iterator();
 
-		while(iter.hasNext())
-		{
-			Map.Entry<Object, Object> item = (Map.Entry<Object, Object>) iter.next();
+        for (Entry<Object, Object> item : set) {
+            Object[] row = {item.getKey(), item.getValue()};
 
-			Object[] row = {item.getKey(), item.getValue()};
-
-			model.addRow(row);
-		}
+            model.addRow(row);
+        }
 
 		JScrollPane scp = new JScrollPane(table);
 

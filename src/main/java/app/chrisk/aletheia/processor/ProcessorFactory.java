@@ -34,13 +34,13 @@ public class ProcessorFactory
 	{
 		Class<?> responseClass = Class.forName("app.chrisk.aletheia.response." + name);
 
-		return (ResponseProcessorInterface) responseClass.newInstance();
+		return (ResponseProcessorInterface) responseClass.getConstructor().newInstance();
 	}
 
 	public static RequestProcessorInterface getRequest(String name) throws Exception
 	{
 		Class<?> requestClass = Class.forName("app.chrisk.aletheia.request." + name);
 
-		return (RequestProcessorInterface) requestClass.newInstance();
+		return (RequestProcessorInterface) requestClass.getConstructor().newInstance();
 	}
 }
