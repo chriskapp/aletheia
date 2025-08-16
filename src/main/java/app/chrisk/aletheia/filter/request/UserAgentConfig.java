@@ -79,23 +79,18 @@ public class UserAgentConfig extends ConfigFilterAbstract
 
 		panel.add(panelAgent);
 
-
 		this.add(panel);
-
 
 		// add agents
 		ArrayList<AgentEntry> agents = new ArrayList<>();
 		agents.add(new AgentEntry("Aletheia " + Aletheia.VERSION, "Aletheia/" + Aletheia.VERSION));
-		agents.add(new AgentEntry("Firefox 4.0", "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.3) Gecko/20100401 Firefox/4.0 (.NET CLR 3.5.30729)"));
-		agents.add(new AgentEntry("Firefox 3.8", "Mozilla/5.0 (X11; U; Linux i686; pl-PL; rv:1.9.0.2) Gecko/20121223 Ubuntu/9.25 (jaunty) Firefox/3.8"));
-		agents.add(new AgentEntry("Internet Explorer 8", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)"));
-		agents.add(new AgentEntry("Internet Explorer 7", "Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)"));
-		agents.add(new AgentEntry("Internet Explorer 6", "Mozilla/5.0 (Windows; U; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"));
+        agents.add(new AgentEntry("Safari 17.10, Mac OS X", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.10 Safari/605.1.1"));
+		agents.add(new AgentEntry("Chrome 113.0.0, Mac OS X", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.3"));
+		agents.add(new AgentEntry("Chrome 134.0.0, Linux", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3"));
+        agents.add(new AgentEntry("Chrome 134.0.0, Windows", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3"));
+		agents.add(new AgentEntry("Edge 134.0.0, Windows", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0."));
+        agents.add(new AgentEntry("Opera 117.0.0, Windows", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 OPR/117.0.0."));
 		agents.add(new AgentEntry("Lynx 2.8.7", "Lynx/2.8.7dev.4 libwww-FM/2.14 SSL-MM/1.4.1 OpenSSL/0.9.8d"));
-		agents.add(new AgentEntry("Opera 9.70", "Opera/9.70 (Linux i686 ; U; en) Presto/2.2.1"));
-		agents.add(new AgentEntry("Safari 5.0", "Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10_5_8; ja-jp) AppleWebKit/533.16 (KHTML, like Gecko) Version/5.0 Safari/533.16"));
-		agents.add(new AgentEntry("Safari 4.1", "Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10_4_11; nl-nl) AppleWebKit/533.16 (KHTML, like Gecko) Version/4.1 Safari/533.16"));
-		agents.add(new AgentEntry("Konqueror 4.4", "Mozilla/5.0 (compatible; Konqueror/4.4; Linux) KHTML/4.4.1 (like Gecko) Fedora/4.4.1-1.fc12"));
 		agents.add(new AgentEntry("Googlebot 2.1", "Googlebot/2.1 (+http://www.googlebot.com/bot.html)"));
 
 		this.cboAgent.setModel(new AgentModel(agents));
@@ -118,9 +113,7 @@ public class UserAgentConfig extends ConfigFilterAbstract
 		Properties config = new Properties();
 
 		Object item = this.cboAgent.getSelectedItem();
-		
-		if(item != null)
-		{
+		if (item != null) {
 			config.setProperty("agent", ((AgentEntry) item).getKey());
 		}
 
@@ -213,14 +206,11 @@ public class UserAgentConfig extends ConfigFilterAbstract
 
 		public boolean equals(Object obj)
 		{
-			if(obj instanceof AgentEntry)
-			{
+			if (obj instanceof AgentEntry) {
 				AgentEntry entry = (AgentEntry) obj;
 
 				return this.getKey().equals(entry.getKey());
-			}
-			else
-			{
+			} else {
 				return super.equals(obj);
 			}
 		}
