@@ -146,12 +146,6 @@ public class MenuBar extends JMenuBar
 		itemForm.addActionListener(e -> listener.onResponseHtmlForm());
 		menuHtml.add(itemForm);
 
-		// images
-		JMenuItem itemImages = new JMenuItem("Images");
-		itemImages.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
-		itemImages.addActionListener(e -> listener.onResponseHtmlImages());
-		menuHtml.add(itemImages);
-
 		menu.add(menuHtml);
 
 		// format
@@ -243,7 +237,6 @@ public class MenuBar extends JMenuBar
 		void onRequestSoap();
 		void onResponseHtmlSearch();
 		void onResponseHtmlForm();
-		void onResponseHtmlImages();
 		void onResponseFormatHtml();
 		void onResponseFormatJson();
 		void onResponseFormatXml();
