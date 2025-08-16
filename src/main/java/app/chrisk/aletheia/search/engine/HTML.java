@@ -41,7 +41,7 @@ public class HTML implements SearchInterface
 
 	public void search(String search, TextPaneOut out) throws Exception
 	{
-		// if the search string is an css selector
+		// if the search string is a css selector
 		if (search.startsWith("css:")) {
 			SearchFactory.getEngine("CSSSelector").search(search.substring(4), out);
 		} else {

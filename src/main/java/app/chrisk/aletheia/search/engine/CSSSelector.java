@@ -48,10 +48,8 @@ public class CSSSelector implements SearchInterface
 		if (!search.isEmpty()) {
 			app.chrisk.aletheia.protocol.Response response = out.getResponse();
 
-			if (response instanceof Response) {
-				Response httpResponse = (Response) response;
-
-				String html = httpResponse.getBody();
+			if (response instanceof Response httpResponse) {
+                String html = httpResponse.getBody();
 				Document doc = Jsoup.parse(html);
 				
 				Elements els = doc.select(search);
