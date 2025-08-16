@@ -47,11 +47,8 @@ public abstract class SidebarHTTPAbstract extends JPanel implements SidebarInter
 
 	public void process(app.chrisk.aletheia.protocol.Response response) throws Exception
 	{
-		if(response instanceof Response)
-		{
-			Response httpResponse = (Response) response;
-
-			this.process(httpResponse);
+		if (response instanceof Response httpResponse) {
+            this.process(httpResponse);
 		}
 	}
 }
