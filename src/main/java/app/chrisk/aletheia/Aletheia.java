@@ -950,24 +950,19 @@ public class Aletheia extends JFrame
 				callResponseProcessor("html.Form");
 			}
 
-			public void onResponseHtmlImages()
-			{
-				callResponseProcessor("html.Images");
-			}
-
 			public void onResponseFormatHtml()
 			{
-				callResponseProcessor("format.Html");
+				callResponseProcessor("format.HTML");
 			}
 
 			public void onResponseFormatJson()
 			{
-				callResponseProcessor("format.Json");
+				callResponseProcessor("format.JSON");
 			}
 
 			public void onResponseFormatXml()
 			{
-				callResponseProcessor("format.Xml");
+				callResponseProcessor("format.XML");
 			}
 
 			public void onRequestBasicAuth()
@@ -1058,7 +1053,7 @@ public class Aletheia extends JFrame
 	/**
 	 * A common method to handle exceptions
 	 */
-	public static void handleException(Exception e)
+	public static void handleException(Throwable e)
 	{
 		Logger.getLogger("app.chrisk.aletheia").log(Level.WARNING, e.getMessage(), e);
 	}
