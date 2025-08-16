@@ -40,38 +40,30 @@ import java.io.ByteArrayOutputStream;
  */
 public class Process extends RequestFilterAbstract
 {
-	private long timeout = 8000;
-
-	private ByteArrayOutputStream baos;
-	private ByteArrayOutputStream baosErr;
-	private ByteArrayInputStream bais;
-
-	public void exec(Request request)
+    public void exec(Request request)
 	{
 		String cmd = getConfig().getProperty("cmd");
 
-		try
-		{
+		try {
 			logger.info("Execute: " + cmd);
 
 			CommandLine commandLine = CommandLine.parse(cmd);
-			ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
+            long timeout = 8000;
+            ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
 			DefaultExecutor executor = new DefaultExecutor();
 
-			this.baos = new ByteArrayOutputStream();
-			this.baosErr = new ByteArrayOutputStream();
-			this.bais = new ByteArrayInputStream(request.getContent().getBytes());
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
+            ByteArrayInputStream bais = new ByteArrayInputStream(request.getContent().getBytes());
 
-			executor.setStreamHandler(new PumpStreamHandler(this.baos, this.baosErr, this.bais));
+			executor.setStreamHandler(new PumpStreamHandler(baos, baosErr, bais));
 			executor.setWatchdog(watchdog);
 			executor.execute(commandLine);
 
-			logger.info("Output: " + this.baos.toString());
+			logger.info("Output: " + baos);
 
-			request.setContent(this.baos.toString());
-		}
-		catch(Exception e)
-		{
+			request.setContent(baos.toString());
+		} catch(Exception e) {
 			logger.warning(e.getMessage());
 		}
 	}

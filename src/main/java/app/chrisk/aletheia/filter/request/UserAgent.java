@@ -35,15 +35,9 @@ public class UserAgent extends RequestFilterAbstract
 {
 	public void exec(app.chrisk.aletheia.protocol.Request request)
 	{
-		if(request instanceof Request)
-		{
-			Request httpRequest = (Request) request;
-			
-			// get config
+		if (request instanceof Request httpRequest) {
 			String agent = getConfig().getProperty("agent");
-
-			if(!httpRequest.hasHeader("User-Agent"))
-			{
+			if (!httpRequest.hasHeader("User-Agent")) {
 				httpRequest.setHeader("User-Agent", agent);
 			}
 		}
