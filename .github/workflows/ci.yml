@@ -14,3 +14,5 @@ jobs:
           distribution: 'temurin'
       - name: Compile
         run: mvn clean compile
+      - name: Test
+        run: mvn test
