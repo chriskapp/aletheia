@@ -24,16 +24,13 @@ package app.chrisk.aletheia.protocol.dns;
 
 import app.chrisk.aletheia.Aletheia;
 import app.chrisk.aletheia.protocol.ProtocolAbstract;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.SimpleResolver;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Type;
+import org.xbill.DNS.lookup.LookupSession;
 
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * DNSProtocol
@@ -44,51 +41,56 @@ import java.util.concurrent.TimeUnit;
 public class DNSProtocol extends ProtocolAbstract
 {
 	private final HashMap<Integer, String> types;
-	private final ExecutorService service;
 
-	public DNSProtocol()
+    public DNSProtocol()
 	{
 		// dns types
-		types = new HashMap<Integer, String>();
+		types = new HashMap<>();
 
-		types.put(org.xbill.DNS.Type.A, "A (IPv4 address)");
-		types.put(org.xbill.DNS.Type.A6, "A6 (IPv6 address (experimental))");
-		types.put(org.xbill.DNS.Type.AAAA, "AAAA (IPv6 address)");
-		types.put(org.xbill.DNS.Type.CNAME, "CNAME (Canonical name)");
-		types.put(org.xbill.DNS.Type.GPOS, "GPOS (Geographical position)");
-		types.put(org.xbill.DNS.Type.HINFO, "HINFO (Host information)");
-		types.put(org.xbill.DNS.Type.LOC, "LOC (Location)");
-		types.put(org.xbill.DNS.Type.MB, "MB (Mailbox domain name)");
-		types.put(org.xbill.DNS.Type.MD, "MD (Mail destination)");
-		types.put(org.xbill.DNS.Type.MF, "MF (Mail forwarder)");
-		types.put(org.xbill.DNS.Type.MG, "MG (Mail group member)");
-		types.put(org.xbill.DNS.Type.MINFO, "MINFO (Mailbox information)");
-		types.put(org.xbill.DNS.Type.MR, "MR (Mail rename name)");
-		types.put(org.xbill.DNS.Type.MX, "MX (Mail routing information)");
-		types.put(org.xbill.DNS.Type.NS, "NS (Name server)");
-		types.put(org.xbill.DNS.Type.NULL, "NULL (Null record)");
-		types.put(org.xbill.DNS.Type.PTR, "PTR (Domain name pointer)");
-		types.put(org.xbill.DNS.Type.RP, "RP (Responsible person)");
-		types.put(org.xbill.DNS.Type.RT, "RT (Router)");
-		types.put(org.xbill.DNS.Type.SOA, "SOA (Start of authority)");
-		types.put(org.xbill.DNS.Type.TXT, "TXT (Text strings)");
-		types.put(org.xbill.DNS.Type.WKS, "WKS (Well known services)");
-
-		service = Executors.newSingleThreadExecutor();
+		types.put(Type.A, "A (IPv4 address)");
+		types.put(Type.A6, "A6 (IPv6 address (experimental))");
+		types.put(Type.AAAA, "AAAA (IPv6 address)");
+		types.put(Type.CNAME, "CNAME (Canonical name)");
+		types.put(Type.GPOS, "GPOS (Geographical position)");
+		types.put(Type.HINFO, "HINFO (Host information)");
+		types.put(Type.LOC, "LOC (Location)");
+		types.put(Type.MB, "MB (Mailbox domain name)");
+		types.put(Type.MD, "MD (Mail destination)");
+		types.put(Type.MF, "MF (Mail forwarder)");
+		types.put(Type.MG, "MG (Mail group member)");
+		types.put(Type.MINFO, "MINFO (Mailbox information)");
+		types.put(Type.MR, "MR (Mail rename name)");
+		types.put(Type.MX, "MX (Mail routing information)");
+		types.put(Type.NS, "NS (Name server)");
+		types.put(Type.NULL, "NULL (Null record)");
+		types.put(Type.PTR, "PTR (Domain name pointer)");
+		types.put(Type.RP, "RP (Responsible person)");
+		types.put(Type.RT, "RT (Router)");
+		types.put(Type.SOA, "SOA (Start of authority)");
+		types.put(Type.TXT, "TXT (Text strings)");
+		types.put(Type.WKS, "WKS (Well known services)");
 	}
 
 	public void run() 
 	{
 		try {
+            LookupSession session = LookupSession.defaultBuilder().build();
+            StringBuilder out = new StringBuilder();
+
             for (int key : types.keySet()) {
-                service.submit(new RequestWorker(request.getUrl().getHost(), key, types.get(key)));
+                var result = session
+                    .lookupAsync(Name.fromString(request.getUrl().getHost()), key)
+                    .toCompletableFuture()
+                    .get();
+
+                out.append("> ").append(types.get(key)).append("\n");
+
+                for (var record : result.getRecords()) {
+                    out.append(record).append("\n");
+                }
             }
 
-			service.shutdown();
-
-			Aletheia.getInstance().getActiveOut().append("Requesting DNS records ...");
-
-			service.awaitTermination(10000, TimeUnit.MILLISECONDS);
+            Aletheia.getInstance().getActiveOut().append(out.toString());
 
 			// create response
 			this.response = new Response(Aletheia.getInstance().getActiveOut().getText());
@@ -118,47 +120,5 @@ public class DNSProtocol extends ProtocolAbstract
 	public URLStreamHandler getStreamHandler()
 	{
 		return new DNSURLStreamHandler();
-	}
-	
-	private static class RequestWorker implements Runnable
-	{
-		private final String host;
-		private final int type;
-		private final String desc;
-
-		public RequestWorker(String host, int type, String desc)
-		{
-			this.host = host;
-			this.type = type;
-			this.desc = desc;
-		}
-
-		public void run()
-		{
-			StringBuilder result = new StringBuilder();
-
-			result.append("> ").append(desc).append("\n");
-
-			try {
-				Lookup lookup = new Lookup(host, type);
-				lookup.setResolver(new SimpleResolver("8.8.8.8"));
-
-				Record [] records = lookup.run();
-
-				if (records != null && records.length > 0) {
-                    for (Record record : records) {
-                        result.append(record).append("\n");
-                    }
-				} else {
-					return;
-				}
-
-				result.append("\n");
-			} catch(Exception e) {
-				Aletheia.handleException(e);
-			}
-
-			Aletheia.getInstance().getActiveOut().append(result.toString());
-		}
 	}
 }
