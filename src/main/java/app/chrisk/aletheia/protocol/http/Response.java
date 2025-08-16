@@ -29,7 +29,9 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -56,42 +58,30 @@ public class Response extends app.chrisk.aletheia.protocol.Response
 		this.setLine(response.getStatusLine().toString());
 
 		// set headers
-		LinkedList<Header> header = new LinkedList<Header>();
+		LinkedList<Header> header = new LinkedList<>();
 		Header[] headers = response.getAllHeaders();
 
-		for(int i = 0; i < headers.length; i++)
-		{
-			header.add(headers[i]);
-		}
+        Collections.addAll(header, headers);
 
 		this.setHeaders(header);
 
 		// read body
-		if(this.content != null)
-		{
+		if (this.content != null) {
 			Charset charset = this.detectCharset();
 			String body = "";
 
-			if(charset != null)
-			{
+			if (charset != null) {
 				body = new String(this.getContent(), charset);
-			}
-			else
-			{
-				if(this.isBinary())
-				{
+			} else {
+				if (this.isBinary()) {
 					body = this.toHexdump();
-				}
-				else
-				{
-					body = new String(this.getContent(), Charset.forName("UTF-8"));
+				} else {
+					body = new String(this.getContent(), StandardCharsets.UTF_8);
 				}
 			}
 
 			this.setBody(body);
-		}
-		else
-		{
+		} else {
 			this.setBody("");
 		}
 	}
@@ -123,13 +113,11 @@ public class Response extends app.chrisk.aletheia.protocol.Response
 
 	public String getHeader(String key)
 	{
-		for(int i = 0; i < this.header.size(); i++)
-		{
-			if(this.header.get(i).getName().toLowerCase().equals(key.toLowerCase()))
-			{
-				return this.header.get(i).getValue();
-			}
-		}
+        for (Header value : this.header) {
+            if (value.getName().equalsIgnoreCase(key)) {
+                return value.getValue();
+            }
+        }
 
 		return null;
 	}
@@ -159,28 +147,18 @@ public class Response extends app.chrisk.aletheia.protocol.Response
 		// try to read charset from the header
 		String contentType = this.getHeader("Content-Type");
 
-		if(contentType != null)
-		{
-			try
-			{
+		if (contentType != null) {
+			try {
 				Charset charset = ContentType.parse(contentType).getCharset();
-
-				if(charset != null)
-				{
+				if (charset != null) {
 					return charset;
 				}
-			}
-			catch(ParseException e)
-			{
-			}
-			catch(UnsupportedCharsetException e)
-			{
+			} catch(ParseException | UnsupportedCharsetException ignored) {
 			}
 
-			// if the content type is text/* use default charset
-			if(contentType.indexOf("text/") != -1)
-			{
-				return Charset.forName("UTF-8");
+            // if the content type is text/* use default charset
+			if (contentType.contains("text/")) {
+				return StandardCharsets.UTF_8;
 			}
 		}
 
@@ -195,20 +173,16 @@ public class Response extends app.chrisk.aletheia.protocol.Response
 	{
 		StringBuilder dump = new StringBuilder();
 
-		for(int i = 0; i < this.content.length; i++)
-		{
-			String hex = Integer.toHexString(this.content[i]);
+		for (int i = 0; i < this.content.length; i++) {
+			StringBuilder hex = new StringBuilder(Integer.toHexString(this.content[i]));
 
-			if(hex.length() < 8)
-			{
-				while(hex.length() < 8)
-				{
-					hex = "0" + hex;
+			if (hex.length() < 8) {
+				while (hex.length() < 8) {
+					hex.insert(0, "0");
 				}
 			}
 
-			if(i > 0 && i % 8 == 0)
-			{
+			if (i > 0 && i % 8 == 0) {
 				dump.append("\n");
 			}
 
@@ -221,7 +195,7 @@ public class Response extends app.chrisk.aletheia.protocol.Response
 	
 	/**
 	 * Tries to detect whether the content is binary or text content. If the 
-	 * content contains more the 8 bytes wich have the upper bytes set it 
+	 * content contains more the 8 bytes which have the upper bytes set it
 	 * returns true
 	 * 
 	 * @return boolean
@@ -230,18 +204,15 @@ public class Response extends app.chrisk.aletheia.protocol.Response
 	{
 		int c = 0;
 
-		for(int i = 0; i < this.content.length; i++)
-		{
-			if(this.content[i] >> 16 != 0)
-			{
-				c++;
-			}
+        for (byte b : this.content) {
+            if (b >> 16 != 0) {
+                c++;
+            }
 
-			if(c > 8)
-			{
-				return true;
-			}
-		}
+            if (c > 8) {
+                return true;
+            }
+        }
 
 		return false;
 	}
