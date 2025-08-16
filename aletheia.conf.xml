@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<aletheia>
+<?xml version="1.0" encoding="UTF-8"?><aletheia>
     <filters>
         <in>
             <filter name="app.chrisk.aletheia.filter.request.Cookie"/>
@@ -11,12 +10,10 @@
             <filter name="app.chrisk.aletheia.filter.response.Cookie"/>
             <filter name="app.chrisk.aletheia.filter.response.Location"/>
             <filter name="app.chrisk.aletheia.filter.response.Application"/>
-            <!--<filter name="response.filter.app.chrisk.aletheia.Syntax" />-->
         </out>
     </filters>
-    <applications>
-        <!-- <application contentType="application/x-shockwave-flash" path="J:\application\flashplayer\flashplayer_11_sa.exe ${url}" /> -->
-    </applications>
+    <applications/>
     <bookmarks>
+        <bookmark url="https://chrisk.app"/>
     </bookmarks>
 </aletheia>
