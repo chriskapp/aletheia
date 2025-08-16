@@ -47,7 +47,7 @@ public class HTTPSProtocol extends HTTPProtocol
             new CrazyX509TrustManager()
 		};
 
-		SSLContext sc = SSLContext.getInstance("SSL");
+		SSLContext sc = SSLContext.getInstance("TLS");
 	    sc.init(null, trustAllCerts, new SecureRandom());
 
 		return sc.getSocketFactory().createSocket(host.getHostName(), host.getPort());
