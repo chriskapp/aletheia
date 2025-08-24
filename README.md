@@ -23,11 +23,7 @@ java -jar aletheia.jar
 
 ## Screenshots
 
-### Debian
-![Image](docs/debian_6.png)
-
-### Windows
-![Image](docs/windows_7.png)
+![Image](docs/windows_11.png)
 
 ## Milestones
 
